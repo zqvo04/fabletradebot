@@ -83,8 +83,13 @@ class Config:
     halt_bars: int = 24
 
     # ---- costs ----
-    fee_bps: float = 5.0
+    fee_bps: float = 5.0            # taker
+    maker_fee_bps: float = 2.0
     slip_bps: dict = _d(BTC=2.0, ETH=2.0, SOL=5.0, HYPE=15.0)
+    maker_exits: bool = False       # resting-limit exits (targets/partials) pay maker
+    maker_entries: str = "none"     # none | optimistic | realistic — limit entries
+    maker_entry_playbooks: tuple = ("P2", "P3", "P4")  # P1 breakout stays stop-market
+    pending_ttl: int = 2            # realistic mode: bars a limit entry stays working
 
     # ---- trade management ----
     partial_at_r: float = 1.0
@@ -120,6 +125,7 @@ def h4_config() -> Config:
     cfg.cooldown_bars = 6        # 24h
     cfg.reentry_window = 12      # 48h
     cfg.halt_bars = 24           # RiskManager uses hours, unchanged
+    cfg.maker_exits = True       # targets/partials as resting limits (ANALYSIS_TEMPO.md)
     return cfg
 
 
