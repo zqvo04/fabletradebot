@@ -1,4 +1,13 @@
-# FableTradeBot — Quant Algorithm Blueprint (v0.1, Logic-Only)
+# FableTradeBot — Quant Algorithm Blueprint (v0.3)
+
+> **Phase 2**: 본 청사진은 `fabletradebot/` 패키지로 구현 완료 (구조는 README.md 참조).
+> 데이/스윙 타겟팅 반영: P1·P2 = 스윙(최대 ~10일, 트레일링), P3·P4 = 데이(24~72시간, 고정 목표).
+>
+> **Phase 3 (v0.3)**: OKX 실데이터 18.5개월로 §6 게이트 검증 완료.
+> 1H 템포는 불합격(엣지는 실재하나 수수료가 잠식 — 총이익 대비 비용 140%),
+> 신호 템포를 4H로 옮긴 변형(`config.h4_config`)이 전 게이트 통과.
+> ATR 손절폭이 ~2배가 되어 R당 비용이 절반이 되는 구조적 수정이며,
+> 파라미터 재튜닝(커브피팅)은 하지 않았다. 상세: VALIDATION.md / VALIDATION_4H.md.
 
 > Phase 1 산출물: 수학적 수식 + 의사코드 + 설계도.
 > 인프라(OKX API, 스케줄러, Notion, Paper trading 스위치)는 Phase 2에서 다룬다.
