@@ -20,10 +20,15 @@ class Broker:
         self.fees = 0.0
         self.funding = 0.0
 
-    def fill(self, asset: str, side: int, qty: float, ref_price: float) -> float:
-        """side +1 buy / -1 sell. Returns executed price incl. slippage."""
-        px = ref_price * (1 + side * self.cfg.slip_bps[asset] * 1e-4)
-        fee = qty * px * self.cfg.fee_bps * 1e-4
+    def fill(self, asset: str, side: int, qty: float, ref_price: float,
+             kind: str = "taker") -> float:
+        """side +1 buy / -1 sell. Maker fills: no slippage, maker fee."""
+        if kind == "maker":
+            px = ref_price
+            fee = qty * px * self.cfg.maker_fee_bps * 1e-4
+        else:
+            px = ref_price * (1 + side * self.cfg.slip_bps[asset] * 1e-4)
+            fee = qty * px * self.cfg.fee_bps * 1e-4
         self.cash -= side * qty * px + fee
         self.fees += fee
         return px
@@ -85,15 +90,26 @@ class Engine:
         self.risk = risk
         self.positions: dict[str, Position | None] = {}
         self.cooldowns: dict[str, Cooldown] = {}
+        self.pending: dict[str, dict] = {}  # realistic maker entries awaiting a touch
         self.trades: list[dict] = []
 
     # ---------------- fills ----------------
 
-    def _fill(self, pos: Position, side: int, qty: float, ref_px: float) -> float:
-        px = self.broker.fill(pos.asset, side, qty, ref_px)
-        fee = qty * px * self.cfg.fee_bps * 1e-4
-        pos.cash_flow += -side * qty * px - fee
+    def _fill(self, pos: Position, side: int, qty: float, ref_px: float,
+              kind: str = "taker") -> float:
+        px = self.broker.fill(pos.asset, side, qty, ref_px, kind)
+        rate = self.cfg.maker_fee_bps if kind == "maker" else self.cfg.fee_bps
+        pos.cash_flow += -side * qty * px - rate * 1e-4 * qty * px
         return px
+
+    def _entry_kind(self, playbook: str) -> str:
+        if self.cfg.maker_entries != "none" and playbook in self.cfg.maker_entry_playbooks:
+            return "maker"
+        return "taker"
+
+    def _exit_kind(self, resting: bool) -> str:
+        """resting=True for target/partial levels that would be resting limits."""
+        return "maker" if (resting and self.cfg.maker_exits) else "taker"
 
     def _open(self, sig: Signal, full_qty: float, i: int):
         d = sig.direction
@@ -105,7 +121,8 @@ class Engine:
             r_denom=abs(sig.entry - sig.stop), atr0=0.0, z=sig.z,
             opened_i=i, targets=list(sig.targets),
         )
-        px = self._fill(pos, d, full_qty / 3.0, sig.entry)  # probe = 1/3
+        px = self._fill(pos, d, full_qty / 3.0, sig.entry,  # probe = 1/3
+                        kind=self._entry_kind(sig.playbook))
         pos.qty = full_qty / 3.0
         pos.avg_entry = px
         pos.entry1 = px
@@ -121,14 +138,15 @@ class Engine:
         pos.qty += add
         pos.unit += 1
 
-    def _reduce(self, pos: Position, frac: float, ref_px: float):
+    def _reduce(self, pos: Position, frac: float, ref_px: float, kind: str = "taker"):
         qty = pos.qty * frac
-        self._fill(pos, -pos.direction, qty, ref_px)
+        self._fill(pos, -pos.direction, qty, ref_px, kind)
         pos.qty -= qty
 
-    def _close(self, pos: Position, ref_px: float, reason: str, i: int, ts):
+    def _close(self, pos: Position, ref_px: float, reason: str, i: int, ts,
+               kind: str = "taker"):
         if pos.qty > 0:
-            self._fill(pos, -pos.direction, pos.qty, ref_px)
+            self._fill(pos, -pos.direction, pos.qty, ref_px, kind)
             pos.qty = 0.0
         r = pos.cash_flow / pos.risk_amount if pos.risk_amount > 0 else 0.0
         self.trades.append(dict(
@@ -174,18 +192,18 @@ class Engine:
             if d * (h if d > 0 else l) >= d * tgt:
                 px = o if d * (o - tgt) > 0 else tgt
                 if len(pos.targets) > 1:
-                    self._reduce(pos, 0.5, px)
+                    self._reduce(pos, 0.5, px, self._exit_kind(True))
                     pos.targets.pop(0)
                     pos.stop = pos.avg_entry              # breakeven
                     pos.scaled_out = True
                 else:
-                    self._close(pos, px, "target", i, ts)
+                    self._close(pos, px, "target", i, ts, self._exit_kind(True))
                     return
         elif not pos.scaled_out:                          # generic +1R partial
             level = pos.entry1 + d * cfg.partial_at_r * pos.r_denom
             if d * (h if d > 0 else l) >= d * level:
                 px = o if d * (o - level) > 0 else level
-                self._reduce(pos, cfg.partial_frac, px)
+                self._reduce(pos, cfg.partial_frac, px, self._exit_kind(True))
                 pos.stop = pos.avg_entry                  # breakeven
                 pos.scaled_out = True
 
@@ -223,6 +241,27 @@ class Engine:
             self._close(pos, c, "regime", i, ts)
 
     # ---------------- entries ----------------
+
+    def check_pending(self, asset: str, A: dict, i: int, ts):
+        """Realistic maker entries: fill the resting limit if this bar trades
+        through it; expire stale or invalidated orders. A limit only fills
+        when price comes back against the trade — adverse selection is real."""
+        order = self.pending.get(asset)
+        if order is None:
+            return
+        sig, full_qty = order["sig"], order["full_qty"]
+        regime = A["regime"][i]
+        if i > order["expire_i"] or regime == CRISIS \
+                or self.positions.get(asset) is not None:
+            del self.pending[asset]
+            return
+        d = sig.direction
+        touched = A["low"][i] <= sig.entry if d > 0 else A["high"][i] >= sig.entry
+        if touched:
+            del self.pending[asset]
+            self._open(sig, full_qty, i)
+            self.positions[asset].atr0 = order["atr0"]
+            self.positions[asset].risk_frac = order["risk_frac"]
 
     def try_enter(self, asset: str, A: dict, i: int, ts, btc_ctx: dict | None,
                   equity: float, marks: dict):
@@ -263,10 +302,16 @@ class Engine:
                 {a: (p.direction, p.qty) if p else None for a, p in self.positions.items()},
                 asset, sig.direction, full * sig.entry, marks, equity):
             return
+        risk_frac = full * abs(sig.entry - sig.stop) / equity if equity > 0 else 0.0
+        if self.cfg.maker_entries == "realistic" \
+                and sig.playbook in self.cfg.maker_entry_playbooks:
+            self.pending[asset] = dict(  # rest a limit at the signal close
+                sig=sig, full_qty=full, expire_i=i + self.cfg.pending_ttl,
+                atr0=float(A["atr"][i]), risk_frac=risk_frac)
+            return
         self._open(sig, full, i)
         self.positions[asset].atr0 = float(A["atr"][i])
-        self.positions[asset].risk_frac = \
-            self.positions[asset].risk_amount / equity if equity > 0 else 0.0
+        self.positions[asset].risk_frac = risk_frac
 
     def _ev_positive(self, sig: Signal, A: dict, i: int) -> bool:
         """EV = p*W - (1-p)*L - costs, all in R. Costs scale with entry/stop
@@ -277,7 +322,9 @@ class Engine:
         if dist <= 0:
             return False
         notional_per_r = sig.entry / dist
-        cost_r = 2 * (cfg.fee_bps + cfg.slip_bps[sig.asset]) * 1e-4 * notional_per_r
+        taker = cfg.fee_bps + cfg.slip_bps[sig.asset]
+        entry_bps = cfg.maker_fee_bps if self._entry_kind(sig.playbook) == "maker" else taker
+        cost_r = (entry_bps + taker) * 1e-4 * notional_per_r  # exit modeled as taker
         f = A["funding"][i]
         if not np.isnan(f):
             periods = cfg.exp_hold[sig.playbook] / 8.0

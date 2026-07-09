@@ -123,3 +123,51 @@ def test_cooldown_after_three_straight_stops():
     cd = eng.cooldowns["BTC"]
     assert cd.until == 1 + cfg.cooldown_bars  # 3rd stop arms the cooldown
     assert cd.consec == 0
+
+
+def test_maker_fill_economics():
+    """Maker fills: no slippage, maker fee; taker fills keep slip+taker fee."""
+    cfg = make_cfg()
+    cfg.slip_bps = {k: 10.0 for k in cfg.slip_bps}   # visible slippage
+    cfg.maker_exits = True
+    cfg.maker_entries = "optimistic"
+    eng = _engine(cfg)
+    pos = _open(eng, playbook="P3", targets=(101.0, 102.0))  # maker entry playbook
+    assert abs(pos.entry1 - 100.0) < 1e-9            # no slip on maker entry
+    # taker probe for P1 would slip: reset and compare
+    eng2 = _engine(cfg)
+    pos2 = _open(eng2, playbook="P1")
+    assert pos2.entry1 > 100.0                        # buy slipped up 10bp
+
+
+def test_realistic_pending_fills_only_on_touch():
+    cfg = _cfg_no_costs()
+    cfg.maker_entries = "realistic"
+    eng = _engine(cfg)
+    sig = Signal(asset="BTC", direction=1, playbook="P3", entry=100.0, stop=99.0,
+                 z=0.9, horizon="day", targets=[101.0, 102.0])
+    # emulate try_enter's pending registration path
+    eng.pending["BTC"] = dict(sig=sig, full_qty=30.0, expire_i=3, atr0=1.0,
+                              risk_frac=0.003)
+    bars = _arrays([(0, 0, 0, 0),
+                    (100.5, 100.8, 100.2, 100.6),   # never touches 100 -> no fill
+                    (100.4, 100.5, 99.9, 100.1),    # touches 100 -> fill
+                    (0, 0, 0, 0), (0, 0, 0, 0)])
+    eng.check_pending("BTC", bars, 1, None)
+    assert eng.positions["BTC"] is None
+    eng.check_pending("BTC", bars, 2, None)
+    assert eng.positions["BTC"] is not None
+    assert abs(eng.positions["BTC"].entry1 - 100.0) < 1e-9
+
+
+def test_realistic_pending_expires():
+    cfg = _cfg_no_costs()
+    cfg.maker_entries = "realistic"
+    eng = _engine(cfg)
+    sig = Signal(asset="BTC", direction=1, playbook="P3", entry=100.0, stop=99.0,
+                 z=0.9, horizon="day")
+    eng.pending["BTC"] = dict(sig=sig, full_qty=30.0, expire_i=2, atr0=1.0,
+                              risk_frac=0.003)
+    bars = _arrays([(101, 101, 100.5, 101)] * 5)
+    eng.check_pending("BTC", bars, 3, None)           # past expire_i
+    assert "BTC" not in eng.pending and eng.positions["BTC"] is None

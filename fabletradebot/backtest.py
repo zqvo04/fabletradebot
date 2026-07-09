@@ -105,6 +105,7 @@ class Backtester:
 
             btc_regime = arrays["BTC"]["regime"][i] if has_btc else CRISIS
             for a in arrays:
+                engine.check_pending(a, arrays[a], i, ts)
                 engine.manage(a, arrays[a], i, ts, btc_regime)
 
             equity = broker.equity(engine.positions, marks)
