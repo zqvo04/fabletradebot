@@ -46,6 +46,10 @@ class Config:
     hysteresis: int = 3          # bars to confirm a regime switch (CRISIS is immediate)
 
     # ---- alpha signal ----
+    playbooks: tuple = ("P1", "P2", "P3", "P4")  # enabled playbooks
+    p1_regimes: tuple = ("SQUEEZE",)  # regimes where the breakout playbook fires
+    p1_own_weights: bool = False      # score P1 with SQUEEZE weights/theta in any regime
+    p1_trend_filter: bool = False     # breakout direction must agree with close vs EMA100
     theta: dict = _d(TREND=0.55, SQUEEZE=0.55, CHOP=0.75)
     # evidence weights [E1 structure, E2 orderflow, E3 positioning, E4 cross, E5 vol-context]
     weights: dict = _d(
@@ -92,6 +96,7 @@ class Config:
     pending_ttl: int = 2            # realistic mode: bars a limit entry stays working
 
     # ---- trade management ----
+    pyr_units: int = 3           # position built in N equal units (probe = 1/N)
     partial_at_r: float = 1.0
     partial_frac: float = 0.40
     chandelier_atr: float = 2.75
@@ -126,6 +131,38 @@ def h4_config() -> Config:
     cfg.reentry_window = 12      # 48h
     cfg.halt_bars = 24           # RiskManager uses hours, unchanged
     cfg.maker_exits = True       # targets/partials as resting limits (ANALYSIS_TEMPO.md)
+    return cfg
+
+
+def v2_config() -> Config:
+    """v2 structural redesign (2026-07), designed on the 2025 window only.
+
+    Diagnosis on the v1 validation data (VALIDATION.md / VALIDATION_4H.md):
+      1. the only reliable edge was breakout continuation (P1; fully
+         pyramided winners: 90% win, +0.72 avgR — probes that never
+         advanced: -0.24), and the probe structure kept winner size small;
+      2. the right tail was capped at ~3.5R by the 1R partial + tight trail
+         (a trend system's payoff lives in that tail);
+      3. P2/P3 were net losers on 4H (-3.7R combined).
+
+    Changes (each traced to a numbered finding):
+      (1) full entry replaces probe-and-pyramid — the probe capped winner
+          size more than it saved on losers; time stop tightened to 8 bars;
+      (2) no 1R partial (breakeven move stays), chandelier widened to 3.25;
+      (3) P2/P3 disabled — P1 + P4 (funding squeeze) remain.
+
+    A CHOP-expanded breakout variant (P1 firing outside SQUEEZE) tripled
+    design-window return but was REJECTED on the 2026 holdout (-4.7% vs v1's
+    -1.4%): removing the theta(CHOP) false-positive guard is exactly the
+    death-by-a-thousand-cuts failure the blueprint predicts. Not adopted.
+    See REDESIGN_V2.md.
+    """
+    cfg = h4_config()
+    cfg.playbooks = ("P1", "P4")
+    cfg.pyr_units = 1
+    cfg.partial_frac = 0.0
+    cfg.chandelier_atr = 3.25
+    cfg.time_stop = dict(cfg.time_stop, P1=8)
     return cfg
 
 

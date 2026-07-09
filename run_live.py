@@ -22,7 +22,7 @@ from pathlib import Path
 import pandas as pd
 
 from fabletradebot import Backtester
-from fabletradebot.config import h4_config
+from fabletradebot.config import v2_config
 from fabletradebot.data_okx import update_market
 from fabletradebot.journal_notion import post_trade
 from fabletradebot.preprocess import resample_ohlcv
@@ -40,10 +40,10 @@ def main():
 
     data, funding = update_market(anchor, cache_dir="live_data")
     # deterministic replay: fixed anchor even if the cache holds older bars,
-    # resampled to the gate-validated 4H tempo (see VALIDATION_4H.md)
+    # resampled to the gate-validated 4H tempo, v2 strategy (VALIDATION_V2.md)
     anchor_ts = pd.Timestamp(anchor, tz="UTC")
     data = {a: resample_ohlcv(df.loc[df.index >= anchor_ts]) for a, df in data.items()}
-    bt = Backtester(data, h4_config(), funding=funding, equity0=equity0)
+    bt = Backtester(data, v2_config(), funding=funding, equity0=equity0)
     out = bt.run()
 
     state = json.loads(STATE_JSON.read_text()) if STATE_JSON.exists() else {"n_journaled": 0}

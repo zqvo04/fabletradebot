@@ -101,7 +101,7 @@ def _clamp_stop(entry, stop, atr_, d, min_atr, max_atr=None) -> float:
 # ---------------- playbooks ----------------
 
 def _p1_squeeze_breakout(A, i, regime, btc_ctx, cfg: Config):
-    if regime != SQUEEZE:
+    if regime not in cfg.p1_regimes:
         return []
     c, v, atr_ = A["close"][i], A["volume"][i], A["atr"][i]
     hi, lo = A["don_hi"][i], A["don_lo"][i]
@@ -113,6 +113,10 @@ def _p1_squeeze_breakout(A, i, regime, btc_ctx, cfg: Config):
     for d, brk, box in ((1, hi, box_lo), (-1, lo, box_hi)):
         if d * (c - brk) <= 0:
             continue
+        if cfg.p1_trend_filter:
+            ema100 = A["ema100"][i]
+            if _nan(ema100) or d * (c - ema100) <= 0:
+                continue
         rng_exp = (A["high"][i] - A["low"][i]) >= 1.5 * atr_
         strong_close = d * (c - brk) >= 0.25 * atr_
         e1 = min(0.4 + 0.3 * rng_exp + 0.3 * strong_close, 1.0)
@@ -211,9 +215,16 @@ def generate(asset: str, A: dict, i: int, cfg: Config, btc_ctx: dict | None) -> 
     signals = []
     for pb in _PLAYBOOKS:
         for name, d, e1, stop, targets, smult, horizon in pb(A, i, regime, btc_ctx, cfg):
-            z, ev = _score(e1, A, i, d, btc_ctx, regime, cfg)
-            if z < theta:
+            if name not in cfg.playbooks:
                 continue
+            if name == "P1" and cfg.p1_own_weights:
+                z, ev = _score(e1, A, i, d, btc_ctx, SQUEEZE, cfg)
+                if z < cfg.theta["SQUEEZE"]:
+                    continue
+            else:
+                z, ev = _score(e1, A, i, d, btc_ctx, regime, cfg)
+                if z < theta:
+                    continue
             signals.append(Signal(
                 asset=asset, direction=d, playbook=name, entry=float(A["close"][i]),
                 stop=float(stop), z=z, horizon=horizon, size_mult=smult,

@@ -9,7 +9,8 @@ Gate 4  Monte Carlo: shuffle (risk_frac, R) trade sequence 2000x
         -> 95th percentile max drawdown must be within -25%.
 
 Usage: python3 validation.py [start] [end] [timeframe]
-       (defaults 2025-01-01 .. 2026-07-08 1H; pass 4H for the swing-tempo variant)
+       (defaults 2025-01-01 .. 2026-07-08 1H; pass 4H for the swing-tempo
+       variant, V2 for the v2 redesign on 4H bars)
 """
 import copy
 import sys
@@ -18,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 from fabletradebot import Backtester, Config
-from fabletradebot.config import h4_config
+from fabletradebot.config import h4_config, v2_config
 from fabletradebot.data_okx import load_market
 from fabletradebot.preprocess import resample_ohlcv
 
@@ -115,6 +116,9 @@ def main(start="2025-01-01", end="2026-07-08", timeframe="1H"):
     if timeframe.upper() == "4H":
         data = {a: resample_ohlcv(df) for a, df in data.items()}
         cfg = h4_config()
+    elif timeframe.upper() == "V2":
+        data = {a: resample_ohlcv(df) for a, df in data.items()}
+        cfg = v2_config()
     else:
         cfg = Config()
     print(f"assets loaded ({timeframe}): { {a: len(df) for a, df in data.items()} }")

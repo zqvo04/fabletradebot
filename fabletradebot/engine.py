@@ -121,9 +121,10 @@ class Engine:
             r_denom=abs(sig.entry - sig.stop), atr0=0.0, z=sig.z,
             opened_i=i, targets=list(sig.targets),
         )
-        px = self._fill(pos, d, full_qty / 3.0, sig.entry,  # probe = 1/3
+        probe = full_qty / self.cfg.pyr_units
+        px = self._fill(pos, d, probe, sig.entry,
                         kind=self._entry_kind(sig.playbook))
-        pos.qty = full_qty / 3.0
+        pos.qty = probe
         pos.avg_entry = px
         pos.entry1 = px
         pos.r_denom = abs(px - sig.stop)
@@ -132,7 +133,7 @@ class Engine:
         self.positions[sig.asset] = pos
 
     def _add(self, pos: Position, ref_px: float):
-        add = pos.full_qty / 3.0
+        add = pos.full_qty / self.cfg.pyr_units
         px = self._fill(pos, pos.direction, add, ref_px)
         pos.avg_entry = (pos.avg_entry * pos.qty + px * add) / (pos.qty + add)
         pos.qty += add
@@ -154,6 +155,7 @@ class Engine:
             direction=pos.direction, entry=pos.entry1, opened_i=pos.opened_i,
             closed_i=i, closed_ts=ts, bars=i - pos.opened_i, unit=pos.unit,
             pnl=pos.cash_flow, r=r, reason=reason, z=pos.z, risk_frac=pos.risk_frac,
+            mfe_r=pos.mfe() / pos.r_denom if pos.r_denom > 0 else 0.0,
         ))
         self.risk.record_trade(r)
         cd = self.cooldowns.setdefault(pos.asset, Cooldown())
@@ -213,10 +215,11 @@ class Engine:
             pos.stop = max(pos.stop, trail) if d > 0 else min(pos.stop, trail)
 
         # 4) pyramiding (evaluated at close)
-        if pos.unit == 1 and d * (c - pos.entry1) >= cfg.pyr_advance_atr * pos.atr0 \
+        if pos.unit == 1 and cfg.pyr_units >= 2 \
+                and d * (c - pos.entry1) >= cfg.pyr_advance_atr * pos.atr0 \
                 and d * A["e2raw"][i] >= 0:
             self._add(pos, c)
-        elif pos.unit == 2 and pos.horizon == SWING:
+        elif pos.unit == 2 and cfg.pyr_units >= 3 and pos.horizon == SWING:
             brk = A["don_hi_f"][i] if d > 0 else A["don_lo_f"][i]
             if not np.isnan(brk) and d * (c - brk) > 0:
                 self._add(pos, c)
