@@ -101,6 +101,28 @@ class Config:
     min_stop_atr: dict = _d(P1=0.5, P2=0.5, P3=0.3, P4=0.5)
 
 
+def h4_config() -> Config:
+    """4H-bar variant. Structure windows (ER, Donchian, swing, t-stat) keep
+    their BAR counts (horizons scale x4 into swing tempo); wall-clock windows
+    (vol percentiles, holds, time stops) are rescaled to preserve real time.
+    Motivation: on 1H bars the ATR-sized stops are so tight that taker fees
+    consume the gross edge (see VALIDATION.md); 4H roughly halves cost per R.
+    """
+    cfg = Config()
+    cfg.vpct_win = 180           # 30d of 4H bars
+    cfg.bbwpct_win = 540         # 90d
+    cfg.volvolpct_win = 180
+    cfg.min_history_bars = 180
+    cfg.time_stop = dict(P1=6, P2=6, P3=4, P4=8)       # 24h / 16h / 32h
+    cfg.max_hold = dict(P1=90, P2=90, P3=6, P4=18)     # 15d swing, 24h/3d day
+    cfg.exp_hold = dict(P1=12, P2=12, P3=3, P4=9)      # funding periods est.
+    cfg.p4_stall_bars = 3        # 12h
+    cfg.cooldown_bars = 6        # 24h
+    cfg.reentry_window = 12      # 48h
+    cfg.halt_bars = 24           # RiskManager uses hours, unchanged
+    return cfg
+
+
 def test_config() -> Config:
     """Shrunk windows so unit/integration tests warm up quickly."""
     cfg = Config()

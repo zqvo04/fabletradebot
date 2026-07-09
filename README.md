@@ -1,23 +1,57 @@
 # FableTradeBot
 
 BTC/ETH/SOL/HYPE 무기한 선물 대상 국면 적응형(regime-adaptive) 데이+스윙 트레이딩 시스템.
-설계 근거와 수식은 [BLUEPRINT.md](BLUEPRINT.md) 참조. **현재 Phase 2: 순수 매매 로직 + 백테스트만 구현.**
-거래소 API 연동, 스케줄링, 매매일지, 페이퍼 트레이딩 스위치 등 인프라는 Phase 3에서 추가한다.
+설계 근거와 수식은 [BLUEPRINT.md](BLUEPRINT.md) 참조.
+
+## 검증 상태 (Phase 3, 실데이터 18.5개월)
+
+| 타임프레임 | 결과 | 리포트 |
+|---|---|---|
+| 1H (설계 초안) | **불합격** — 총이익 +7.8k 중 수수료가 10.9k를 잠식 (비용 지배) | [VALIDATION.md](VALIDATION.md) |
+| **4H (운영 채택)** | **전 게이트 통과** — 8개 민감도 코너 전부 흑자, 비용 2배에도 흑자, MC 95% MDD −4.6% | [VALIDATION_4H.md](VALIDATION_4H.md) |
+
+정직한 성과 서술: 검증된 4H 시스템의 실측 기대치는 18.5개월 +1.8%, MDD −5.0%로
+**자본 보존 우선의 완만한 양(+)의 기대값**이다. 목표였던 월 50%와는 거리가 멀며,
+게이트는 "지지 않는 시스템"임을 보증할 뿐 수익률을 보증하지 않는다.
+공격성 레버(r_base, θ)는 페이퍼 트레이딩으로 전방 검증을 쌓은 뒤에만 올릴 것.
 
 ## 구조
 
 ```
 fabletradebot/
-  config.py      # 청사진의 모든 파라미터 (단일 출처)
-  preprocess.py  # N/A 결측 행 무조건 배제 등 전처리
-  indicators.py  # ER, OLS t-stat, EWMA vol, ATR, BBW, Donchian 등 순수 함수
-  regime.py      # Market Regime Engine (TREND/SQUEEZE/CHOP/CRISIS + 히스테리시스)
-  signals.py     # Alpha Signal Logic: 증거벡터(E1~E5) + 플레이북 P1~P4 + θ(regime)
-  risk.py        # 분수 켈리 사이징, 국면/성과/유동성 승수, 포트폴리오 캡, 서킷 브레이커
-  engine.py      # Probe-and-Pyramid 포지션 수명주기, 청산 로직, EV 게이트, 쿨다운
-  backtest.py    # 이벤트 기반 백테스터 (수수료 + 슬리피지 + 펀딩 반영)
-  synthetic.py   # 국면 순환 합성 데이터 생성기 (로직 검증용)
+  config.py         # 청사진의 모든 파라미터 (단일 출처)
+  preprocess.py     # N/A 결측 행 무조건 배제 등 전처리
+  indicators.py     # ER, OLS t-stat, EWMA vol, ATR, BBW, Donchian 등 순수 함수
+  regime.py         # Market Regime Engine (TREND/SQUEEZE/CHOP/CRISIS + 히스테리시스)
+  signals.py        # Alpha Signal Logic: 증거벡터(E1~E5) + 플레이북 P1~P4 + θ(regime)
+  risk.py           # 분수 켈리 사이징, 국면/성과/유동성 승수, 포트폴리오 캡, 서킷 브레이커
+  engine.py         # Probe-and-Pyramid 포지션 수명주기, 청산 로직, EV 게이트, 쿨다운
+  backtest.py       # 이벤트 기반 백테스터 (수수료 + 슬리피지 + 펀딩 반영)
+  synthetic.py      # 국면 순환 합성 데이터 생성기 (로직 검증용)
+  data_okx.py       # OKX 퍼블릭 API 수집기 (1H 캔들 + 8h 펀딩, CSV 캐시/증분 갱신)
+  journal_notion.py # Notion 매매일지 (NOTION_TOKEN 설정 시에만 활성)
+  okx_exec.py       # 라이브 주문 어댑터 (LIVE_CONFIRM=YES까지 4중 안전장치, 기본 dry-run)
+validation.py       # BLUEPRINT §6 검증 게이트 4종 실행 → VALIDATION.md 생성
+run_live.py         # 시간당 페이퍼/라이브 루프 (결정론적 리플레이 설계)
+.github/workflows/paper-trade.yml  # 매시 7분 자동 실행 + 저널 커밋
 ```
+
+## 페이퍼 / 라이브 운영
+
+```bash
+python3 validation.py                # 실데이터 검증 게이트 (데이터 자동 다운로드)
+TRADE_MODE=paper python3 run_live.py # 페이퍼 트레이딩 1스텝 (기본값)
+```
+
+- **페이퍼 트레이딩(기본)**: 고정 앵커일부터 전체 리플레이 → 신규 트레이드만
+  `journal/paper_trades.csv`에 추가 기록. 상태 파일이 꼬일 수 없는 결정론적 설계.
+- **Notion 일지**: GitHub Secrets에 `NOTION_TOKEN`, `NOTION_DATABASE_ID` 설정 시 자동 기록.
+  (DB 속성: Name/Asset/Playbook/Direction/R/PnL/Reason/Closed)
+- **라이브 전환**: `TRADE_MODE=live` + OKX API 키 3종 + `LIVE_CONFIRM=YES`가 전부
+  설정되어야만 실제 주문. 하나라도 빠지면 dry-run 출력만 한다.
+  실주문 전 반드시 OKX 데모 트레이딩(`OKX_DEMO=1`)으로 먼저 검증할 것.
+- **주의**: OKX 펀딩레이트 히스토리는 최근 3개월만 제공되므로, 그 이전 구간은
+  E3 증거가 중립 처리되고 P4가 비활성화된다.
 
 ## 호라이즌 매핑 (데이 / 스윙)
 
@@ -27,6 +61,9 @@ fabletradebot/
 | P2 Trend Pullback | TREND | 스윙 | 240봉 | 12봉 |
 | P3 Sweep Reversal | CHOP | 데이 | 24봉 (24h) | 8봉 |
 | P4 Funding Squeeze | 전천후 | 데이 | 72봉 | 16봉 |
+
+(표는 1H 봉 수 기준. 운영 채택된 4H 템포에서는 `config.h4_config()`가 시간 단위
+파라미터를 실시간 기준으로 환산한다 — 예: P1 최대 보유 90봉=15일, P3 6봉=24h.)
 
 ## 실행
 

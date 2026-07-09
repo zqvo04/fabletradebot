@@ -52,3 +52,17 @@ def test_winsorize_clips_only_extremes():
     w = ind.winsorize_returns(r, 5.0)
     assert w.iloc[400] < 0.5
     assert np.allclose(w.iloc[300], r.iloc[300])
+
+
+def test_resample_ohlcv_aggregation():
+    from fabletradebot.preprocess import resample_ohlcv
+    idx = pd.date_range("2025-01-01", periods=8, freq="1h", tz="UTC")
+    df = pd.DataFrame({
+        "open": [1, 2, 3, 4, 5, 6, 7, 8], "high": [2, 3, 4, 9, 6, 7, 8, 9],
+        "low": [0.5, 1, 2, 3, 4, 5, 6, 7], "close": [2, 3, 4, 5, 6, 7, 8, 9],
+        "volume": [1] * 8}, index=idx)
+    out = resample_ohlcv(df, "4h")
+    assert len(out) == 2
+    assert out["open"].iloc[0] == 1 and out["close"].iloc[0] == 5
+    assert out["high"].iloc[0] == 9 and out["low"].iloc[0] == 0.5
+    assert out["volume"].iloc[0] == 4

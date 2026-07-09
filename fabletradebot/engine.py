@@ -59,6 +59,7 @@ class Position:
     z: float
     opened_i: int
     targets: list = field(default_factory=list)
+    risk_frac: float = 0.0        # risk_amount / equity at entry (for Monte Carlo)
     unit: int = 1                 # pyramid units filled (1..3)
     scaled_out: bool = False      # 1R partial (or P3 target-1) done
     best_px: float = 0.0          # favorable extreme since entry
@@ -134,7 +135,7 @@ class Engine:
             asset=pos.asset, playbook=pos.playbook, horizon=pos.horizon,
             direction=pos.direction, entry=pos.entry1, opened_i=pos.opened_i,
             closed_i=i, closed_ts=ts, bars=i - pos.opened_i, unit=pos.unit,
-            pnl=pos.cash_flow, r=r, reason=reason, z=pos.z,
+            pnl=pos.cash_flow, r=r, reason=reason, z=pos.z, risk_frac=pos.risk_frac,
         ))
         self.risk.record_trade(r)
         cd = self.cooldowns.setdefault(pos.asset, Cooldown())
@@ -264,6 +265,8 @@ class Engine:
             return
         self._open(sig, full, i)
         self.positions[asset].atr0 = float(A["atr"][i])
+        self.positions[asset].risk_frac = \
+            self.positions[asset].risk_amount / equity if equity > 0 else 0.0
 
     def _ev_positive(self, sig: Signal, A: dict, i: int) -> bool:
         """EV = p*W - (1-p)*L - costs, all in R. Costs scale with entry/stop

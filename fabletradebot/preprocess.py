@@ -17,6 +17,13 @@ def clean_ohlcv(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def resample_ohlcv(df: pd.DataFrame, freq: str = "4h") -> pd.DataFrame:
+    """Aggregate 1H bars to a coarser frame; partial trailing bins dropped."""
+    out = df.resample(freq).agg(
+        {"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"})
+    return out.dropna(subset=OHLCV[:4])
+
+
 def align_funding(index: pd.DatetimeIndex, funding: pd.Series | None) -> pd.Series:
     """Align an 8h funding-rate series to the bar index.
 
