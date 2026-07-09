@@ -1,4 +1,7 @@
-# FableTradeBot — Quant Algorithm Blueprint (v0.1, Logic-Only)
+# FableTradeBot — Quant Algorithm Blueprint (v0.2, Logic-Only)
+
+> **Phase 2 상태**: 본 청사진은 `fabletradebot/` 패키지로 구현 완료 (구조는 README.md 참조).
+> 데이/스윙 타겟팅 반영: P1·P2 = 스윙(최대 ~10일, 트레일링), P3·P4 = 데이(24~72시간, 고정 목표).
 
 > Phase 1 산출물: 수학적 수식 + 의사코드 + 설계도.
 > 인프라(OKX API, 스케줄러, Notion, Paper trading 스위치)는 Phase 2에서 다룬다.
