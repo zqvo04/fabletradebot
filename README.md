@@ -60,8 +60,11 @@ TRADE_MODE=paper python3 run_live.py # 페이퍼 트레이딩 1스텝 (기본값
 
 - **페이퍼 트레이딩(기본)**: 고정 앵커일부터 전체 리플레이 → 신규 트레이드만
   `journal/paper_trades.csv`에 추가 기록. 상태 파일이 꼬일 수 없는 결정론적 설계.
-- **Notion 일지**: GitHub Secrets에 `NOTION_TOKEN`, `NOTION_DATABASE_ID` 설정 시 자동 기록.
-  (DB 속성: Name/Asset/Playbook/Direction/R/PnL/Reason/Closed)
+- **신호 발화 연동** (v3): 목표 비중이 임계 이상 바뀌면 **Notion 신호 로그 DB 기록 +
+  Telegram 알림**이 자동 발화. **OKX 3종 키**가 있으면 실계정 equity를 읽어 반영한다.
+  키 설정법은 **[SECRETS.md](SECRETS.md)** 참조 (하나도 없으면 조용히 페이퍼만 돈다).
+- **Notion 일지**: GitHub Secrets에 `NOTION_TOKEN`, `NOTION_DATABASE_ID`(v2 트레이드) /
+  `NOTION_SIGNAL_DB_ID`(v3 신호) 설정 시 자동 기록.
 - **라이브 전환**: `TRADE_MODE=live` + OKX API 키 3종 + `LIVE_CONFIRM=YES`가 전부
   설정되어야만 실제 주문. 하나라도 빠지면 dry-run 출력만 한다.
   실주문 전 반드시 OKX 데모 트레이딩(`OKX_DEMO=1`)으로 먼저 검증할 것.
