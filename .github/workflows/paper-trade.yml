@@ -57,6 +57,17 @@ jobs:
           OKX_PASSPHRASE: ${{ secrets.OKX_PASSPHRASE }}
         run: python run_live_v3.py
 
+      - name: Run trading step (v4 aggressive profile)
+        env:
+          TRADE_MODE: paper
+          LIVE_ANCHOR: "2026-01-01"
+          V3_PROFILE: v4
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_SIGNAL_DB_ID: ${{ secrets.NOTION_SIGNAL_DB_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python run_live_v3.py
+
       - name: Commit journal and data cache
         run: |
           git config user.name "fabletradebot"

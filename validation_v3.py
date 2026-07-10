@@ -8,7 +8,8 @@ Gate 3  Cost stress: fees x2 and slippage x2 -> total return must stay positive.
 Gate 4  Monte Carlo: stationary bootstrap of daily returns (2000 runs, mean
         block 5 days) -> 95th percentile max drawdown within -25%.
 
-Usage: python3 validation_v3.py [start] [end]
+Usage: python3 validation_v3.py [start] [end] [profile]
+       profile: v3 (default) | v4 (aggressive risk profile)
 """
 import copy
 import sys
@@ -16,7 +17,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-from fabletradebot.v3 import V3Backtester, v3_config
+from fabletradebot.v3 import V3Backtester, v3_config, v4_config
 from fabletradebot.data_okx import load_market
 from fabletradebot.preprocess import resample_ohlcv
 
@@ -99,11 +100,11 @@ def gate4_monte_carlo(equity: pd.Series, seed: int = 0):
     return dict(passed=p95 >= MC_MDD_LIMIT, mdds=mdds, p95=p95)
 
 
-def main(start="2025-01-01", end="2026-07-08"):
+def main(start="2025-01-01", end="2026-07-08", profile="v3"):
     data, funding = load_market(start, end)
     data = {a: resample_ohlcv(df) for a, df in data.items()}
-    cfg = v3_config()
-    print(f"assets loaded (4H): { {a: len(df) for a, df in data.items()} }")
+    cfg = v4_config() if profile.lower() == "v4" else v3_config()
+    print(f"assets loaded (4H, {profile}): { {a: len(df) for a, df in data.items()} }")
 
     g1 = gate1_walkforward(data, funding, cfg)
     g2 = gate2_sensitivity(data, funding, cfg)
@@ -111,7 +112,7 @@ def main(start="2025-01-01", end="2026-07-08"):
     g4 = gate4_monte_carlo(g1["res"].equity)
 
     s = g1["res"].stats
-    lines = ["# VALIDATION (V3) — §6 gates adapted to the continuous portfolio system", ""]
+    lines = [f"# VALIDATION ({profile.upper()}) — §6 gates adapted to the continuous portfolio system", ""]
     lines.append(f"Period: {start} .. {end} (4H bars, params fixed at frozen v3 values, "
                  f"equity0 = {EQUITY0:,.0f})")
     lines.append(f"Assets: {', '.join(s['assets'])}")
@@ -153,10 +154,10 @@ def main(start="2025-01-01", end="2026-07-08"):
     lines.append(f"## VERDICT: {'ALL GATES PASS' if verdict else 'GATES FAILED — do not deploy'}")
     report = "\n".join(lines)
     print(report)
-    with open("VALIDATION_V3.md", "w") as f:
+    with open(f"VALIDATION_{profile.upper()}.md", "w") as f:
         f.write(report + "\n")
     return verdict
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:3])
+    main(*sys.argv[1:4])

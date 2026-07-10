@@ -17,16 +17,21 @@ from pathlib import Path
 
 import pandas as pd
 
-from fabletradebot.v3 import V3Backtester, v3_config
+from fabletradebot.v3 import V3Backtester, v3_config, v4_config
 from fabletradebot.data_okx import update_market
 from fabletradebot.preprocess import resample_ohlcv
 from fabletradebot.okx_account import fetch_equity
 from fabletradebot.journal_notion import post_signal
 from fabletradebot.notify import send_telegram, format_signal
 
+# V3_PROFILE selects the risk profile: "v3" (base, vol budget 0.2) or
+# "v4" (aggressive, 0.4 + liquidation stress guard). Same signal either way;
+# each profile keeps its own journal so forward tracks stay comparable.
+PROFILE = os.environ.get("V3_PROFILE", "v3").lower()
+
 JOURNAL = Path("journal")
-WEIGHTS_CSV = JOURNAL / "v3_weights.csv"
-STATE_JSON = JOURNAL / "v3_state.json"
+WEIGHTS_CSV = JOURNAL / f"{PROFILE}_weights.csv"
+STATE_JSON = JOURNAL / f"{PROFILE}_state.json"
 
 # a signal "fires" when a target weight moves at least this much (fraction of
 # equity) from the last fired target — the notify/log analogue of a rebalance.
@@ -56,7 +61,8 @@ def main():
     data, funding = update_market(anchor, cache_dir="live_data")
     anchor_ts = pd.Timestamp(anchor, tz="UTC")
     data = {a: resample_ohlcv(df.loc[df.index >= anchor_ts]) for a, df in data.items()}
-    out = V3Backtester(data, v3_config(), funding=funding, equity0=equity0).run()
+    cfg = v4_config() if PROFILE == "v4" else v3_config()
+    out = V3Backtester(data, cfg, funding=funding, equity0=equity0).run()
 
     state = json.loads(STATE_JSON.read_text()) if STATE_JSON.exists() else {"n_journaled": 0}
     n_old = int(state.get("n_journaled", 0))
@@ -76,7 +82,7 @@ def main():
     # --- signal firing: notify + journal when the target moved materially ---
     prev_fired = state.get("last_signal_weights", {})
     for sig in signal_changes(prev_fired, target, NOTIFY_THRESHOLD):
-        sig.update(system="v3", equity=equity, bar_time=bar_time,
+        sig.update(system=PROFILE, equity=equity, bar_time=bar_time,
                    note="XS 횡단면 모멘텀 리밸런스")
         post_signal(sig)
         send_telegram(format_signal(sig))
@@ -97,7 +103,7 @@ def main():
         mode=mode,
     )
     STATE_JSON.write_text(json.dumps(state, indent=2))
-    print(f"[v3/{mode}] bar {bar_time}  equity {equity:.2f}"
+    print(f"[{PROFILE}/{mode}] bar {bar_time}  equity {equity:.2f}"
           f"{' (okx)' if okx_equity is not None else ' (paper)'}  "
           f"weights { {a: round(v, 3) for a, v in target.items()} }")
 
