@@ -34,13 +34,19 @@ jobs:
             cp data/*.csv live_data/
           fi
 
-      - name: Run trading step
+      - name: Run trading step (v2 trade engine)
         env:
           TRADE_MODE: paper
           LIVE_ANCHOR: "2026-01-01"
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
         run: python run_live.py
+
+      - name: Run trading step (v3 portfolio system)
+        env:
+          TRADE_MODE: paper
+          LIVE_ANCHOR: "2026-01-01"
+        run: python run_live_v3.py
 
       - name: Commit journal and data cache
         run: |
