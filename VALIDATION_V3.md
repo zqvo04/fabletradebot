@@ -4,30 +4,30 @@ Period: 2025-01-01 .. 2026-07-08 (4H bars, params fixed at frozen v3 values, equ
 Assets: BTC, ETH, SOL, HYPE
 
 ## Gate 1 — Walk-forward (fixed params): PASS
-- total return +42.06%, max DD -6.11%, ann vol 10.2%, sharpe 2.55, turnover 52.1x/yr, fees 4,001, net funding -252
+- total return +38.21%, max DD -6.04%, ann vol 10.1%, sharpe 2.16, turnover 51.3x/yr, fees 4,171, net funding -243
 - quarterly segments (return / max DD):
-  - 2025Q1: -0.37% / -0.45%
-  - 2025Q2: +4.21% / -3.20%
-  - 2025Q3: +6.96% / -3.44%
-  - 2025Q4: -0.72% / -4.75%
-  - 2026Q1: +8.74% / -5.33%
-  - 2026Q2: +20.20% / -2.76%
+  - 2025Q1: -4.96% / -5.10%
+  - 2025Q2: +4.24% / -3.23%
+  - 2025Q3: +9.03% / -3.43%
+  - 2025Q4: -0.67% / -4.69%
+  - 2026Q1: +8.74% / -5.28%
+  - 2026Q2: +20.15% / -2.76%
   - 2026Q3: -1.24% / -1.29%
 
 ## Gate 2 — Sensitivity +-20% (8 corners): PASS
-- xs_look x0.8 | vol_budget x0.8 | band x0.8: return +24.12%, MDD -8.03%, sharpe 1.84
-- xs_look x0.8 | vol_budget x0.8 | band x1.2: return +20.15%, MDD -6.92%, sharpe 1.69
-- xs_look x0.8 | vol_budget x1.2 | band x0.8: return +23.98%, MDD -11.66%, sharpe 1.36
-- xs_look x0.8 | vol_budget x1.2 | band x1.2: return +23.22%, MDD -9.90%, sharpe 1.37
-- xs_look x1.2 | vol_budget x0.8 | band x0.8: return +37.11%, MDD -6.24%, sharpe 2.64
-- xs_look x1.2 | vol_budget x0.8 | band x1.2: return +33.29%, MDD -4.81%, sharpe 2.56
-- xs_look x1.2 | vol_budget x1.2 | band x0.8: return +60.68%, MDD -7.99%, sharpe 2.68
-- xs_look x1.2 | vol_budget x1.2 | band x1.2: return +44.07%, MDD -8.18%, sharpe 2.25
+- xs_look x0.8 | vol_budget x0.8 | band x0.8: return +21.85%, MDD -8.00%, sharpe 1.58
+- xs_look x0.8 | vol_budget x0.8 | band x1.2: return +18.32%, MDD -7.02%, sharpe 1.45
+- xs_look x0.8 | vol_budget x1.2 | band x0.8: return +18.62%, MDD -11.68%, sharpe 1.02
+- xs_look x0.8 | vol_budget x1.2 | band x1.2: return +19.56%, MDD -9.71%, sharpe 1.09
+- xs_look x1.2 | vol_budget x0.8 | band x0.8: return +33.70%, MDD -6.10%, sharpe 2.29
+- xs_look x1.2 | vol_budget x0.8 | band x1.2: return +32.13%, MDD -4.81%, sharpe 2.32
+- xs_look x1.2 | vol_budget x1.2 | band x0.8: return +59.58%, MDD -8.16%, sharpe 2.48
+- xs_look x1.2 | vol_budget x1.2 | band x1.2: return +37.90%, MDD -8.17%, sharpe 1.86
 
 ## Gate 3 — Cost stress (fees x2, slippage x2): PASS
-- total return +27.51%, sharpe 1.86, fees 7,334
+- total return +23.89%, sharpe 1.51, fees 7,668
 
 ## Gate 4 — Monte Carlo stationary bootstrap (2000 runs, ~5d blocks): PASS
-- MDD distribution: median -6.42%, 95th pct -11.18% (limit -25.00%)
+- MDD distribution: median -7.27%, 95th pct -12.53% (limit -25.00%)
 
 ## VERDICT: ALL GATES PASS

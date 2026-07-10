@@ -35,6 +35,9 @@ def _d(**kw):
 class V3Config:
     assets: tuple = ("BTC", "ETH", "SOL", "HYPE")
 
+    # ---- tempo ----
+    bars_per_year: int = BARS_PER_YEAR   # 4H default; 1H variant uses 24*365
+
     # ---- signal windows (4H bars) ----
     ret_std_win: int = 180            # ~30d realized-vol window
     trend_lookbacks: tuple = (16, 48, 120)   # ~2.7d / 8d / 20d
@@ -42,6 +45,11 @@ class V3Config:
     mr_win: int = 20                  # ~3.3d mean-reversion anchor
     mr_scale: float = 2.0
     xs_look: int = 120                # ~20d relative strength
+    xs_min_assets: int = 3            # cross-section needs this many live assets
+    xs_residual: bool = False         # rank beta-stripped residual returns
+                                      # instead of raw returns (isolates the
+                                      # idiosyncratic component in a universe
+                                      # of highly correlated names)
     min_history: int = 200            # bars before an asset may trade
 
     # ---- ensemble (design-window choice) ----
@@ -54,7 +62,9 @@ class V3Config:
     # ---- sizing ----
     vol_budget: float = 0.20          # annualized vol per asset at |signal| = 1
     lev_cap: dict = _d(BTC=1.5, ETH=1.5, SOL=1.0, HYPE=0.5)   # |weight| cap
+    lev_default: float = 1.0          # cap for assets not listed above
     beta: dict = _d(BTC=1.0, ETH=1.1, SOL=1.5, HYPE=2.0)
+    beta_default: float = 1.3
     gross_cap: float = 2.0            # beta-weighted gross exposure cap
 
     # ---- rebalancing / costs ----
@@ -62,11 +72,21 @@ class V3Config:
     min_trade: float = 0.005          # min rebalance notional (frac of equity)
     fee_bps: float = 5.0
     slip_bps: dict = _d(BTC=2.0, ETH=2.0, SOL=5.0, HYPE=15.0)
+    slip_default: float = 8.0         # conservative default for liquid alts
 
     # ---- drawdown governor ----
     dd_soft: float = -0.06            # start de-risking here
     dd_hard: float = -0.15            # floor multiplier here (never full stop)
     dd_floor: float = 0.25
+
+    def lev(self, a: str) -> float:
+        return self.lev_cap.get(a, self.lev_default)
+
+    def beta_of(self, a: str) -> float:
+        return self.beta.get(a, self.beta_default)
+
+    def slip(self, a: str) -> float:
+        return self.slip_bps.get(a, self.slip_default)
 
 
 def v3_config() -> V3Config:
@@ -91,15 +111,29 @@ def sleeve_signals(data: dict, cfg: V3Config) -> dict:
     out = {}
     closes = {a: df["close"] for a, df in data.items()}
     # cross-sectional momentum needs the panel: risk-adjusted lookback return
+    rets = pd.DataFrame({a: np.log(c / c.shift(1)) for a, c in closes.items()})
     xs_raw = {}
-    for a, c in closes.items():
-        r = np.log(c / c.shift(1))
-        sd = r.rolling(cfg.ret_std_win).std()
-        xs_raw[a] = (c / c.shift(cfg.xs_look) - 1.0) / (sd * np.sqrt(cfg.xs_look))
+    if cfg.xs_residual:
+        # strip each asset's beta to the equal-weight market so the rank is
+        # over idiosyncratic returns, not the common crypto factor
+        mkt = rets.mean(axis=1)
+        mvar = mkt.rolling(cfg.ret_std_win).var()
+        for a in rets:
+            beta = rets[a].rolling(cfg.ret_std_win).cov(mkt) / mvar
+            resid = rets[a] - beta.shift(1) * mkt   # prior-bar beta: no lookahead
+            rsd = resid.rolling(cfg.ret_std_win).std()
+            xs_raw[a] = (resid.rolling(cfg.xs_look).sum()
+                         / (rsd * np.sqrt(cfg.xs_look)))
+    else:
+        for a, c in closes.items():
+            sd = rets[a].rolling(cfg.ret_std_win).std()
+            xs_raw[a] = (c / c.shift(cfg.xs_look) - 1.0) / (sd * np.sqrt(cfg.xs_look))
     xs_panel = pd.DataFrame(xs_raw)
     xs_z = xs_panel.sub(xs_panel.mean(axis=1), axis=0)
     xs_sd = xs_panel.std(axis=1)
     xs_z = xs_z.div(xs_sd.where(xs_sd > 0), axis=0).clip(-2, 2) / 2.0
+    # a relative-strength rank over too few names is noise, not signal
+    xs_z = xs_z.where(xs_panel.count(axis=1) >= cfg.xs_min_assets)
 
     for a, df in data.items():
         c = df["close"]
@@ -116,7 +150,7 @@ def sleeve_signals(data: dict, cfg: V3Config) -> dict:
         zmr = (c - c.rolling(cfg.mr_win).mean()) / (sd * np.sqrt(cfg.mr_win) * c)
         s["mr"] = -np.tanh(zmr / cfg.mr_scale)
         s["xs"] = xs_z[a].reindex(df.index)
-        s["vol_ann"] = sd * np.sqrt(BARS_PER_YEAR)
+        s["vol_ann"] = sd * np.sqrt(cfg.bars_per_year)
         out[a] = s
     return out
 
@@ -138,8 +172,8 @@ def target_weights(sig_row: dict, equity_dd: float, cfg: V3Config) -> dict:
             else:  # rescale the live range back to (0, 1]
                 sig = np.sign(sig) * (abs(sig) - cfg.deadband) / (1.0 - cfg.deadband)
         raw = sig * cfg.vol_budget / s["vol_ann"]
-        w[a] = float(np.clip(raw, -cfg.lev_cap[a], cfg.lev_cap[a]))
-    gross_beta = sum(abs(v) * cfg.beta[a] for a, v in w.items())
+        w[a] = float(np.clip(raw, -cfg.lev(a), cfg.lev(a)))
+    gross_beta = sum(abs(v) * cfg.beta_of(a) for a, v in w.items())
     if gross_beta > cfg.gross_cap:
         scale = cfg.gross_cap / gross_beta
         w = {a: v * scale for a, v in w.items()}
@@ -186,15 +220,18 @@ class V3Backtester:
 
     def run(self) -> V3Results:
         cfg = self.cfg
+        # UNION index: assets listing mid-period join when their own history
+        # is warm (NaN rows gate them out) instead of truncating the panel.
         index = None
         for df in self.data.values():
-            index = df.index if index is None else index.intersection(df.index)
+            index = df.index if index is None else index.union(df.index)
         index = index.sort_values()
-        data = {a: df.loc[index] for a, df in self.data.items()}
+        data = {a: df.reindex(index) for a, df in self.data.items()}
         sigs = sleeve_signals(data, cfg)
         arr = {a: {
             "open": data[a]["open"].to_numpy(float),
             "close": data[a]["close"].to_numpy(float),
+            "mark": data[a]["close"].ffill().to_numpy(float),  # marking only
             "tsm": sigs[a]["tsm"].to_numpy(float),
             "mr": sigs[a]["mr"].to_numpy(float),
             "xs": sigs[a]["xs"].to_numpy(float),
@@ -216,9 +253,12 @@ class V3Backtester:
         for i in range(n):
             # 1) execute last bar's targets at this bar's open
             if pending is not None:
-                eq_open = cash + sum(qty[a] * arr[a]["open"][i] for a in assets)
+                eq_open = cash + sum(
+                    qty[a] * arr[a]["mark"][i] for a in assets if qty[a] != 0.0)
                 for a in assets:
                     px = arr[a]["open"][i]
+                    if np.isnan(px):              # asset not trading this bar
+                        continue
                     tgt_qty = pending[a] * eq_open / px
                     delta = tgt_qty - qty[a]
                     notional = abs(delta) * px
@@ -228,7 +268,7 @@ class V3Backtester:
                             abs(delta * px) < cfg.band * abs(pending[a]) * eq_open:
                         continue
                     side = 1.0 if delta > 0 else -1.0
-                    fill = px * (1 + side * cfg.slip_bps[a] * 1e-4)
+                    fill = px * (1 + side * cfg.slip(a) * 1e-4)
                     fee = notional * cfg.fee_bps * 1e-4
                     cash -= delta * fill + fee
                     fees += fee
@@ -243,12 +283,13 @@ class V3Backtester:
                 for a in assets:
                     rate = arr[a]["funding"][i]
                     if not np.isnan(rate) and qty[a] != 0.0:
-                        cost = qty[a] * arr[a]["close"][i] * rate
+                        cost = qty[a] * arr[a]["mark"][i] * rate
                         cash -= cost
                         funding_paid += cost
 
             # 3) mark equity at close, update governor state
-            equity = cash + sum(qty[a] * arr[a]["close"][i] for a in assets)
+            equity = cash + sum(
+                qty[a] * arr[a]["mark"][i] for a in assets if qty[a] != 0.0)
             equity_curve[i] = equity
             hwm = max(hwm, equity)
             dd = equity / hwm - 1.0
@@ -275,13 +316,14 @@ class V3Backtester:
         return f.reindex(index).to_numpy(float)
 
     def _stats(self, equity, fees, funding_paid, turnover, n_rebal, assets):
+        bpy = self.cfg.bars_per_year
         r = equity.pct_change().dropna()
-        years = len(equity) / BARS_PER_YEAR
+        years = len(equity) / bpy
         monthly_eq = equity.resample("ME").last()
         prev = pd.concat([pd.Series([self.equity0]), monthly_eq.iloc[:-1]])
         monthly = pd.Series(monthly_eq.values / prev.values - 1.0, index=monthly_eq.index)
-        ann_vol = float(r.std() * np.sqrt(BARS_PER_YEAR))
-        mean_ann = float(r.mean() * BARS_PER_YEAR)
+        ann_vol = float(r.std() * np.sqrt(bpy))
+        mean_ann = float(r.mean() * bpy)
         return dict(
             bars=len(equity), assets=assets,
             total_return=float(equity.iloc[-1] / self.equity0 - 1.0),
