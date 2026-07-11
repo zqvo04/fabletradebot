@@ -8,11 +8,15 @@ P = Params()
 
 
 def test_conf_tier_mapping():
-    assert conf_tier(0.59, P) == (0.0, 0.0)
-    assert conf_tier(0.60, P) == (2.0, 0.005)
-    assert conf_tier(0.75, P) == (3.0, 0.008)
-    assert conf_tier(0.85, P) == (5.0, 0.011)
-    assert conf_tier(0.95, P) == (10.0, 0.015)
+    # V1 default: single tier (E9 — confidence does not rank R yet)
+    assert conf_tier(0.54, P) == (0.0, 0.0)
+    assert conf_tier(0.55, P) == (5.0, 0.006)
+    assert conf_tier(0.95, P) == (5.0, 0.006)
+    # multi-tier plumbing still works when configured
+    p2 = Params(conf_tiers=((0.60, 2.0, 0.005), (0.90, 10.0, 0.015)))
+    assert conf_tier(0.59, p2) == (0.0, 0.0)
+    assert conf_tier(0.65, p2) == (2.0, 0.005)
+    assert conf_tier(0.95, p2) == (10.0, 0.015)
 
 
 def test_liq_cap_tightens_with_wider_stop():
@@ -29,10 +33,13 @@ def test_liq_cap_tightens_with_wider_stop():
 def test_final_leverage_is_min_of_all_caps():
     # high conf, tight stop, TREND, but alt capped at 3x
     lev, risk = final_leverage(0.95, 0.02, "TREND", 3.0, P)
-    assert (lev, risk) == (3.0, 0.015)
-    # high conf, tight stop, BTC 10x, but RANGE regime caps at 5x
+    assert (lev, risk) == (3.0, 0.006)
+    # tight stop, BTC 10x: single 5x tier is the binding cap
     lev, _ = final_leverage(0.95, 0.02, "RANGE", 10.0, P)
     assert lev == 5.0
+    # wide stop: liquidation-safety cap binds below the tier
+    lev, _ = final_leverage(0.95, 0.08, "TREND", 10.0, P)
+    assert lev == 3.0
     # CRISIS blocks everything
     assert final_leverage(0.95, 0.02, "CRISIS", 10.0, P)[0] == 0.0
 

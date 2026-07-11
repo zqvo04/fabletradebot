@@ -42,9 +42,14 @@ def inst_id(symbol: str) -> str:
 @dataclass(frozen=True)
 class Params:
     # --- confidence -> entry / leverage tier / risk fraction ---
-    conf_entry: float = 0.60
-    conf_tiers: tuple = ((0.60, 2.0, 0.005), (0.70, 3.0, 0.008),
-                         (0.80, 5.0, 0.011), (0.90, 10.0, 0.015))
+    # Design measurement (EXPERIMENTS E9): confidence does NOT rank R for the
+    # surviving BRK signal (corr 0.005), so V1 sizes uniformly at 1% and keeps
+    # a single tier. The tier plumbing stays; forward scoring keeps measuring
+    # conf predictiveness and tiers can be re-introduced if it materialises.
+    # Risk 0.6%/trade: the largest size that passes the Monte-Carlo survival
+    # gate (95%p MDD <= 30%, P(MDD>50%) ~ 0) on design-window trades (G7).
+    conf_entry: float = 0.55
+    conf_tiers: tuple = ((0.55, 5.0, 0.006),)
     # --- liquidation safety (hard, not swept) ---
     liq_stop_mult: float = 3.0       # liq distance must be >= 3x stop distance
     mmr_buffer: float = 0.015        # maintenance-margin + fee buffer
@@ -58,46 +63,49 @@ class Params:
     hysteresis_bars: int = 2         # 1D bars to confirm a regime switch
     corr_window_h: int = 720         # 30d of 1H returns
     corr_alert: float = 0.80
-    # --- S1 pullback in trend ---
-    s1_pullback_atr: float = 0.5     # distance to 4H EMA20 in ATR4H
-    s1_rsi_lo: float = 35.0
-    s1_rsi_hi: float = 55.0
-    s1_sl_atr: float = 0.6
-    # --- S2 squeeze breakout ---
-    s2_bbw_pct: float = 20.0         # BB width percentile threshold
-    s2_bbw_lookback: int = 240
-    s2_donchian: int = 48
-    s2_vol_mult: float = 1.5
-    s2_sl_atr: float = 0.6
-    s2_sl_min_atr: float = 1.0
-    # --- S3 sweep reversal ---
-    s3_lookback: int = 48
-    s3_sweep_atr: float = 0.25
-    s3_wick_frac: float = 0.55
-    s3_vol_mult: float = 2.0
-    s3_sl_atr: float = 0.5
+    # --- stops (all setups) ---
+    # 1H noise sweeps stops placed inside ~2 ATR (EXPERIMENTS E5)
+    sl_floor_atr: float = 2.0
+    sl_swing_atr: float = 0.6        # buffer beyond the structural level
+    # --- CAPREV: capitulation-reversal long — REJECTED in design (E8): the
+    # positive drift rides on 40%-frequency catastrophic MAE paths that a
+    # survival-compatible stop cannot hold through. Kept behind a flag for
+    # future re-measurement only.
+    cap_enabled: bool = False
+    cap_rsi: float = 20.0
+    cap_vol_mult: float = 1.0        # min volume ratio (quality scored above this)
+    cap_confirm: bool = False        # require a bounce-confirmation bar to enter
+    cap_confirm_bars: int = 3        # RSI must have been < cap_rsi within N bars
+    cap_floor_atr: float = 0.0       # extra-wide stop floor for CAPREV (0 = global)
+    # --- BRK: trend-continuation breakout long (secondary, weaker recent edge) ---
+    brk_lookback: int = 168          # 7d of 1H bars
+    brk_vol_mult: float = 1.2
+    bbw_lookback: int = 240          # squeeze percentile window (BRK quality score)
     # --- S4 funding modifier ---
     funding_z_ext: float = 1.5
     funding_bonus: float = 0.05
     funding_penalty: float = 0.10
     funding_z_window: int = 270      # 90d of 8h fundings
     # --- exits ---
-    tp1_r: float = 1.5
+    # Exit structure chosen by measurement (E9): partial-TP and time stops CUT
+    # the trend winners this signal lives on. 0 disables either mechanism.
+    tp1_r: float = 0.0               # 0 = no partial take-profit
     tp1_frac: float = 0.5
-    trail_atr: float = 3.0
-    time_stop_bars: int = 36
-    time_stop_min_r: float = 0.5
+    trail_atr: float = 8.0           # wide chandelier, active from entry
+    time_stop_bars: int = 0          # 0 = no time stop
+    time_stop_min_r: float = 0.3
     # --- portfolio risk ---
     max_positions: int = 4
     max_positions_corr: int = 2
-    max_open_risk: float = 0.045
+    max_open_risk: float = 0.025
     max_margin_frac: float = 0.60
     dd_half: float = 0.10            # halve risk beyond this drawdown
     dd_stop: float = 0.20            # no new entries beyond this drawdown
     dd_resume: float = 0.15
     circuit_loss_24h: float = 0.04
     circuit_pause_h: int = 24
-    cooldown_bars: int = 4           # per-asset bars to wait after a close
+    cooldown_bars: int = 12          # per-asset bars to wait after a close
+                                     # (RSI<20 persists; avoid re-catching a knife)
     # --- costs ---
     taker_fee: float = 0.0005        # one way
     # OKX only serves ~3 months of funding history; before that the engine

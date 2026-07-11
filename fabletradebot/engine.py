@@ -37,6 +37,7 @@ class Position:
     leverage: float
     liq_price: float
     opened_ts: pd.Timestamp
+    meta: dict = field(default_factory=dict)
     bars: int = 0
     tp1_done: bool = False
     best_close: float = 0.0
@@ -60,6 +61,7 @@ class Pending:
     setup: str
     regime: str
     decided_ts: pd.Timestamp
+    meta: dict = field(default_factory=dict)   # signal components for attribution
 
 
 def _cost(notional: float, sym: str, p: Params) -> float:
@@ -128,7 +130,7 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             "bars": pos.bars, "r": r, "pnl": pnl,
             "pnl_pct_price": price_pct, "pnl_pct_lev": price_pct * pos.leverage,
             "reason": reason, "risk_amt": pos.risk_amt, "notional": pos.notional,
-            "equity_after": cash,
+            "equity_after": cash, **pos.meta,
         })
         cooldown[pos.sym] = p.cooldown_bars
         del positions[pos.sym]
@@ -175,13 +177,14 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 continue
             if open_margin + sz.margin > p.max_margin_frac * eq:
                 continue
-            tp1 = fill * (1 + pend.direction * p.tp1_r * stop_frac)
+            tp1 = fill * (1 + pend.direction * p.tp1_r * stop_frac) \
+                if p.tp1_r > 0 else 0.0
             positions[pend.sym] = Position(
                 sym=pend.sym, direction=pend.direction, conf=pend.conf,
                 setup=pend.setup, regime=pend.regime, entry=fill, sl=pend.sl,
                 sl0=pend.sl, tp1=tp1, notional=sz.notional, margin=sz.margin,
                 risk_amt=sz.risk_amt, leverage=sz.leverage, liq_price=sz.liq_price,
-                opened_ts=t, best_close=fill)
+                opened_ts=t, meta=pend.meta, best_close=fill)
         pendings = []
 
         # ---- 2. manage open positions over bar t ----
@@ -207,7 +210,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 if (d == 1 and lo > pos.sl) or (d == -1 and hi < pos.sl):
                     raise AssertionError(f"liquidation before stop on {sym} at {t}")
             sl_hit = lo <= pos.sl if d == 1 else hi >= pos.sl
-            tp_hit = hi >= pos.tp1 if d == 1 else lo <= pos.tp1
+            tp_on = pos.tp1 > 0
+            tp_hit = tp_on and (hi >= pos.tp1 if d == 1 else lo <= pos.tp1)
             if sl_hit:  # conservative: stop fills before any TP in the same bar
                 px = pos.sl * (1 - d * spec(sym).slippage * p.cost_mult)
                 finalize(pos, px, t, "SL" if pos.sl == pos.sl0 else "Trail")
@@ -220,7 +224,7 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             pos.best_close = max(pos.best_close, close_px) if d == 1 \
                 else min(pos.best_close, close_px)
             a = atr1h[sym].iloc[i]
-            if pos.tp1_done and not np.isnan(a):
+            if not np.isnan(a):   # chandelier trail, active from entry
                 trail = pos.best_close - d * p.trail_atr * a
                 if d * (trail - pos.sl) > 0:
                     pos.sl = trail
@@ -231,9 +235,10 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             exit_px = close_px * (1 - d * spec(sym).slippage * p.cost_mult)
             if state == "CRISIS":
                 finalize(pos, exit_px, t, "Regime")
-            elif pos.bias_flip_streak >= 2:
+            elif pos.setup == "BRK" and pos.bias_flip_streak >= 2:
                 finalize(pos, exit_px, t, "BiasFlip")
-            elif pos.bars >= p.time_stop_bars and unreal_r < p.time_stop_min_r:
+            elif (p.time_stop_bars > 0 and pos.bars >= p.time_stop_bars
+                  and unreal_r < p.time_stop_min_r):
                 finalize(pos, exit_px, t, "Timeout")
 
         # ---- 3. decide at bar close: candidates -> pending fills for t+1h ----
@@ -245,10 +250,12 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             row = cand_at[sym].get(t)
             if row is None:
                 continue
+            meta = {k: float(row[k]) for k in
+                    ("c_base", "c_fit", "c_align", "c_fund") if k in row.index}
             pendings.append(Pending(sym=sym, direction=int(row["dir"]),
                                     conf=float(row["conf"]), sl=float(row["sl"]),
                                     setup=str(row["setup"]), regime=state,
-                                    decided_ts=t))
+                                    decided_ts=t, meta=meta))
         for sym in list(cooldown):
             cooldown[sym] -= 1
             if cooldown[sym] <= 0:

@@ -30,8 +30,8 @@ def walk_forward(data_dir: str, p: Params, start: str, end: str,
     return pd.DataFrame(rows)
 
 
-SENSITIVITY_KNOBS = ("conf_entry", "s1_sl_atr", "s2_bbw_pct", "s3_wick_frac",
-                     "tp1_r", "trail_atr", "time_stop_bars", "funding_z_ext")
+SENSITIVITY_KNOBS = ("conf_entry", "sl_floor_atr", "sl_swing_atr", "trail_atr",
+                     "brk_vol_mult", "brk_lookback", "cooldown_bars", "funding_z_ext")
 
 
 def sensitivity(data_dir: str, p: Params, start: str, end: str,
