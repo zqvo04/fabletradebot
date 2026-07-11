@@ -43,7 +43,10 @@ https://console.cron-job.org → **CREATE CRONJOB**
 
 **Advanced 탭**
 - **Request method**: `POST`
-- **Headers** (각 줄 Key / Value):
+- **Headers** (Key 칸과 Value 칸이 분리된 표다 — **Key 칸에는 콜론 없이 이름만**
+  넣을 것. `Authorization: Bearer xxx`처럼 한 줄을 통째로 Key 칸에 넣으면 HTTP
+  헤더 자체가 깨져 `Bad request: the server could not understand the request`
+  가 뜬다 — §3-1 참고):
   | Key | Value |
   |---|---|
   | `Accept` | `application/vnd.github+json` |
@@ -78,11 +81,28 @@ https://console.cron-job.org → **CREATE CRONJOB**
 
 ### 3-1. `400 Bad Request` 해결 (가장 흔한 실패)
 
-원인은 거의 항상 **Body의 JSON이 깨져 있는 것**이다 (GitHub이 돌려주는 메시지는
-`"message":"Problems parsing JSON"`) — cron-job.org 잡 상세 → **History** →
-실패한 실행 클릭 → **Response** 탭에서 원문 메시지를 확인할 수 있다.
+cron-job.org 잡 상세 → **History** → 실패한 실행 클릭 → **Response** 탭에서
+정확한 에러 문구를 먼저 확인한다. 문구에 따라 원인 레이어가 다르다:
 
-1. **스마트 따옴표(가장 흔함)**: Body 입력창에 `{"ref":"main"}`을 직접 타이핑하면
+**"Bad request: the server could not understand the request. Check the
+request body, headers and method." (일반 문구, JSON 메시지 아님)**
+→ HTTP 요청 자체가 파싱 불가능할 만큼 깨졌다는 뜻 — Body보다 **헤더/메서드
+레벨**을 먼저 의심한다.
+1. **Headers 표의 Key 칸에 `Key: Value`를 통째로 넣음(가장 흔함)**: cron-job.org
+   헤더 입력은 Key 칸/Value 칸이 분리돼 있다. `Authorization: Bearer xxx` 한
+   줄을 Key 칸에 그대로 넣으면 헤더 이름에 콜론·공백이 섞여 요청이 깨진다.
+   **해결**: Key 칸엔 `Authorization`만, Value 칸엔 `Bearer <PAT>`만 (§2 표 참고).
+2. **Authorization 값에 숨은 공백/개행**: PAT을 복사할 때 앞뒤로 공백이나
+   줄바꿈이 같이 붙는 경우가 흔하다. Value 칸을 지우고 다시 입력.
+3. **Request method가 실제로는 POST가 아님**: Advanced 탭 상단에서 재확인
+   (기본값 GET으로 저장된 채 넘어가는 경우가 있다).
+4. **URL 끝에 공백/개행**: URL 필드도 복사 시 트레일링 문자가 섞일 수 있다.
+5. 의심되면 **잡을 삭제 후 처음부터 재생성** — 여러 번 편집된 폼은 이전 입력이
+   잔류하는 경우가 있다.
+
+**`"message":"Problems parsing JSON"` (GitHub JSON 에러)**
+→ Body는 도달했지만 JSON 파싱에 실패한 것 — **Body 레벨** 문제.
+1. **스마트 따옴표**: Body 입력창에 `{"ref":"main"}`을 직접 타이핑하면
    브라우저/OS 자동교정이 곧은따옴표 `"`를 굴림따옴표 `“ ”`로 바꾸는 경우가 많다.
    겉보기엔 똑같아 보이지만 JSON 파싱이 실패한다. **해결**: Body를 전부 지우고
    위 §2의 코드블록을 그대로 복사-붙여넣기 (재타이핑 금지).
@@ -91,7 +111,10 @@ https://console.cron-job.org → **CREATE CRONJOB**
    헤더가 두 번 전송되어 거부될 수 있다. 한쪽에서만 지정한다.
 3. **Body가 비어 있거나 form 형식으로 전송됨**: `ref=main`처럼 key=value 형태로
    저장돼 있으면 JSON이 아니라 400이 난다. Body 필드가 raw JSON 모드인지 확인.
-4. **직접 curl로 격리 테스트** (cron-job.org를 거치지 않고 PAT만으로 확인):
+
+**공통: 직접 curl로 격리 테스트** (cron-job.org를 거치지 않고 PAT만으로 확인.
+성공(204)하면 cron-job.org 폼 설정 문제로 확정, 실패하면 그 에러 메시지가
+원인을 바로 알려준다):
    ```bash
    curl -i -X POST \
      -H "Accept: application/vnd.github+json" \
