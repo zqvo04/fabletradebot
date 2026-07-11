@@ -10,6 +10,7 @@ Gate 4  Monte Carlo: stationary bootstrap of daily returns (2000 runs, mean
 
 Usage: python3 validation_v3.py [start] [end] [profile]
        profile: v3 (default) | v4 (aggressive risk profile)
+                | v5 (maker execution + satellite universe)
 """
 import copy
 import sys
@@ -17,8 +18,8 @@ import sys
 import numpy as np
 import pandas as pd
 
-from fabletradebot.v3 import V3Backtester, v3_config, v4_config
-from fabletradebot.data_okx import load_market
+from fabletradebot.v3 import V3Backtester, v3_config, v4_config, v5_config
+from fabletradebot.data_okx import INSTRUMENTS, load_market
 from fabletradebot.preprocess import resample_ohlcv
 
 MC_RUNS = 2000
@@ -72,7 +73,9 @@ def gate2_sensitivity(data, funding, base_cfg):
 def gate3_cost_stress(data, funding, base_cfg):
     cfg = copy.deepcopy(base_cfg)
     cfg.fee_bps = base_cfg.fee_bps * 2
+    cfg.maker_fee_bps = base_cfg.maker_fee_bps * 2   # v5 maker path too
     cfg.slip_bps = {k: v * 2 for k, v in base_cfg.slip_bps.items()}
+    cfg.sat_slip_bps = base_cfg.sat_slip_bps * 2
     res = run_bt(data, funding, cfg)
     passed = res.stats["total_return"] > 0
     return dict(res=res, passed=passed)
@@ -101,9 +104,16 @@ def gate4_monte_carlo(equity: pd.Series, seed: int = 0):
 
 
 def main(start="2025-01-01", end="2026-07-08", profile="v3"):
-    data, funding = load_market(start, end)
-    data = {a: resample_ohlcv(df) for a, df in data.items()}
-    cfg = v4_config() if profile.lower() == "v4" else v3_config()
+    profile = profile.lower()
+    cfg = {"v4": v4_config, "v5": v5_config}.get(profile, v3_config)()
+    assets = dict(INSTRUMENTS)
+    assets.update({a: f"{a}-USDT-SWAP" for a in cfg.satellites})
+    data, funding = load_market(start, end, assets=assets)
+    # satellite caches reach back to their 2024 listings — clamp every asset
+    # to the requested window so the run matches the design-window studies
+    lo, hi = pd.Timestamp(start, tz="UTC"), pd.Timestamp(end, tz="UTC")
+    data = {a: resample_ohlcv(df.loc[(df.index >= lo) & (df.index <= hi)])
+            for a, df in data.items()}
     print(f"assets loaded (4H, {profile}): { {a: len(df) for a, df in data.items()} }")
 
     g1 = gate1_walkforward(data, funding, cfg)

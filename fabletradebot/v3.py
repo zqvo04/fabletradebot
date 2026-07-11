@@ -103,13 +103,58 @@ class V3Config:
     score_sl_k: float = 1.5
     score_timeout_days: float = 7.0
 
+    # ---- v5: maker execution model (off by default) ----
+    # Rebalance deltas rest as post-only limits at the decision close for one
+    # bar; the fill requires the bar to trade THROUGH the price (strict
+    # inequality). Unfilled remainders convert to taker at that bar's close —
+    # a one-bar-bounded delay, mechanically implementable live.
+    exec_maker: bool = False
+    maker_fee_bps: float = 2.0        # OKX USDT-swap maker tier vs 5.0 taker
+
+    # ---- v5: portfolio-level vol cap (0 = off) ----
+    # Scales the whole book down when the EWMA-covariance portfolio vol
+    # exceeds the cap: per-asset budgets set relative sizes, this bounds their
+    # JOINT risk, auto-decelerating in correlation spikes (ASSESSMENT (e)).
+    port_vol_cap: float = 0.0
+
+    # ---- v5: listing-aware satellite universe (empty = off) ----
+    # Satellites join the cross-section only while (a) older than
+    # sat_age_min_days since exchange listing and (b) trailing 30d median
+    # daily quote volume holds above sat_vol_floor (enrol) / sat_vol_drop
+    # (stay — hysteresis so borderline names don't churn). The core panel is
+    # grandfathered and never gated. Every satellite gets the HYPE-class
+    # safety defaults below — the tight ceilings are load-bearing (v4 #5).
+    satellites: tuple = ()
+    sat_list_time: dict = _d()        # asset -> ISO exchange listTime
+    sat_age_min_days: float = 90.0
+    sat_vol_win: int = 180            # 30d of 4H bars for the volume median
+    sat_vol_floor: float = 20e6       # est. daily $ volume to enrol
+    sat_vol_drop: float = 10e6        # ... and to stay enrolled
+    sat_lev_cap: float = 0.5
+    sat_beta: float = 2.0
+    sat_slip_bps: float = 15.0
+
+    # ---- v5: funding-carry sleeve (0 = off) ----
+    # Pre-registered spec, NOT validated: cross-sectional funding tilt (short
+    # the crowded-funding names, long the negative-funding names). OKX only
+    # serves ~3 months of funding history, all inside the holdout, so this
+    # sleeve stays off until enough forward data accumulates to run a proper
+    # design-window study (ASSESSMENT (d)).
+    w_carry: float = 0.0
+
     def lev(self, a: str) -> float:
+        if a in self.satellites:
+            return self.sat_lev_cap
         return self.lev_cap.get(a, self.lev_default)
 
     def beta_of(self, a: str) -> float:
+        if a in self.satellites:
+            return self.sat_beta
         return self.beta.get(a, self.beta_default)
 
     def slip(self, a: str) -> float:
+        if a in self.satellites:
+            return self.sat_slip_bps
         return self.slip_bps.get(a, self.slip_default)
 
     def liq(self, a: str) -> float:
@@ -133,7 +178,8 @@ def v3_config() -> V3Config:
 
 
 def _xs_cross_section(rets: pd.DataFrame, closes: dict, cfg: V3Config,
-                      look: int) -> tuple[pd.DataFrame, pd.Series]:
+                      look: int, elig: dict | None = None
+                      ) -> tuple[pd.DataFrame, pd.Series]:
     """Cross-sectional momentum z-panel for one lookback + the raw
     cross-sectional spread (dispersion) before normalization."""
     xs_raw = {}
@@ -152,6 +198,11 @@ def _xs_cross_section(rets: pd.DataFrame, closes: dict, cfg: V3Config,
             sd = rets[a].rolling(cfg.ret_std_win).std()
             xs_raw[a] = (c / c.shift(look) - 1.0) / (sd * np.sqrt(look))
     xs_panel = pd.DataFrame(xs_raw)
+    if elig:                          # ineligible satellites leave the panel
+        for a, e in elig.items():
+            if a in xs_panel:
+                xs_panel[a] = xs_panel[a].where(e.reindex(xs_panel.index,
+                                                          fill_value=False))
     xs_sd = xs_panel.std(axis=1)
     xs_z = xs_panel.sub(xs_panel.mean(axis=1), axis=0)
     xs_z = xs_z.div(xs_sd.where(xs_sd > 0), axis=0).clip(-2, 2) / 2.0
@@ -197,7 +248,125 @@ def v4_config() -> V3Config:
     return cfg
 
 
-def sleeve_signals(data: dict, cfg: V3Config) -> dict:
+def universe_mask(data: dict, cfg: V3Config) -> dict:
+    """Per-satellite eligibility Series (True = may trade this bar).
+
+    Age gate: bar timestamp >= exchange listTime + sat_age_min_days (listTime
+    is config metadata, so eligibility does not depend on how much history a
+    replay happens to load). Liquidity gate: trailing sat_vol_win median of
+    estimated daily quote volume, latched with enrol/stay hysteresis. Both
+    use only information up to the current bar. Core assets are not gated.
+    """
+    bars_per_day = cfg.bars_per_year / 365.0
+    out = {}
+    for a in cfg.satellites:
+        df = data.get(a)
+        if df is None:
+            continue
+        est_daily = (df["volume"] * df["close"]).rolling(cfg.sat_vol_win).median() \
+            * bars_per_day
+        lt = cfg.sat_list_time.get(a)
+        if lt is not None:
+            age_ok = df.index >= (pd.Timestamp(lt) +
+                                  pd.Timedelta(days=cfg.sat_age_min_days))
+        else:                          # unknown listing: age from first bar
+            first = df["close"].first_valid_index()
+            age_ok = df.index >= (first + pd.Timedelta(days=cfg.sat_age_min_days)) \
+                if first is not None else np.zeros(len(df), dtype=bool)
+        vol_arr = est_daily.to_numpy(float)
+        elig = np.zeros(len(df), dtype=bool)
+        on = False
+        for i in range(len(df)):
+            v = vol_arr[i]
+            if not np.isnan(v):
+                on = v >= (cfg.sat_vol_drop if on else cfg.sat_vol_floor)
+            elif not on:
+                on = False
+            elig[i] = on and age_ok[i]
+        out[a] = pd.Series(elig, index=df.index)
+    return out
+
+
+# v5 satellite universe — the MECHANICAL fetch set, not a curated list:
+# all live OKX USDT perps with listTime in [2024-06-01, 2026-01-08] (so every
+# name has >= sat_age_min_days of history by the 2026-07-08 data end), ranked
+# by a single 24h-volume snapshot: top-12 overall UNION top-12 of the
+# pre-2025-07 cohort (so the design window's own listing generation is
+# represented). Discovery date 2026-07-11; listTime = OKX exchange listTime.
+# Enrolment/graduation per bar is decided by universe_mask (age + trailing
+# volume with hysteresis) — THIS LIST ONLY BOUNDS WHAT DATA IS FETCHED.
+# Survivorship caveat (disclosed in REDESIGN_V5.md): the instruments endpoint
+# only shows currently-live names, and a present-day volume rank favours
+# names still liquid today.
+SATELLITE_LIST_TIME = {
+    "ONDO": "2024-08-06T10:30:03+00:00",
+    "TAO": "2024-09-20T05:00:00+00:00",
+    "HMSTR": "2024-09-26T12:30:00+00:00",
+    "ACT": "2024-11-14T11:00:00+00:00",
+    "MORPHO": "2024-11-25T10:00:00+00:00",
+    "VIRTUAL": "2024-12-11T10:00:00+00:00",
+    "PENGU": "2024-12-17T15:55:02+00:00",
+    "TRUMP": "2025-01-19T05:30:04+00:00",
+    "PI": "2025-02-20T09:00:00+00:00",
+    "KAITO": "2025-02-20T14:00:00+00:00",
+    "PARTI": "2025-03-25T13:30:00+00:00",
+    "XAU": "2025-04-09T10:00:00+00:00",
+    "PUMP": "2025-07-14T17:30:00+00:00",
+    "XPL": "2025-08-28T11:00:00+00:00",
+    "LAB": "2025-11-01T12:00:01+00:00",
+    "MMT": "2025-11-04T12:30:01+00:00",
+    "ZEC": "2025-11-06T03:15:00+00:00",
+    "ALLO": "2025-11-11T16:45:00+00:00",
+    "BEAT": "2025-11-12T16:15:00+00:00",
+    "LIT": "2025-12-24T03:30:00+00:00",
+}
+
+
+def v5_config() -> V3Config:
+    """v5 = the unchanged XS signal on an EXPANDED, listing-aware universe
+    with maker execution — ASSESSMENT §4 roadmap items that survived the
+    2025 design window (full experiment log in REDESIGN_V5.md):
+
+      (a) listing-aware satellite universe — the HYPE effect systematised:
+          new listings join the cross-section while young + liquid
+          (dispersion supply), always under the HYPE-class safety caps.
+          Design 2025: +17.4% -> +50.6% standalone, Sharpe 1.08 -> 1.58.
+      (c) maker execution — rebalance deltas rest as post-only limits for
+          one bar, unfilled remainders convert to taker at that bar's close.
+          Design 2025: fees -55%, Sharpe 1.08 -> 1.48 standalone.
+      (e) portfolio-level vol cap at the per-asset budget — a tail guard
+          against correlation spikes (binds rarely; +Sharpe when it does).
+      (d) funding-carry sleeve — pre-registered but OFF (w_carry = 0): OKX
+          serves ~3 months of funding history, all inside the holdout, so
+          there is no design window to validate it on yet.
+
+    vol_budget drops to 0.20: the wider universe carries more simultaneous
+    positions, so the same per-asset budget puts more total risk on — the
+    return frontier peaks at 0.30 (design 2025: 0.2 -> +50.9%, 0.3 ->
+    +71.9%, 0.4 -> +64.5%), but the 0.30 seat FAILED the risk gates on the
+    full period (MC 95% MDD -30.2% vs the -25% limit; one sensitivity
+    corner -27.1%). The gates pick the deployable seat, exactly as they
+    did for v3/v4: 0.20 passes everything with margin and still nearly
+    triples v4's design-window return at a smaller drawdown. Governor
+    bands stay vol-denominated (v4 rule), scaled by 0.2/0.4 back to the
+    original v3 values.
+
+    Conviction-tiered SIZING remains rejected (v4 §1, five variants). The
+    exchange 10x/5x/3x/2x tiers live in leverage_plan.py as account-level
+    hard stops chosen by confidence — they never size a position.
+    """
+    cfg = v4_config()
+    cfg.exec_maker = True
+    cfg.vol_budget = 0.20
+    cfg.port_vol_cap = 0.20
+    cfg.dd_soft = -0.06
+    cfg.dd_hard = -0.15
+    cfg.satellites = tuple(SATELLITE_LIST_TIME)
+    cfg.sat_list_time = dict(SATELLITE_LIST_TIME)
+    return cfg
+
+
+def sleeve_signals(data: dict, cfg: V3Config, funding: dict | None = None) -> dict:
     """Per-asset DataFrame of sleeve signals in [-1,1] + realized vol +
     conviction inputs (horizon agreement, dispersion-regime percentile).
     All columns are computable from information up to and including bar i."""
@@ -205,12 +374,17 @@ def sleeve_signals(data: dict, cfg: V3Config) -> dict:
 
     out = {}
     closes = {a: df["close"] for a, df in data.items()}
+    # satellite gating happens on PANEL MEMBERSHIP, not on the raw series:
+    # rolling stats keep warming from the asset's full trading history, but an
+    # ineligible name is excluded from the cross-sectional mean/std it can't
+    # be traded against (and gets no signal of its own while excluded)
+    elig = universe_mask(data, cfg) if cfg.satellites else {}
     # cross-sectional momentum needs the panel: risk-adjusted lookback return
     rets = pd.DataFrame({a: np.log(c / c.shift(1)) for a, c in closes.items()})
     horizons = cfg.xs_horizons or (cfg.xs_look,)
     zs, sds = [], []
     for lb in horizons:
-        z, sd_x = _xs_cross_section(rets, closes, cfg, lb)
+        z, sd_x = _xs_cross_section(rets, closes, cfg, lb, elig)
         zs.append(z)
         sds.append(sd_x)
     xs_z = sum(zs) / len(zs)
@@ -221,6 +395,23 @@ def sleeve_signals(data: dict, cfg: V3Config) -> dict:
         agree = xs_z.notna().astype(float).where(xs_z.notna())
     disp = sum(sds) / len(sds)                       # cross-sectional spread
     disp_pct = pct_rank(disp, cfg.disp_win)          # 0-100, trailing window
+
+    # funding-carry z-panel: short the crowded positive-funding names, long
+    # the negative ones. Uses the prevailing rate (known between events).
+    carry_z = None
+    if funding:
+        from .preprocess import align_funding
+        idx = rets.index
+        fpanel = pd.DataFrame({a: align_funding(idx, funding.get(a))
+                               for a in closes})
+        for a, e in elig.items():
+            if a in fpanel:
+                fpanel[a] = fpanel[a].where(e.reindex(idx, fill_value=False))
+        fsd = fpanel.std(axis=1)
+        carry_z = -fpanel.sub(fpanel.mean(axis=1), axis=0) \
+            .div(fsd.where(fsd > 0), axis=0)
+        carry_z = (carry_z.clip(-2, 2) / 2.0) \
+            .where(fpanel.count(axis=1) >= cfg.xs_min_assets)
 
     for a, df in data.items():
         c = df["close"]
@@ -239,6 +430,8 @@ def sleeve_signals(data: dict, cfg: V3Config) -> dict:
         s["xs"] = xs_z[a].reindex(df.index)
         s["agree"] = agree[a].reindex(df.index)
         s["disp_pct"] = disp_pct.reindex(df.index)
+        s["carry"] = (carry_z[a].reindex(df.index)
+                      if carry_z is not None and a in carry_z else np.nan)
         s["vol_ann"] = sd * np.sqrt(cfg.bars_per_year)
         out[a] = s
     return out
@@ -274,6 +467,10 @@ def target_weights(sig_row: dict, equity_dd: float, cfg: V3Config) -> dict:
             w[a] = 0.0
             continue
         sig = cfg.w_trend * s["tsm"] + cfg.w_mr * s["mr"] + cfg.w_xs * s["xs"]
+        if cfg.w_carry:
+            carry = s.get("carry", np.nan)
+            if carry is not None and not np.isnan(carry):
+                sig = sig + cfg.w_carry * carry  # NaN carry degrades to neutral
         sig = float(np.clip(sig, -1.0, 1.0))
         if cfg.deadband > 0:
             if abs(sig) <= cfg.deadband:
@@ -337,7 +534,8 @@ class V3Backtester:
     def __init__(self, data: dict, cfg: V3Config | None = None,
                  funding: dict | None = None, equity0: float = 100_000.0):
         self.cfg = cfg or V3Config()
-        self.data = {a: df for a, df in data.items() if a in self.cfg.assets}
+        universe = set(self.cfg.assets) | set(self.cfg.satellites)
+        self.data = {a: df for a, df in data.items() if a in universe}
         self.funding = funding or {}
         self.equity0 = equity0
 
@@ -350,9 +548,11 @@ class V3Backtester:
             index = df.index if index is None else index.union(df.index)
         index = index.sort_values()
         data = {a: df.reindex(index) for a, df in self.data.items()}
-        sigs = sleeve_signals(data, cfg)
+        sigs = sleeve_signals(data, cfg, funding=self.funding)
         arr = {a: {
             "open": data[a]["open"].to_numpy(float),
+            "high": data[a]["high"].to_numpy(float),
+            "low": data[a]["low"].to_numpy(float),
             "close": data[a]["close"].to_numpy(float),
             "mark": data[a]["close"].ffill().to_numpy(float),  # marking only
             "tsm": sigs[a]["tsm"].to_numpy(float),
@@ -360,6 +560,7 @@ class V3Backtester:
             "xs": sigs[a]["xs"].to_numpy(float),
             "agree": sigs[a]["agree"].to_numpy(float),
             "disp_pct": sigs[a]["disp_pct"].to_numpy(float),
+            "carry": sigs[a]["carry"].to_numpy(float),
             "vol_ann": sigs[a]["vol_ann"].to_numpy(float),
             "funding": self._funding_arr(index, a),
         } for a in data}
@@ -374,6 +575,11 @@ class V3Backtester:
         pending = None                          # weights decided at bar i-1 close
         equity_curve = np.empty(n)
         w_hist = np.zeros((n, len(assets)))
+        # EWMA return covariance state (portfolio-level vol cap)
+        n_a = len(assets)
+        cov = np.zeros((n_a, n_a))
+        lam = 1.0 - 1.0 / cfg.ret_std_win
+        prev_close = np.full(n_a, np.nan)
 
         for i in range(n):
             # 1) execute last bar's targets at this bar's open
@@ -393,8 +599,24 @@ class V3Backtester:
                             abs(delta * px) < cfg.band * abs(pending[a]) * eq_open:
                         continue
                     side = 1.0 if delta > 0 else -1.0
-                    fill = px * (1 + side * cfg.slip(a) * 1e-4)
-                    fee = notional * cfg.fee_bps * 1e-4
+                    if cfg.exec_maker:
+                        # post-only limit at the decision close, working for
+                        # this whole bar; fills only if price trades THROUGH
+                        # it (strict), else converts to taker at bar close —
+                        # a one-bar-bounded delay, implementable live
+                        limit = arr[a]["close"][i - 1] if i > 0 else np.nan
+                        thru = (arr[a]["low"][i] < limit if side > 0
+                                else arr[a]["high"][i] > limit)
+                        if not np.isnan(limit) and thru:
+                            fill = limit
+                            fee = abs(delta) * limit * cfg.maker_fee_bps * 1e-4
+                        else:
+                            px_c = arr[a]["close"][i]
+                            fill = px_c * (1 + side * cfg.slip(a) * 1e-4)
+                            fee = abs(delta) * px_c * cfg.fee_bps * 1e-4
+                    else:
+                        fill = px * (1 + side * cfg.slip(a) * 1e-4)
+                        fee = notional * cfg.fee_bps * 1e-4
                     cash -= delta * fill + fee
                     fees += fee
                     turnover += notional / eq_open
@@ -419,12 +641,31 @@ class V3Backtester:
             hwm = max(hwm, equity)
             dd = equity / hwm - 1.0
 
+            # 3b) EWMA covariance from bar-i closes (information up to i only)
+            if cfg.port_vol_cap > 0:
+                closes_i = np.array([arr[a]["close"][i] for a in assets])
+                with np.errstate(invalid="ignore", divide="ignore"):
+                    r_vec = np.log(closes_i / prev_close)
+                r_vec[~np.isfinite(r_vec)] = 0.0
+                cov = lam * cov + (1.0 - lam) * np.outer(r_vec, r_vec)
+                prev_close = np.where(np.isfinite(closes_i), closes_i, prev_close)
+
             # 4) decide next bar's target weights from this close
             if i >= cfg.min_history and equity > 0:
                 row = {a: {k: arr[a][k][i] for k in
-                           ("tsm", "mr", "xs", "agree", "disp_pct", "vol_ann")}
+                           ("tsm", "mr", "xs", "agree", "disp_pct", "carry",
+                            "vol_ann")}
                        for a in assets}
                 pending = target_weights(row, dd, cfg)
+                # portfolio-level vol cap: bound the JOINT risk of the book
+                if cfg.port_vol_cap > 0:
+                    wv = np.array([pending[a] for a in assets])
+                    var_bar = float(wv @ cov @ wv)
+                    if var_bar > 0:
+                        vol_p = np.sqrt(var_bar * cfg.bars_per_year)
+                        if vol_p > cfg.port_vol_cap:
+                            s = cfg.port_vol_cap / vol_p
+                            pending = {a: v * s for a, v in pending.items()}
                 for j, a in enumerate(assets):
                     w_hist[i, j] = pending[a]
 

@@ -19,10 +19,15 @@ def _live_enabled() -> bool:
             and has_keys())
 
 
+def _inst(asset: str) -> str:
+    """Core assets map through INSTRUMENTS; v5 satellites derive mechanically."""
+    return INSTRUMENTS.get(asset, f"{asset}-USDT-SWAP")
+
+
 def place_market_order(asset: str, side: str, qty: float) -> dict | None:
     """side: 'buy' | 'sell'; qty in contracts. Dry-runs unless fully armed."""
     order = {
-        "instId": INSTRUMENTS[asset], "tdMode": "cross",
+        "instId": _inst(asset), "tdMode": "cross",
         "side": side, "ordType": "market", "sz": str(qty),
     }
     if not _live_enabled():
@@ -31,4 +36,20 @@ def place_market_order(asset: str, side: str, qty: float) -> dict | None:
     resp = signed_request("POST", "/api/v5/trade/order", order)
     if resp.get("code") != "0":
         raise RuntimeError(f"order rejected: {resp}")
+    return resp
+
+
+def set_leverage(asset: str, leverage: float) -> dict | None:
+    """Set the per-instrument account leverage tier (the v5 confidence-tiered
+    HARD STOP above the software ceilings — see leverage_plan.py). Never
+    changes a position size. Dry-runs unless fully armed, same as orders."""
+    req = {
+        "instId": _inst(asset), "lever": str(int(leverage)), "mgnMode": "cross",
+    }
+    if not _live_enabled():
+        print(f"[exec] DRY RUN (live not armed): set-leverage {req}")
+        return None
+    resp = signed_request("POST", "/api/v5/account/set-leverage", req)
+    if resp.get("code") != "0":
+        raise RuntimeError(f"set-leverage rejected: {resp}")
     return resp

@@ -93,6 +93,43 @@ def fetch_funding(inst_id: str, start: pd.Timestamp, end: pd.Timestamp,
     return s.loc[(s.index >= start) & (s.index <= end)]
 
 
+def discover_satellites(list_after: str, list_before: str, top_n: int = 12,
+                        cohort_before: str | None = None) -> dict:
+    """Mechanical v5 satellite discovery (universe refresh procedure).
+
+    Returns {asset: ISO listTime} for live USDT linear perps whose OKX
+    listTime falls inside [list_after, list_before], ranked by a single 24h
+    quote-volume snapshot: top_n overall UNION top_n among names listed
+    before cohort_before (keeps an older listing generation represented
+    instead of only today's hot batch). Core panel assets are excluded.
+
+    Survivorship caveat (REDESIGN_V5.md §2): the instruments endpoint only
+    shows currently-live names and the volume rank is as-of today; per-bar
+    enrolment is still decided by universe_mask from trailing data only.
+    """
+    insts = _get("/api/v5/public/instruments", {"instType": "SWAP"})
+    lo, hi = pd.Timestamp(list_after, tz="UTC"), pd.Timestamp(list_before, tz="UTC")
+    rows = {}
+    for it in insts:
+        if (it.get("settleCcy") != "USDT" or it.get("state") != "live"
+                or not it["instId"].endswith("-USDT-SWAP")):
+            continue
+        asset = it["instId"][:-len("-USDT-SWAP")]
+        ts = pd.to_datetime(int(it["listTime"]), unit="ms", utc=True)
+        if asset not in INSTRUMENTS and lo <= ts <= hi:
+            rows[asset] = ts
+    ticks = _get("/api/v5/market/tickers", {"instType": "SWAP"})
+    vol = {t["instId"]: float(t["volCcy24h"]) * float(t["last"]) for t in ticks}
+    ranked = sorted(rows, key=lambda a: vol.get(f"{a}-USDT-SWAP", 0.0),
+                    reverse=True)
+    keep = set(ranked[:top_n])
+    if cohort_before:
+        cb = pd.Timestamp(cohort_before, tz="UTC")
+        old = [a for a in ranked if rows[a] <= cb]
+        keep |= set(old[:top_n])
+    return {a: rows[a].isoformat() for a in sorted(keep, key=rows.get)}
+
+
 def load_market(start: str, end: str, cache_dir: str = "data",
                 assets: dict | None = None) -> tuple[dict, dict]:
     """Fetch-or-load-from-cache OHLCV + funding for all assets.

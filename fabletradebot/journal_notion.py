@@ -5,9 +5,15 @@ never break the trade loop.
 Trade journal DB (NOTION_DATABASE_ID) — v2 discrete trades:
   Name (title) | Asset | Playbook | Direction | R | PnL | Reason | Closed
 
-Signal-position DB (NOTION_SIGNAL_DB_ID) — scored v3/v4 signals:
+Signal-position DB (NOTION_SIGNAL_DB_ID) — scored v3/v4/v5 signals:
   Name (title) | Bar Time (date) | System | Asset | Direction | Status
-  Entry/TP/SL/Exit/Result R/Target Weight/Equity (number) | Closed (date)
+  Entry/TP/SL/Exit/Result R/PnL %/Leverage/Target Weight/Equity (number)
+  | Closed (date)
+
+Leverage = confidence-tiered ACCOUNT leverage (2/3/5/10x hard stop), not a
+sizing multiplier. PnL % = signed price-move return of the signal at close.
+Extra properties are ignored by Notion if the column is absent, so a DB
+created for the older schema keeps working — add the columns to see them.
 """
 import json
 import os
@@ -57,10 +63,14 @@ def _scored_props(pos: dict) -> dict:
         "Equity": {"number": round(float(pos["equity"]), 2)},
         "Bar Time": {"date": {"start": str(pos["opened_ts"])}},
     }
+    if pos.get("leverage") is not None:
+        props["Leverage"] = {"number": round(float(pos["leverage"]), 1)}
     if pos.get("exit") is not None:
         props["Exit"] = {"number": round(float(pos["exit"]), 8)}
     if pos.get("result_r") is not None:
         props["Result R"] = {"number": round(float(pos["result_r"]), 4)}
+    if pos.get("result_pct") is not None:
+        props["PnL %"] = {"number": round(float(pos["result_pct"]), 3)}
     if pos.get("closed_ts"):
         props["Closed"] = {"date": {"start": str(pos["closed_ts"])}}
     return props
@@ -85,6 +95,8 @@ def update_scored(page_id: str, pos: dict) -> bool:
         props["Exit"] = {"number": round(float(pos["exit"]), 8)}
     if pos.get("result_r") is not None:
         props["Result R"] = {"number": round(float(pos["result_r"]), 4)}
+    if pos.get("result_pct") is not None:
+        props["PnL %"] = {"number": round(float(pos["result_pct"]), 3)}
     if pos.get("closed_ts"):
         props["Closed"] = {"date": {"start": str(pos["closed_ts"])}}
     return _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH") is not None

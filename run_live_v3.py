@@ -17,18 +17,22 @@ from pathlib import Path
 
 import pandas as pd
 
-from fabletradebot.v3 import V3Backtester, v3_config, v4_config, sleeve_signals
-from fabletradebot.data_okx import update_market
+from fabletradebot.v3 import (V3Backtester, v3_config, v4_config, v5_config,
+                              sleeve_signals)
+from fabletradebot.data_okx import INSTRUMENTS, update_market
+from fabletradebot.leverage_plan import plan_leverage, format_plan
 from fabletradebot.preprocess import resample_ohlcv
 from fabletradebot.okx_account import fetch_equity
 from fabletradebot.journal_notion import post_scored, update_scored
 from fabletradebot.notify import send_telegram, format_scored_open, format_scored_close
 from fabletradebot.scoring import simulate_scoring, summarize, OPEN
 
-# V3_PROFILE selects the risk profile: "v3" (base, vol budget 0.2) or
-# "v4" (aggressive, 0.4 + liquidation stress guard). Same signal either way;
-# each profile keeps its own journal so forward tracks stay comparable.
+# V3_PROFILE selects the risk profile: "v3" (base, vol budget 0.2), "v4"
+# (aggressive, 0.4 + liquidation stress guard) or "v5" (v4 + maker execution,
+# satellite universe, portfolio vol cap). Each profile keeps its own journal
+# so forward tracks stay comparable.
 PROFILE = os.environ.get("V3_PROFILE", "v3").lower()
+CONFIGS = {"v3": v3_config, "v4": v4_config, "v5": v5_config}
 
 JOURNAL = Path("journal")
 WEIGHTS_CSV = JOURNAL / f"{PROFILE}_weights.csv"
@@ -81,10 +85,12 @@ def main():
     mode = os.environ.get("TRADE_MODE", "paper")
     JOURNAL.mkdir(exist_ok=True)
 
-    data, funding = update_market(anchor, cache_dir="live_data")
+    cfg = CONFIGS.get(PROFILE, v3_config)()
+    assets = dict(INSTRUMENTS)
+    assets.update({a: f"{a}-USDT-SWAP" for a in cfg.satellites})
+    data, funding = update_market(anchor, cache_dir="live_data", assets=assets)
     anchor_ts = pd.Timestamp(anchor, tz="UTC")
     data = {a: resample_ohlcv(df.loc[df.index >= anchor_ts]) for a, df in data.items()}
-    cfg = v4_config() if PROFILE == "v4" else v3_config()
     out = V3Backtester(data, cfg, funding=funding, equity0=equity0).run()
 
     state = json.loads(STATE_JSON.read_text()) if STATE_JSON.exists() else {"n_journaled": 0}
@@ -105,13 +111,20 @@ def main():
     # --- scored signals: open positions with TP/SL, grade Win/Loss/Timeout ---
     # Stateless recompute over the full history, then reconcile with Notion
     # (idempotent, matching the deterministic-replay design of the whole loop).
-    sigs = sleeve_signals(data, cfg)
+    sigs = sleeve_signals(data, cfg, funding=funding)
     positions = simulate_scoring(out.weights, data, sigs, out.equity, cfg, PROFILE)
     scored_state = state.get("scored", {})
     writes = reconcile_scored(positions, scored_state, out.equity.index[-1])
     stats = summarize(positions)
 
+    # --- confidence-tiered account leverage plan (hard stops, never sizing) ---
+    dd = float(out.equity.iloc[-1] / out.equity.cummax().iloc[-1] - 1.0)
+    sig_last = {a: {k: float(sigs[a][k].iloc[-1]) for k in
+                    ("xs", "agree", "disp_pct", "vol_ann")} for a in target}
+    lev_plan = plan_leverage(target, sig_last, dd, cfg)
+
     if mode == "live":
+        _set_account_tiers(lev_plan)
         _reconcile(state.get("live_qty", {}), target_qty)
 
     state.update(
@@ -122,16 +135,29 @@ def main():
         target_weights=target,
         scored=scored_state,
         live_qty=target_qty,
+        leverage_plan=lev_plan,
         mode=mode,
     )
     STATE_JSON.write_text(json.dumps(state, indent=2))
     wr = f"{stats['win_rate']:.0%}" if stats.get("n") else "n/a"
+    live_w = {a: round(v, 3) for a, v in target.items() if abs(v) > 1e-6}
     print(f"[{PROFILE}/{mode}] bar {bar_time}  equity {equity:.2f}"
           f"{' (okx)' if okx_equity is not None else ' (paper)'}  "
-          f"weights { {a: round(v, 3) for a, v in target.items()} }")
+          f"weights {live_w if live_w else '(flat)'}")
     print(f"[{PROFILE}/scored] resolved {stats.get('n', 0)} (win {wr}, "
           f"avgR {stats.get('avg_r', 0):+.2f})  open {stats.get('open', 0)}  "
           f"notion writes {writes}")
+    if lev_plan["assets"]:
+        print(f"[{PROFILE}/tiers]\n{format_plan(lev_plan)}")
+
+
+def _set_account_tiers(plan: dict):
+    """LIVE mode: push each open position's confidence tier to the exchange
+    as the account-level hard stop above the software ceilings. Never touches
+    position sizes. Dry-runs unless the OKX adapter is fully armed."""
+    from fabletradebot.okx_exec import set_leverage
+    for a, p in plan["assets"].items():
+        set_leverage(a, p["tier"])
 
 
 def _reconcile(prev: dict, target: dict):

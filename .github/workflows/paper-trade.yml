@@ -1,8 +1,13 @@
 name: paper-trade
 
+# Timing is driven by an EXTERNAL scheduler (cron-job.org) that POSTs to the
+# workflow_dispatch API at exactly bar-close + a few minutes — GitHub's own
+# `schedule:` cron is delayed/skipped under load, so it is intentionally NOT
+# used here. See CRON_SETUP.md for the connection guide. `workflow_dispatch`
+# also lets you run it by hand from the Actions tab. The whole loop is a
+# deterministic replay of bar-close data, so an occasional duplicate trigger
+# is a harmless no-op (the commit step skips when nothing changed).
 on:
-  schedule:
-    - cron: "7 0,4,8,12,16,20 * * *"  # 7 min after each 4H candle close (UTC)
   workflow_dispatch: {}
 
 permissions:
@@ -34,18 +39,11 @@ jobs:
             cp data/*.csv live_data/
           fi
 
-      - name: Run trading step (v2 trade engine)
+      - name: Run trading step (v5 — maker + satellite universe, only profile)
         env:
           TRADE_MODE: paper
           LIVE_ANCHOR: "2026-01-01"
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-        run: python run_live.py
-
-      - name: Run trading step (v3 portfolio system)
-        env:
-          TRADE_MODE: paper
-          LIVE_ANCHOR: "2026-01-01"
+          V3_PROFILE: v5
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_SIGNAL_DB_ID: ${{ secrets.NOTION_SIGNAL_DB_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -57,24 +55,13 @@ jobs:
           OKX_PASSPHRASE: ${{ secrets.OKX_PASSPHRASE }}
         run: python run_live_v3.py
 
-      - name: Run trading step (v4 aggressive profile)
-        env:
-          TRADE_MODE: paper
-          LIVE_ANCHOR: "2026-01-01"
-          V3_PROFILE: v4
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_SIGNAL_DB_ID: ${{ secrets.NOTION_SIGNAL_DB_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python run_live_v3.py
-
       - name: Commit journal and data cache
         run: |
           git config user.name "fabletradebot"
           git config user.email "bot@users.noreply.github.com"
           git add journal live_data
           if ! git diff --cached --quiet; then
-            git commit -m "paper-trade: journal update $(date -u +%Y-%m-%dT%H:%M)"
+            git commit -m "paper-trade: v5 journal update $(date -u +%Y-%m-%dT%H:%M)"
             git pull --rebase origin "${{ github.ref_name }}"
             git push origin "HEAD:${{ github.ref_name }}"
           fi
