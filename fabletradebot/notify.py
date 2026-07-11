@@ -40,20 +40,27 @@ _OUTCOME = {"Win": "✅ WIN", "Loss": "❌ LOSS",
             "Timeout-Win": "⏳ TIMEOUT-WIN", "Timeout-Loss": "⌛ TIMEOUT-LOSS"}
 
 
+def _lev_str(pos: dict) -> str:
+    lev = pos.get("leverage")
+    return f"  ·  레버리지 <b>{lev:.0f}x</b>" if lev else ""
+
+
 def format_scored_open(pos: dict) -> str:
     """Telegram message for a newly opened scored position."""
     return (
         f"<b>🎯 {pos['system']} OPEN</b> — <b>{pos['asset']}</b> {_DIR[pos['direction']]}\n"
         f"진입 <b>{pos['entry']:.6g}</b>  ·  TP {pos['tp']:.6g} / SL {pos['sl']:.6g}\n"
-        f"목표 비중 {pos['weight']:+.3f}  ·  봉 {pos['opened_ts']}"
+        f"목표 비중 {pos['weight']:+.3f}{_lev_str(pos)}  ·  봉 {pos['opened_ts']}"
     )
 
 
 def format_scored_close(pos: dict) -> str:
     """Telegram message for a resolved scored position."""
+    pct = pos.get("result_pct")
+    pct_str = f"  ·  손익 <b>{pct:+.2f}%</b>" if pct is not None else ""
     return (
         f"<b>{_OUTCOME.get(pos['status'], pos['status'])}</b> — "
         f"<b>{pos['asset']}</b> {pos['system']} {_DIR[pos['direction']]} "
-        f"<b>{pos['result_r']:+.2f}R</b>\n"
+        f"<b>{pos['result_r']:+.2f}R</b>{pct_str}{_lev_str(pos)}\n"
         f"청산 {pos['exit']:.6g} (진입 {pos['entry']:.6g})  ·  {pos['closed_ts']}"
     )

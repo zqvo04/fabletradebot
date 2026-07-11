@@ -22,7 +22,8 @@ OPEN = "Open"
 
 
 def open_position(system: str, asset: str, direction: int, entry: float,
-                  sigma_day: float, ts, cfg, weight: float, equity: float) -> dict:
+                  sigma_day: float, ts, cfg, weight: float, equity: float,
+                  leverage: float | None = None) -> dict:
     tp_dist = cfg.score_tp_k * sigma_day * entry
     sl_dist = cfg.score_sl_k * sigma_day * entry
     opened = pd.Timestamp(ts)
@@ -33,10 +34,11 @@ def open_position(system: str, asset: str, direction: int, entry: float,
         tp=float(entry + direction * tp_dist),
         sl=float(entry - direction * sl_dist),
         risk=float(sl_dist),
+        leverage=None if leverage is None else float(leverage),
         opened_ts=opened.isoformat(),
         timeout_ts=(opened + pd.Timedelta(days=cfg.score_timeout_days)).isoformat(),
         weight=float(weight), equity=float(equity),
-        status=OPEN, exit=None, result_r=None, closed_ts=None,
+        status=OPEN, exit=None, result_r=None, result_pct=None, closed_ts=None,
     )
 
 
@@ -61,6 +63,11 @@ def _close(pos: dict, status: str, exit_px: float, ts) -> bool:
     pos["exit"] = float(exit_px)
     pos["result_r"] = float(pos["direction"] * (exit_px - pos["entry"]) / pos["risk"]) \
         if pos["risk"] > 0 else 0.0
+    # signed price-move return of the signal (percent). This is the position's
+    # own P&L %, NOT multiplied by leverage: the tier is an account hard stop,
+    # not a sizing multiplier (the core v4/v5 thesis).
+    pos["result_pct"] = float(pos["direction"] * (exit_px - pos["entry"])
+                              / pos["entry"] * 100.0) if pos["entry"] else 0.0
     pos["closed_ts"] = pd.Timestamp(ts).isoformat()
     return True
 
@@ -68,15 +75,30 @@ def _close(pos: dict, status: str, exit_px: float, ts) -> bool:
 def simulate_scoring(weights: pd.DataFrame, data: dict, sigs: dict,
                      equity: pd.Series, cfg, system: str) -> list[dict]:
     """Replay the whole weight history and return every scored position
-    (resolved + still-open). Deterministic — identical inputs, identical ids."""
+    (resolved + still-open). Deterministic — identical inputs, identical ids.
+
+    Each opened position records the confidence-tiered account leverage
+    (leverage_plan) evaluated from the signal + drawdown AT THE OPEN BAR."""
+    from .leverage_plan import plan_leverage
+
     assets = list(weights.columns)
     idx = weights.index
+
+    def _col(a, name):  # missing signal columns -> NaN (tier degrades to floor)
+        s = sigs[a]
+        return (s[name].reindex(idx).to_numpy(float) if name in s
+                else np.full(len(idx), np.nan))
+
     W = {a: weights[a].to_numpy(float) for a in assets}
     H = {a: data[a]["high"].reindex(idx).to_numpy(float) for a in assets}
     L = {a: data[a]["low"].reindex(idx).to_numpy(float) for a in assets}
     C = {a: data[a]["close"].reindex(idx).to_numpy(float) for a in assets}
-    V = {a: sigs[a]["vol_ann"].reindex(idx).to_numpy(float) for a in assets}
+    V = {a: _col(a, "vol_ann") for a in assets}
+    XS = {a: _col(a, "xs") for a in assets}
+    AG = {a: _col(a, "agree") for a in assets}
+    DP = {a: _col(a, "disp_pct") for a in assets}
     EQ = equity.reindex(idx).to_numpy(float)
+    DD = EQ / np.maximum.accumulate(np.where(np.isnan(EQ), -np.inf, EQ)) - 1.0
 
     open_pos: dict[str, dict] = {}
     done: list[dict] = []
@@ -98,8 +120,12 @@ def simulate_scoring(weights: pd.DataFrame, data: dict, sigs: dict,
             sd = V[a][i] / np.sqrt(365.0)
             if np.isnan(sd) or sd <= 0 or np.isnan(C[a][i]):
                 continue
+            row = {a: {"xs": XS[a][i], "agree": AG[a][i],
+                       "disp_pct": DP[a][i], "vol_ann": V[a][i]}}
+            plan = plan_leverage({a: w}, row, float(DD[i]), cfg)
+            lev = plan["assets"].get(a, {}).get("tier")
             open_pos[a] = open_position(system, a, d, C[a][i], sd, ts, cfg,
-                                        weight=w, equity=EQ[i])
+                                        weight=w, equity=EQ[i], leverage=lev)
     return done + list(open_pos.values())
 
 

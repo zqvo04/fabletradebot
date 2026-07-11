@@ -61,9 +61,15 @@ TRADE_MODE=paper python3 run_live_v3.py
 > `NOTION_SIGNAL_DB_ID`를 바꾸되, 스키마(속성 이름)는 아래와 같아야 한다:
 > `Name`(title) · `Bar Time`/`Closed`(date) ·
 > `System`/`Asset`/`Direction`/`Status`(select) ·
-> `Entry`/`TP`/`SL`/`Exit`/`Result R`/`Target Weight`/`Equity`(number).
+> `Entry`/`TP`/`SL`/`Exit`/`Result R`/`PnL %`/`Leverage`/`Target Weight`/`Equity`(number).
 > `Status` 옵션: `Open`/`Win`/`Loss`/`Timeout-Win`/`Timeout-Loss`.
-> 신호 발화 시 Open 행이 생기고, TP/SL/타임아웃 판정 시 같은 행이 갱신된다.
+> `System` 옵션엔 `v5`가 포함된다 (워크플로는 V5만 발화).
+> 신호 발화 시 Open 행이 생기고(진입가·TP·SL·목표비중·**Leverage** 기록),
+> TP/SL/타임아웃 판정 시 같은 행이 갱신된다(**PnL %**·Result R·Exit·Closed).
+> **`Leverage`** = 확신도 계층 계좌 레버리지(2/3/5/10x 하드스톱, 사이징 아님),
+> **`PnL %`** = 청산 시 신호의 가격 변화 손익(부호 포함, 예: `+9.24`).
+> 두 컬럼은 없어도 나머지는 그대로 기록되니, 기존 DB엔 이 두 속성만 추가하면 된다
+> (`Leverage`·`PnL %` 둘 다 Number 타입).
 
 ---
 
