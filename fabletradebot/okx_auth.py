@@ -10,6 +10,7 @@ import hashlib
 import hmac
 import json
 import os
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
@@ -46,5 +47,13 @@ def signed_request(method: str, path: str, body: dict | None = None,
         headers["x-simulated-trading"] = "1"
     req = urllib.request.Request(f"{BASE}{path}", headers=headers, method=method,
                                  data=payload.encode() if payload else None)
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read())
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as exc:
+        # OKX's diagnostic detail (e.g. code 50110 "Invalid IP", 50113
+        # "Invalid Sign") lives in the response body, which urllib discards
+        # by default -> surface it so failures are diagnosable from the log
+        # instead of a bare "HTTP Error 401: Unauthorized".
+        detail = exc.read().decode(errors="replace")
+        raise RuntimeError(f"HTTP {exc.code} {exc.reason}: {detail}") from exc

@@ -68,8 +68,11 @@ TRADE_MODE=paper python3 run_live_v3.py
 > TP/SL/타임아웃 판정 시 같은 행이 갱신된다(**PnL %**·Result R·Exit·Closed).
 > **`Leverage`** = 확신도 계층 계좌 레버리지(2/3/5/10x 하드스톱, 사이징 아님),
 > **`PnL %`** = 청산 시 신호의 가격 변화 손익(부호 포함, 예: `+9.24`).
-> 두 컬럼은 없어도 나머지는 그대로 기록되니, 기존 DB엔 이 두 속성만 추가하면 된다
-> (`Leverage`·`PnL %` 둘 다 Number 타입).
+> ⚠️ **정정**: Notion API는 스키마에 없는 속성명이 요청에 섞이면 그 속성만
+> 무시하는 게 아니라 **요청 전체를 400으로 거부한다.** 기존 DB를 계속 쓰려면
+> `Leverage`(Number)·`PnL %`(Number) 속성을 반드시 추가해야 하고, `System`
+> select 속성에 `v5` 옵션도 미리 추가해야 한다(마찬가지로 없는 select 옵션은
+> 자동 생성되지 않고 거부될 수 있다). 운영 중인 Signal Log DB는 이미 갱신 완료.
 
 ---
 
@@ -118,6 +121,33 @@ TRADE_MODE=paper python3 run_live_v3.py
 # 데모 실주문 검증
 OKX_DEMO=1 TRADE_MODE=live LIVE_CONFIRM=YES python3 run_live_v3.py
 ```
+
+### 3-1. `[okx] balance fetch failed: HTTP Error 401` 해결
+
+3종 키가 전부 설정된 상태에서(하나라도 빠지면 이 로그 자체가 안 뜨고 조용히
+페이퍼 폴백된다) OKX가 인증을 거부한 것이다. **트레이딩 자체는 영향 없다** —
+equity 조회 실패 시 자동으로 페이퍼 equity로 폴백하도록 설계돼 있다
+(`TRADE_MODE=paper`인 한 실주문과는 완전히 무관).
+
+원인은 로그의 `HTTP Error 401` 뒤에 OKX가 돌려준 상세 메시지로 바로 특정된다
+(`okx_auth.signed_request`가 응답 본문을 그대로 붙여서 예외를 던지도록 수정됨 —
+이전 로그는 urllib의 일반 메시지만 남아 원인 불명이었다. 다음 실행부터는
+`{"code":"501xx","msg":"..."}` 형태의 원문이 로그에 남는다). 코드 수정 없이도
+흔한 원인은:
+
+1. **IP 화이트리스트 (GitHub Actions에서 가장 흔함, code 50110)**: OKX API
+   키에 IP 제한이 걸려 있으면, GitHub Actions 러너는 매번 다른 IP를 쓰므로
+   거의 항상 거부된다. OKX API 관리 페이지에서 해당 키의 IP 화이트리스트를
+   **해제**하거나 비워둔다 (Read 전용 키는 보통 무제한 허용 가능).
+2. **데모/실계정 키 불일치 (code 50101 계열)**: OKX 데모 트레이딩에서 만든
+   키인데 `OKX_DEMO=1`을 안 넣었거나, 반대로 실계정 키인데 `OKX_DEMO=1`을
+   넣은 경우. 워크플로 env에 `OKX_DEMO`가 있는지 확인.
+3. **키/시크릿/패스프레이즈 오타 또는 폐기됨 (code 50111/50113)**: GitHub
+   Secrets에 붙여넣을 때 앞뒤 공백·개행이 같이 들어간 경우가 흔하다. Secrets를
+   지우고 다시 입력(재입력 시 GitHub은 기존 값을 보여주지 않으니 새로 붙여넣기).
+   OKX 쪽에서 키를 재발급했다면 GitHub Secrets도 같이 갱신해야 한다.
+4. **타임스탬프 만료 (code 50102)**: 러너 시계 이슈 — GitHub Actions에서는
+   거의 발생하지 않지만, 재시도 시에도 반복되면 의심.
 
 ---
 
