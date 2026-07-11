@@ -1,33 +1,33 @@
 {
   "n_journaled": 1148,
-  "equity": 123440.68414049779,
+  "equity": 123491.28213548733,
   "okx_equity": null,
   "last_bar": "2026-07-11 04:00:00+00:00",
   "target_weights": {
-    "BTC": -0.013258,
-    "ETH": 0.051406,
-    "SOL": 0.063514,
-    "HYPE": -0.027676,
-    "ONDO": -0.03763,
-    "TAO": -0.07561,
+    "BTC": -0.014957,
+    "ETH": 0.051675,
+    "SOL": 0.061686,
+    "HYPE": -0.025794,
+    "ONDO": -0.038729,
+    "TAO": -0.07465,
     "HMSTR": 0.0,
     "ACT": 0.0,
     "MORPHO": 0.0,
     "VIRTUAL": 0.0,
-    "PENGU": -0.078874,
-    "TRUMP": -0.062982,
+    "PENGU": -0.078604,
+    "TRUMP": -0.062224,
     "PI": 0.0,
     "KAITO": 0.0,
     "PARTI": 0.0,
-    "XAU": -0.095655,
-    "PUMP": -0.014552,
-    "XPL": -0.008695,
-    "LAB": -0.016378,
+    "XAU": -0.095774,
+    "PUMP": -0.017612,
+    "XPL": -0.007903,
+    "LAB": -0.016127,
     "MMT": 0.0,
-    "ZEC": 0.026262,
-    "ALLO": -0.002695,
-    "BEAT": 0.01836,
-    "LIT": 0.108282
+    "ZEC": 0.025806,
+    "ALLO": -0.002994,
+    "BEAT": 0.019272,
+    "LIT": 0.107515
   },
   "scored": {
     "v5:BTC:2026-02-03T08:00:00+00:00": {
@@ -189,176 +189,336 @@
     "v5:HYPE:2026-03-21T08:00:00+00:00": {
       "page_id": "39a8b798-76e3-81a4-906d-e2b1774509d7",
       "status": "Loss"
+    },
+    "v5:BEAT:2026-03-25T00:00:00+00:00": {
+      "page_id": "39a8b798-76e3-812f-ac3d-f6dc19ed9e27",
+      "status": "Loss"
+    },
+    "v5:LIT:2026-03-24T04:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8187-a1ee-e27be1b6a180",
+      "status": "Win"
+    },
+    "v5:HYPE:2026-03-24T12:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81ce-bf9e-f43ef365df4e",
+      "status": "Loss"
+    },
+    "v5:BTC:2026-03-29T12:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8103-94cf-ceff44b06284",
+      "status": "Loss"
+    },
+    "v5:PENGU:2026-03-29T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8143-ba72-edb6ea5b13de",
+      "status": "Loss"
+    },
+    "v5:ZEC:2026-03-31T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81a6-9d06-ccfe650bb76d",
+      "status": "Loss"
+    },
+    "v5:ETH:2026-04-01T20:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81fc-bac4-ed232e2a4424",
+      "status": "Loss"
+    },
+    "v5:SOL:2026-03-31T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8135-9ad1-ea83247885fe",
+      "status": "Win"
+    },
+    "v5:XPL:2026-04-02T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8188-bbe8-ce1e6c44c63f",
+      "status": "Win"
+    },
+    "v5:XPL:2026-04-02T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8131-a1ab-eaf44a073469",
+      "status": "Loss"
+    },
+    "v5:PUMP:2026-03-28T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81ea-b5b6-ff644939fcd7",
+      "status": "Timeout-Win"
+    },
+    "v5:PENGU:2026-04-01T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-811c-9ad7-ed21255b7f51",
+      "status": "Win"
+    },
+    "v5:ETH:2026-04-03T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81b5-a2d7-d6cf74ec8c59",
+      "status": "Win"
+    },
+    "v5:XPL:2026-04-03T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81ae-9ac1-fcf91173c35c",
+      "status": "Win"
+    },
+    "v5:HYPE:2026-04-04T20:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8103-ac67-e4f49df5f827",
+      "status": "Win"
+    },
+    "v5:XAU:2026-04-05T20:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81f4-bbda-f410d94ae376",
+      "status": "Loss"
+    },
+    "v5:ZEC:2026-04-06T00:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8104-8cf5-c17fa1495351",
+      "status": "Win"
+    },
+    "v5:BTC:2026-04-06T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81ff-82f7-db5932658696",
+      "status": "Loss"
+    },
+    "v5:PUMP:2026-04-07T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-817e-9df5-c40c60a4e624",
+      "status": "Loss"
+    },
+    "v5:TRUMP:2026-04-02T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81f0-bc01-c1cbdca6b726",
+      "status": "Timeout-Loss"
+    },
+    "v5:TAO:2026-04-09T00:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81c9-aab0-c795a7401ae9",
+      "status": "Loss"
+    },
+    "v5:HYPE:2026-04-08T12:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8110-9be1-d6d1b5b11d6c",
+      "status": "Loss"
+    },
+    "v5:PUMP:2026-04-08T00:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81e7-9d07-e84c619b254e",
+      "status": "Loss"
+    },
+    "v5:BTC:2026-04-10T20:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8102-a05a-fe87f19d25cc",
+      "status": "Loss"
+    },
+    "v5:HYPE:2026-04-12T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81a6-af5e-fa3ef0de3d12",
+      "status": "Win"
+    },
+    "v5:PENGU:2026-04-12T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8102-8c6e-c70935a84fa3",
+      "status": "Loss"
+    },
+    "v5:XAU:2026-04-09T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-818f-b162-eac89b892b21",
+      "status": "Timeout-Win"
+    },
+    "v5:BTC:2026-04-13T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81fb-b690-c26d3cc2fa10",
+      "status": "Win"
+    },
+    "v5:TRUMP:2026-04-10T20:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81e2-898b-c83587202834",
+      "status": "Timeout-Loss"
+    },
+    "v5:XPL:2026-04-17T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81bc-b363-da05b4f6baa6",
+      "status": "Loss"
+    },
+    "v5:HYPE:2026-04-15T00:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8125-a3a8-ee94073226b8",
+      "status": "Loss"
+    },
+    "v5:ETH:2026-04-13T20:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8192-9857-f734e06a5c01",
+      "status": "Loss"
+    },
+    "v5:TAO:2026-04-13T16:00:00+00:00": {
+      "page_id": "39a8b798-76e3-811b-8229-cdf8a3951473",
+      "status": "Timeout-Win"
+    },
+    "v5:HYPE:2026-04-20T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-819e-9bbf-c08ce9e27df6",
+      "status": "Loss"
+    },
+    "v5:PENGU:2026-04-21T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81b4-9221-e0a30b50ba59",
+      "status": "Win"
+    },
+    "v5:ZEC:2026-04-21T04:00:00+00:00": {
+      "page_id": "39a8b798-76e3-811d-92fc-f32ef4432a51",
+      "status": "Win"
+    },
+    "v5:TRUMP:2026-04-22T20:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81e6-9f29-f44a4a7c2337",
+      "status": "Loss"
+    },
+    "v5:SOL:2026-04-18T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81fd-be54-fc63805857fc",
+      "status": "Timeout-Win"
+    },
+    "v5:TRUMP:2026-04-25T08:00:00+00:00": {
+      "page_id": "39a8b798-76e3-81e9-ad2c-f4e2af291eb3",
+      "status": "Win"
+    },
+    "v5:XAU:2026-04-19T00:00:00+00:00": {
+      "page_id": "39a8b798-76e3-8115-b6e6-d4d0b3a030f3",
+      "status": "Timeout-Loss"
     }
   },
   "live_qty": {
-    "BTC": -0.0254982416203241,
-    "ETH": 3.528818392035696,
-    "SOL": 100.51553349358431,
-    "HYPE": -51.53012721759957,
-    "ONDO": -14183.428837273072,
-    "TAO": -43.92164766053194,
+    "BTC": -0.02880071706189826,
+    "ETH": 3.5472192754552876,
+    "SOL": 97.76287512589414,
+    "HYPE": -47.94229664518535,
+    "ONDO": -14634.926150016183,
+    "TAO": -43.402185552797214,
     "HMSTR": 0.0,
     "ACT": 0.0,
     "MORPHO": 0.0,
     "VIRTUAL": 0.0,
-    "PENGU": -1573155.6828078239,
-    "TRUMP": -4843.9508838235715,
+    "PENGU": -1570697.2072779688,
+    "TRUMP": -4790.599463590127,
     "PI": 0.0,
     "KAITO": 0.0,
     "PARTI": 0.0,
-    "XAU": -2.864769061663711,
-    "PUMP": -1247436.691397586,
-    "XPL": -11780.44944135252,
-    "LAB": -2635.869002416001,
+    "XAU": -2.8704140508795666,
+    "PUMP": -1524126.4617871076,
+    "XPL": -10677.807469548758,
+    "LAB": -2553.2614192294923,
     "MMT": 0.0,
-    "ZEC": 6.49620112397602,
-    "ALLO": -831.5153063353367,
-    "BEAT": 798.3271551726159,
-    "LIT": 5129.481986377075
+    "ZEC": 6.389221754658138,
+    "ALLO": -927.2065872044566,
+    "BEAT": 819.9283364277242,
+    "LIT": 5091.718514648304
   },
   "leverage_plan": {
     "assets": {
       "BTC": {
-        "weight": -0.0133,
-        "confidence": 0.03,
+        "weight": -0.015,
+        "confidence": 0.035,
         "tier": 2.0,
-        "margin_frac": 0.0066,
+        "margin_frac": 0.0075,
         "liq_dist": 0.49,
         "liq_sigmas": 22.56,
         "safety_bound": false
       },
       "ETH": {
-        "weight": 0.0514,
-        "confidence": 0.157,
+        "weight": 0.0517,
+        "confidence": 0.16,
         "tier": 2.0,
-        "margin_frac": 0.0257,
+        "margin_frac": 0.0258,
         "liq_dist": 0.49,
         "liq_sigmas": 16.92,
         "safety_bound": false
       },
       "SOL": {
-        "weight": 0.0635,
-        "confidence": 0.236,
+        "weight": 0.0617,
+        "confidence": 0.231,
         "tier": 2.0,
-        "margin_frac": 0.0318,
+        "margin_frac": 0.0308,
         "liq_dist": 0.49,
         "liq_sigmas": 13.97,
         "safety_bound": false
       },
       "HYPE": {
-        "weight": -0.0277,
-        "confidence": 0.134,
+        "weight": -0.0258,
+        "confidence": 0.126,
         "tier": 2.0,
-        "margin_frac": 0.0138,
+        "margin_frac": 0.0129,
         "liq_dist": 0.49,
-        "liq_sigmas": 10.72,
+        "liq_sigmas": 10.73,
         "safety_bound": false
       },
       "ONDO": {
-        "weight": -0.0376,
-        "confidence": 0.153,
+        "weight": -0.0387,
+        "confidence": 0.159,
         "tier": 2.0,
-        "margin_frac": 0.0188,
+        "margin_frac": 0.0194,
         "liq_dist": 0.49,
         "liq_sigmas": 12.74,
         "safety_bound": false
       },
       "TAO": {
-        "weight": -0.0756,
-        "confidence": 0.354,
+        "weight": -0.0746,
+        "confidence": 0.352,
         "tier": 3.0,
-        "margin_frac": 0.0252,
+        "margin_frac": 0.0249,
         "liq_dist": 0.3233,
         "liq_sigmas": 7.31,
         "safety_bound": false
       },
       "PENGU": {
-        "weight": -0.0789,
-        "confidence": 0.342,
+        "weight": -0.0786,
+        "confidence": 0.344,
         "tier": 2.0,
-        "margin_frac": 0.0394,
+        "margin_frac": 0.0393,
         "liq_dist": 0.49,
         "liq_sigmas": 11.94,
         "safety_bound": false
       },
       "TRUMP": {
-        "weight": -0.063,
-        "confidence": 0.337,
+        "weight": -0.0622,
+        "confidence": 0.336,
         "tier": 2.0,
-        "margin_frac": 0.0315,
+        "margin_frac": 0.0311,
         "liq_dist": 0.49,
         "liq_sigmas": 9.69,
         "safety_bound": false
       },
       "XAU": {
-        "weight": -0.0957,
-        "confidence": 0.144,
+        "weight": -0.0958,
+        "confidence": 0.146,
         "tier": 2.0,
-        "margin_frac": 0.0478,
+        "margin_frac": 0.0479,
         "liq_dist": 0.49,
         "liq_sigmas": 34.32,
         "safety_bound": false
       },
       "PUMP": {
-        "weight": -0.0146,
-        "confidence": 0.09,
+        "weight": -0.0176,
+        "confidence": 0.11,
         "tier": 2.0,
-        "margin_frac": 0.0073,
+        "margin_frac": 0.0088,
         "liq_dist": 0.49,
         "liq_sigmas": 8.36,
         "safety_bound": false
       },
       "XPL": {
-        "weight": -0.0087,
-        "confidence": 0.078,
+        "weight": -0.0079,
+        "confidence": 0.071,
         "tier": 2.0,
-        "margin_frac": 0.0043,
+        "margin_frac": 0.004,
         "liq_dist": 0.49,
         "liq_sigmas": 5.79,
         "safety_bound": false
       },
       "LAB": {
-        "weight": -0.0164,
-        "confidence": 0.501,
+        "weight": -0.0161,
+        "confidence": 0.497,
         "tier": 2.0,
-        "margin_frac": 0.0082,
+        "margin_frac": 0.0081,
         "liq_dist": 0.49,
         "liq_sigmas": 1.69,
         "safety_bound": true
       },
       "ZEC": {
-        "weight": 0.0263,
-        "confidence": 0.153,
+        "weight": 0.0258,
+        "confidence": 0.151,
         "tier": 2.0,
-        "margin_frac": 0.0131,
+        "margin_frac": 0.0129,
         "liq_dist": 0.49,
         "liq_sigmas": 8.91,
         "safety_bound": false
       },
       "ALLO": {
-        "weight": -0.0027,
-        "confidence": 0.029,
+        "weight": -0.003,
+        "confidence": 0.033,
         "tier": 2.0,
-        "margin_frac": 0.0013,
+        "margin_frac": 0.0015,
         "liq_dist": 0.49,
         "liq_sigmas": 4.77,
         "safety_bound": false
       },
       "BEAT": {
-        "weight": 0.0184,
-        "confidence": 0.391,
+        "weight": 0.0193,
+        "confidence": 0.414,
         "tier": 2.0,
-        "margin_frac": 0.0092,
+        "margin_frac": 0.0096,
         "liq_dist": 0.49,
-        "liq_sigmas": 2.44,
+        "liq_sigmas": 2.43,
         "safety_bound": true
       },
       "LIT": {
-        "weight": 0.1083,
-        "confidence": 0.615,
+        "weight": 0.1075,
+        "confidence": 0.616,
         "tier": 3.0,
-        "margin_frac": 0.0361,
+        "margin_frac": 0.0358,
         "liq_dist": 0.3233,
         "liq_sigmas": 4.52,
         "safety_bound": true
