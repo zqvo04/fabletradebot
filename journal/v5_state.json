@@ -1,0 +1,210 @@
+{
+  "n_journaled": 1148,
+  "equity": 123440.68414049779,
+  "okx_equity": null,
+  "last_bar": "2026-07-11 04:00:00+00:00",
+  "target_weights": {
+    "BTC": -0.013258,
+    "ETH": 0.051406,
+    "SOL": 0.063514,
+    "HYPE": -0.027676,
+    "ONDO": -0.03763,
+    "TAO": -0.07561,
+    "HMSTR": 0.0,
+    "ACT": 0.0,
+    "MORPHO": 0.0,
+    "VIRTUAL": 0.0,
+    "PENGU": -0.078874,
+    "TRUMP": -0.062982,
+    "PI": 0.0,
+    "KAITO": 0.0,
+    "PARTI": 0.0,
+    "XAU": -0.095655,
+    "PUMP": -0.014552,
+    "XPL": -0.008695,
+    "LAB": -0.016378,
+    "MMT": 0.0,
+    "ZEC": 0.026262,
+    "ALLO": -0.002695,
+    "BEAT": 0.01836,
+    "LIT": 0.108282
+  },
+  "scored": {},
+  "live_qty": {
+    "BTC": -0.0254982416203241,
+    "ETH": 3.528818392035696,
+    "SOL": 100.51553349358431,
+    "HYPE": -51.53012721759957,
+    "ONDO": -14183.428837273072,
+    "TAO": -43.92164766053194,
+    "HMSTR": 0.0,
+    "ACT": 0.0,
+    "MORPHO": 0.0,
+    "VIRTUAL": 0.0,
+    "PENGU": -1573155.6828078239,
+    "TRUMP": -4843.9508838235715,
+    "PI": 0.0,
+    "KAITO": 0.0,
+    "PARTI": 0.0,
+    "XAU": -2.864769061663711,
+    "PUMP": -1247436.691397586,
+    "XPL": -11780.44944135252,
+    "LAB": -2635.869002416001,
+    "MMT": 0.0,
+    "ZEC": 6.49620112397602,
+    "ALLO": -831.5153063353367,
+    "BEAT": 798.3271551726159,
+    "LIT": 5129.481986377075
+  },
+  "leverage_plan": {
+    "assets": {
+      "BTC": {
+        "weight": -0.0133,
+        "confidence": 0.03,
+        "tier": 2.0,
+        "margin_frac": 0.0066,
+        "liq_dist": 0.49,
+        "liq_sigmas": 22.56,
+        "safety_bound": false
+      },
+      "ETH": {
+        "weight": 0.0514,
+        "confidence": 0.157,
+        "tier": 2.0,
+        "margin_frac": 0.0257,
+        "liq_dist": 0.49,
+        "liq_sigmas": 16.92,
+        "safety_bound": false
+      },
+      "SOL": {
+        "weight": 0.0635,
+        "confidence": 0.236,
+        "tier": 2.0,
+        "margin_frac": 0.0318,
+        "liq_dist": 0.49,
+        "liq_sigmas": 13.97,
+        "safety_bound": false
+      },
+      "HYPE": {
+        "weight": -0.0277,
+        "confidence": 0.134,
+        "tier": 2.0,
+        "margin_frac": 0.0138,
+        "liq_dist": 0.49,
+        "liq_sigmas": 10.72,
+        "safety_bound": false
+      },
+      "ONDO": {
+        "weight": -0.0376,
+        "confidence": 0.153,
+        "tier": 2.0,
+        "margin_frac": 0.0188,
+        "liq_dist": 0.49,
+        "liq_sigmas": 12.74,
+        "safety_bound": false
+      },
+      "TAO": {
+        "weight": -0.0756,
+        "confidence": 0.354,
+        "tier": 3.0,
+        "margin_frac": 0.0252,
+        "liq_dist": 0.3233,
+        "liq_sigmas": 7.31,
+        "safety_bound": false
+      },
+      "PENGU": {
+        "weight": -0.0789,
+        "confidence": 0.342,
+        "tier": 2.0,
+        "margin_frac": 0.0394,
+        "liq_dist": 0.49,
+        "liq_sigmas": 11.94,
+        "safety_bound": false
+      },
+      "TRUMP": {
+        "weight": -0.063,
+        "confidence": 0.337,
+        "tier": 2.0,
+        "margin_frac": 0.0315,
+        "liq_dist": 0.49,
+        "liq_sigmas": 9.69,
+        "safety_bound": false
+      },
+      "XAU": {
+        "weight": -0.0957,
+        "confidence": 0.144,
+        "tier": 2.0,
+        "margin_frac": 0.0478,
+        "liq_dist": 0.49,
+        "liq_sigmas": 34.32,
+        "safety_bound": false
+      },
+      "PUMP": {
+        "weight": -0.0146,
+        "confidence": 0.09,
+        "tier": 2.0,
+        "margin_frac": 0.0073,
+        "liq_dist": 0.49,
+        "liq_sigmas": 8.36,
+        "safety_bound": false
+      },
+      "XPL": {
+        "weight": -0.0087,
+        "confidence": 0.078,
+        "tier": 2.0,
+        "margin_frac": 0.0043,
+        "liq_dist": 0.49,
+        "liq_sigmas": 5.79,
+        "safety_bound": false
+      },
+      "LAB": {
+        "weight": -0.0164,
+        "confidence": 0.501,
+        "tier": 2.0,
+        "margin_frac": 0.0082,
+        "liq_dist": 0.49,
+        "liq_sigmas": 1.69,
+        "safety_bound": true
+      },
+      "ZEC": {
+        "weight": 0.0263,
+        "confidence": 0.153,
+        "tier": 2.0,
+        "margin_frac": 0.0131,
+        "liq_dist": 0.49,
+        "liq_sigmas": 8.91,
+        "safety_bound": false
+      },
+      "ALLO": {
+        "weight": -0.0027,
+        "confidence": 0.029,
+        "tier": 2.0,
+        "margin_frac": 0.0013,
+        "liq_dist": 0.49,
+        "liq_sigmas": 4.77,
+        "safety_bound": false
+      },
+      "BEAT": {
+        "weight": 0.0184,
+        "confidence": 0.391,
+        "tier": 2.0,
+        "margin_frac": 0.0092,
+        "liq_dist": 0.49,
+        "liq_sigmas": 2.44,
+        "safety_bound": true
+      },
+      "LIT": {
+        "weight": 0.1083,
+        "confidence": 0.615,
+        "tier": 3.0,
+        "margin_frac": 0.0361,
+        "liq_dist": 0.3233,
+        "liq_sigmas": 4.52,
+        "safety_bound": true
+      }
+    },
+    "total_margin_frac": 0.3203,
+    "governor_mult": 1.0
+  },
+  "mode": "paper"
+}
