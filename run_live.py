@@ -102,7 +102,7 @@ def main() -> None:
 
     state.update({"closed_keys": sorted(known_closed), "open": known_open,
                   "equity": float(eq_now), "anchor": ANCHOR,
-                  "last_run": str(pd.Timestamp.utcnow())})
+                  "last_run": str(pd.Timestamp.now("UTC"))})
     save_state(state)
     print(score_report(trades, res["equity"], EQUITY0))
     print(f"final paper equity: {res['final_equity']:.2f} "
