@@ -107,8 +107,10 @@ def test_funding_settlement_applied():
                Params(), equity0=10_000.0)
     assert res0["final_equity"] == res1["final_equity"]  # deterministic
     pos = res0["open_positions"][SYM]
-    assert pos.realized < 0  # paid two positive fundings
-    assert pos.realized == pytest.approx(-2 * 0.001 * pos.notional, rel=1e-9)
+    assert pos.realized < 0  # paid two positive fundings + one default drag
+    p = Params()
+    expected = -(2 * 0.001 + p.funding_default_drag) * pos.notional
+    assert pos.realized == pytest.approx(expected, rel=1e-9)
 
 
 def test_cooldown_and_single_position_per_asset():

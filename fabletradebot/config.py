@@ -100,6 +100,9 @@ class Params:
     cooldown_bars: int = 4           # per-asset bars to wait after a close
     # --- costs ---
     taker_fee: float = 0.0005        # one way
+    # OKX only serves ~3 months of funding history; before that the engine
+    # charges this flat per-8h drag on any open position (conservative).
+    funding_default_drag: float = 0.0001
     cost_mult: float = 1.0           # stress knob (2.0 in G6)
     # --- confidence weights ---
     w_base: float = 0.55

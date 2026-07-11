@@ -1,0 +1,59 @@
+name: paper-trade
+
+# Timing is driven by an EXTERNAL scheduler (cron-job.org) that POSTs to the
+# workflow_dispatch API at bar-close + 3 minutes — GitHub's own `schedule:`
+# cron is delayed/skipped under load, so it is intentionally NOT used here.
+# See CRON_SETUP.md. The whole loop is a deterministic replay of bar-close
+# data, so a duplicate or missed trigger is harmless.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper-trade
+  cancel-in-progress: false
+
+jobs:
+  trade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install --quiet pandas numpy
+
+      - name: Bootstrap live data cache from repo history on first run
+        run: |
+          mkdir -p live_data
+          if [ -z "$(ls -A live_data 2>/dev/null)" ] && [ -d data ]; then
+            cp data/*.csv live_data/
+          fi
+
+      - name: Run V1 paper-trading step
+        env:
+          TRADE_MODE: paper
+          LIVE_ANCHOR: "2026-07-12"
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_SIGNAL_DB_ID: ${{ secrets.NOTION_SIGNAL_DB_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python run_live.py
+
+      - name: Commit journal and data cache
+        run: |
+          git config user.name "fabletradebot"
+          git config user.email "bot@users.noreply.github.com"
+          git add journal live_data
+          if ! git diff --cached --quiet; then
+            git commit -m "paper-trade: V1 journal update $(date -u +%Y-%m-%dT%H:%M)"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi

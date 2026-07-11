@@ -192,11 +192,15 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 continue
             pos.bars += 1
             d = pos.direction
-            # funding settles at 00/08/16 UTC (bar-open instant)
-            if t.hour % 8 == 0 and sym in fund_at:
-                rate = fund_at[sym].get(t)
-                if rate is not None and pos.opened_ts < t:
+            # funding settles at 00/08/16 UTC (bar-open instant); where history
+            # is missing, charge the conservative default drag instead
+            if t.hour % 8 == 0 and pos.opened_ts < t:
+                rate = fund_at.get(sym, {}).get(t)
+                if rate is not None:
                     pos.realized -= d * rate * pos.remaining_notional()
+                else:
+                    pos.realized -= (p.funding_default_drag * p.cost_mult
+                                     * pos.remaining_notional())
             lo, hi, close_px = row["low"], row["high"], row["close"]
             # liquidation must be unreachable before the stop — hard invariant
             if (d == 1 and lo <= pos.liq_price) or (d == -1 and hi >= pos.liq_price):
