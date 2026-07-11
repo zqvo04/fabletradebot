@@ -46,7 +46,9 @@ def test_stop_loss_accounting_exact():
     slip, fee = spec(SYM).slippage, p.taker_fee
     fill = 100 * (1 + slip)
     stop_frac = (fill - 98.0) / fill
-    notional = min(10_000 * 0.006 / stop_frac, 10_000 * 5.0)
+    # at entry equity is at its high -> anti-martingale boost applies
+    risk_frac = p.conf_tiers[0][2] * p.eq_boost_mult
+    notional = min(10_000 * risk_frac / stop_frac, 10_000 * 5.0)
     exit_px = 98.0 * (1 - slip)
     expected_gross = (exit_px - fill) / fill * notional
     expected_pnl = expected_gross - 2 * notional * fee
@@ -141,3 +143,31 @@ def test_crisis_blocks_entry_and_closes_positions():
               Params(), equity0=10_000.0)
     assert len(res["trades"]) == 1
     assert res["trades"].iloc[0]["reason"] == "Regime"
+
+
+def test_pyramiding_adds_units_on_proof():
+    # BTC is in aggression_syms; stop 5% -> +2R trigger at ~110, +4R at ~120
+    path = [(100, 101, 99.5, 100), (100, 100.5, 99.8, 100)]
+    px = 100.0
+    for _ in range(30):
+        px += 1.0
+        path.append((px - 1, px + 0.4, px - 1.2, px))
+    frames = _frames(path)
+    idx = frames[SYM].index
+    cands = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
+                                "setup": ["BRK"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    res = run(frames, _features(frames), cands, {SYM: None}, regime, corr,
+              Params(), equity0=10_000.0)
+    pos = res["open_positions"].get(SYM) or None
+    assert pos is not None
+    assert pos.adds == 2 and len(pos.tranches) == 3
+    # every add increases committed risk and keeps liquidation beyond the stop
+    assert pos.risk_amt > pos.tranches[0][1] * pos.init_stop_frac * 1.5
+    assert pos.liq_price < pos.sl  # long: stop always hit first
+    # adds do not fire for non-aggression symbols
+    res2 = run(frames, _features(frames), cands, {SYM: None}, regime, corr,
+               Params(aggression_syms=()), equity0=10_000.0)
+    pos2 = res2["open_positions"][SYM]
+    assert pos2.adds == 0 and len(pos2.tranches) == 1

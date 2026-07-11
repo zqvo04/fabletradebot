@@ -27,29 +27,49 @@ class Position:
     conf: float
     setup: str
     regime: str
-    entry: float
+    entry: float                   # tranche-0 entry (records show weighted avg)
     sl: float
     sl0: float
     tp1: float
-    notional: float
+    notional: float                # tranche-0 notional
     margin: float
     risk_amt: float
     leverage: float
     liq_price: float
     opened_ts: pd.Timestamp
+    risk_frac: float = 0.0         # per-unit risk fraction used at entry
+    init_stop_frac: float = 0.0
     meta: dict = field(default_factory=dict)
+    tranches: list = field(default_factory=list)   # [(entry_px, notional), ...]
+    adds: int = 0
     bars: int = 0
     tp1_done: bool = False
     best_close: float = 0.0
     realized: float = 0.0          # accumulated pnl in account currency
     bias_flip_streak: int = 0
 
+    def __post_init__(self):
+        if not self.tranches:
+            self.tranches = [(self.entry, self.notional)]
+
+    def total_notional(self) -> float:
+        return sum(n for _, n in self.tranches)
+
     def remaining_notional(self) -> float:
-        return self.notional * (0.5 if self.tp1_done else 1.0)
+        return self.total_notional() * (0.5 if self.tp1_done else 1.0)
+
+    def gross_at(self, px: float, fraction: float = 1.0) -> float:
+        """Unrealized gross pnl of `fraction` of the position at price px."""
+        d = self.direction
+        return sum(d * (px - e) / e * n for e, n in self.tranches) * fraction
+
+    def avg_entry(self) -> float:
+        tot = self.total_notional()
+        return sum(e * n for e, n in self.tranches) / tot if tot else self.entry
 
     def open_risk(self, p: Params) -> float:
-        loss_frac = max(0.0, self.direction * (self.entry - self.sl) / self.entry)
-        return loss_frac * self.remaining_notional()
+        loss = -self.gross_at(self.sl, 0.5 if self.tp1_done else 1.0)
+        return max(0.0, loss)
 
 
 @dataclass
@@ -104,32 +124,33 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
         for s, pos in positions.items():
             px = ts_prices.get(s)
             if px is not None and not np.isnan(px):
-                u += pos.direction * (px - pos.entry) / pos.entry * pos.remaining_notional()
+                u += pos.gross_at(px, 0.5 if pos.tp1_done else 1.0)
             u += pos.realized
         return cash + u
 
-    def close_part(pos: Position, px: float, frac_notional: float, ts, reason: str):
-        nonlocal cash
-        gross = pos.direction * (px - pos.entry) / pos.entry * frac_notional
-        pos.realized += gross - _cost(frac_notional, pos.sym, p)
+    def close_part(pos: Position, px: float, fraction: float, ts, reason: str):
+        gross = pos.gross_at(px, fraction)
+        pos.realized += gross - _cost(pos.total_notional() * fraction, pos.sym, p)
 
     def finalize(pos: Position, px: float, ts: pd.Timestamp, reason: str):
         nonlocal cash
-        close_part(pos, px, pos.remaining_notional(), ts, reason)
-        pnl = pos.realized - _cost(pos.notional, pos.sym, p)   # entry-side cost
+        close_part(pos, px, 0.5 if pos.tp1_done else 1.0, ts, reason)
+        pnl = pos.realized - _cost(pos.notional, pos.sym, p)   # tranche-0 entry cost
         cash += pnl
         if pnl < 0:
             loss_log.append((ts, -pnl))
         r = pnl / pos.risk_amt if pos.risk_amt > 0 else 0.0
-        price_pct = pos.direction * (px - pos.entry) / pos.entry * 100
+        avg_e = pos.avg_entry()
+        price_pct = pos.direction * (px - avg_e) / avg_e * 100
         trades.append({
             "sym": pos.sym, "setup": pos.setup, "dir": pos.direction,
             "conf": round(pos.conf, 4), "leverage": pos.leverage,
-            "regime": pos.regime, "entry": pos.entry, "sl0": pos.sl0,
+            "regime": pos.regime, "entry": avg_e, "sl0": pos.sl0,
             "exit": px, "opened": pos.opened_ts, "closed": ts,
-            "bars": pos.bars, "r": r, "pnl": pnl,
+            "bars": pos.bars, "r": r, "pnl": pnl, "adds": pos.adds,
             "pnl_pct_price": price_pct, "pnl_pct_lev": price_pct * pos.leverage,
-            "reason": reason, "risk_amt": pos.risk_amt, "notional": pos.notional,
+            "reason": reason, "risk_amt": pos.risk_amt,
+            "notional": pos.total_notional(),
             "equity_after": cash, **pos.meta,
         })
         cooldown[pos.sym] = p.cooldown_bars
@@ -170,6 +191,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             if lev == 0.0:
                 continue
             mult = (0.5 if dd >= p.dd_half else 1.0) * (0.5 if corr_on else 1.0)
+            if (dd <= p.eq_boost_dd and not corr_on
+                    and pend.sym in p.aggression_syms):
+                mult *= p.eq_boost_mult   # anti-martingale: press at equity highs
             sz = size_position(eq, risk_frac * mult, fill, pend.sl, pend.direction, lev)
             open_risk = sum(pos.open_risk(p) for pos in positions.values())
             open_margin = sum(pos.margin for pos in positions.values())
@@ -184,7 +208,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 setup=pend.setup, regime=pend.regime, entry=fill, sl=pend.sl,
                 sl0=pend.sl, tp1=tp1, notional=sz.notional, margin=sz.margin,
                 risk_amt=sz.risk_amt, leverage=sz.leverage, liq_price=sz.liq_price,
-                opened_ts=t, meta=pend.meta, best_close=fill)
+                opened_ts=t, risk_frac=risk_frac * mult, init_stop_frac=stop_frac,
+                meta=pend.meta, best_close=fill)
         pendings = []
 
         # ---- 2. manage open positions over bar t ----
@@ -217,7 +242,7 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 finalize(pos, px, t, "SL" if pos.sl == pos.sl0 else "Trail")
                 continue
             if tp_hit and not pos.tp1_done:
-                close_part(pos, pos.tp1, pos.notional * p.tp1_frac, t, "TP1")
+                close_part(pos, pos.tp1, p.tp1_frac, t, "TP1")
                 pos.tp1_done = True
                 pos.sl = pos.entry  # break-even stop for the runner
             # close-based management
@@ -228,8 +253,37 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 trail = pos.best_close - d * p.trail_atr * a
                 if d * (trail - pos.sl) > 0:
                     pos.sl = trail
-            unreal_r = (d * (close_px - pos.entry) / pos.entry * pos.notional
-                        ) / pos.risk_amt
+            # pyramiding: add a fixed-risk unit each time the trade proves
+            # itself by another +pyramid_trigger_r (in initial-stop units)
+            if (p.pyramid_max > 0 and pos.adds < p.pyramid_max
+                    and sym in p.aggression_syms
+                    and not pos.tp1_done and pos.init_stop_frac > 0):
+                k = pos.adds + 1
+                trigger = pos.entry * (1 + d * p.pyramid_trigger_r * k
+                                       * pos.init_stop_frac)
+                dist = d * (close_px - pos.sl) / close_px
+                if d * (close_px - trigger) >= 0 and dist > 0:
+                    lev_add, _ = final_leverage(pos.conf, dist, pos.regime,
+                                                spec(sym).lev_cap, p)
+                    if lev_add > 0:
+                        eq = mtm({s: bars[s]["close"].iloc[i] for s in positions})
+                        fill_add = close_px * (1 + d * spec(sym).slippage * p.cost_mult)
+                        notional_add = min(eq * pos.risk_frac / dist, eq * lev_add)
+                        add_risk = notional_add * dist
+                        open_risk = sum(q.open_risk(p) for q in positions.values())
+                        open_margin = sum(q.margin for q in positions.values())
+                        if (open_risk + add_risk <= p.max_open_risk * eq
+                                and open_margin + notional_add / lev_add
+                                <= p.max_margin_frac * eq):
+                            pos.realized -= _cost(notional_add, sym, p)
+                            pos.tranches.append((fill_add, notional_add))
+                            pos.margin += notional_add / lev_add
+                            pos.risk_amt += add_risk
+                            pos.adds += 1
+                            liq_add = fill_add * (1 - d * (1 / lev_add - 0.01))
+                            pos.liq_price = max(pos.liq_price, liq_add) if d == 1 \
+                                else min(pos.liq_price, liq_add)
+            unreal_r = pos.gross_at(close_px) / pos.risk_amt
             b4 = bias4h[sym].iloc[i]
             pos.bias_flip_streak = pos.bias_flip_streak + 1 if b4 == -d else 0
             exit_px = close_px * (1 - d * spec(sym).slippage * p.cost_mult)

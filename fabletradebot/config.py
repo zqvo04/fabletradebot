@@ -46,10 +46,20 @@ class Params:
     # surviving BRK signal (corr 0.005), so V1 sizes uniformly at 1% and keeps
     # a single tier. The tier plumbing stays; forward scoring keeps measuring
     # conf predictiveness and tiers can be re-introduced if it materialises.
-    # Risk 0.6%/trade: the largest size that passes the Monte-Carlo survival
-    # gate (95%p MDD <= 30%, P(MDD>50%) ~ 0) on design-window trades (G7).
+    # Risk 0.55%/trade: the largest base size that keeps the WHOLE-UNIVERSE
+    # trade stream inside the Monte-Carlo survival gate (95%p MDD <= 30%,
+    # P(MDD>50%) ~ 0) once the BTC aggression layer is stacked on top (E10).
     conf_entry: float = 0.55
-    conf_tiers: tuple = ((0.55, 5.0, 0.006),)
+    conf_tiers: tuple = ((0.55, 5.0, 0.0055),)
+    # --- aggression layer (E10): mechanical, evidence-conditioned — NOT a
+    # fitted per-trade quality predictor (those were rejected: E9b, E10a).
+    # Enabled per-asset: whole-universe aggression FAILED the survival MC
+    # (95%p MDD -53%) while BTC-only passed — staged rollout, BTC first.
+    aggression_syms: tuple = ("BTC",)
+    pyramid_max: int = 2             # max add-on units per position (0 = off)
+    pyramid_trigger_r: float = 2.0   # add every +2R (in initial-stop units)
+    eq_boost_mult: float = 1.5       # risk multiplier near equity highs
+    eq_boost_dd: float = 0.02        # "near high" = drawdown below this
     # --- liquidation safety (hard, not swept) ---
     liq_stop_mult: float = 3.0       # liq distance must be >= 3x stop distance
     mmr_buffer: float = 0.015        # maintenance-margin + fee buffer
