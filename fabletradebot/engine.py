@@ -201,8 +201,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 continue
             if open_margin + sz.margin > p.max_margin_frac * eq:
                 continue
-            tp1 = fill * (1 + pend.direction * p.tp1_r * stop_frac) \
-                if p.tp1_r > 0 else 0.0
+            pb = p.playbooks.get(pend.setup, {})
+            tp_r = pb.get("tp_r", p.tp1_r)
+            tp1 = fill * (1 + pend.direction * tp_r * stop_frac) if tp_r > 0 else 0.0
             positions[pend.sym] = Position(
                 sym=pend.sym, direction=pend.direction, conf=pend.conf,
                 setup=pend.setup, regime=pend.regime, entry=fill, sl=pend.sl,
@@ -234,6 +235,7 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             if (d == 1 and lo <= pos.liq_price) or (d == -1 and hi >= pos.liq_price):
                 if (d == 1 and lo > pos.sl) or (d == -1 and hi < pos.sl):
                     raise AssertionError(f"liquidation before stop on {sym} at {t}")
+            pb = p.playbooks.get(pos.setup, {})
             sl_hit = lo <= pos.sl if d == 1 else hi >= pos.sl
             tp_on = pos.tp1 > 0
             tp_hit = tp_on and (hi >= pos.tp1 if d == 1 else lo <= pos.tp1)
@@ -242,21 +244,27 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 finalize(pos, px, t, "SL" if pos.sl == pos.sl0 else "Trail")
                 continue
             if tp_hit and not pos.tp1_done:
-                close_part(pos, pos.tp1, p.tp1_frac, t, "TP1")
+                tp_frac = pb.get("tp_frac", p.tp1_frac)
+                if tp_frac >= 1.0:   # day-trade playbooks: full exit at target
+                    px = pos.tp1 * (1 - d * spec(sym).slippage * p.cost_mult)
+                    finalize(pos, px, t, "TP")
+                    continue
+                close_part(pos, pos.tp1, tp_frac, t, "TP1")
                 pos.tp1_done = True
                 pos.sl = pos.entry  # break-even stop for the runner
             # close-based management
             pos.best_close = max(pos.best_close, close_px) if d == 1 \
                 else min(pos.best_close, close_px)
             a = atr1h[sym].iloc[i]
-            if not np.isnan(a):   # chandelier trail, active from entry
-                trail = pos.best_close - d * p.trail_atr * a
+            trail_w = pb.get("trail_atr", p.trail_atr)
+            if trail_w > 0 and not np.isnan(a):  # chandelier, active from entry
+                trail = pos.best_close - d * trail_w * a
                 if d * (trail - pos.sl) > 0:
                     pos.sl = trail
-            # pyramiding: add a fixed-risk unit each time the trade proves
-            # itself by another +pyramid_trigger_r (in initial-stop units)
+            # pyramiding (trend playbooks only): add a fixed-risk unit each
+            # time the trade proves itself by another +pyramid_trigger_r
             if (p.pyramid_max > 0 and pos.adds < p.pyramid_max
-                    and sym in p.aggression_syms
+                    and sym in p.aggression_syms and pos.setup.startswith("BRK")
                     and not pos.tp1_done and pos.init_stop_frac > 0):
                 k = pos.adds + 1
                 trigger = pos.entry * (1 + d * p.pyramid_trigger_r * k
@@ -287,11 +295,12 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             b4 = bias4h[sym].iloc[i]
             pos.bias_flip_streak = pos.bias_flip_streak + 1 if b4 == -d else 0
             exit_px = close_px * (1 - d * spec(sym).slippage * p.cost_mult)
+            time_stop = pb.get("time_stop_bars", p.time_stop_bars)
             if state == "CRISIS":
                 finalize(pos, exit_px, t, "Regime")
-            elif pos.setup == "BRK" and pos.bias_flip_streak >= 2:
+            elif pb.get("biasflip_exit", True) and pos.bias_flip_streak >= 2:
                 finalize(pos, exit_px, t, "BiasFlip")
-            elif (p.time_stop_bars > 0 and pos.bars >= p.time_stop_bars
+            elif (time_stop > 0 and pos.bars >= time_stop
                   and unreal_r < p.time_stop_min_r):
                 finalize(pos, exit_px, t, "Timeout")
 

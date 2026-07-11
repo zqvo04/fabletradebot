@@ -47,17 +47,13 @@ def e1_baseline():
 
 
 def _only(setups: set[str]) -> Params:
-    # disable others by making them unreachable
-    kw = {}
-    if "CAPREV" not in setups:
-        kw["cap_rsi"] = -1.0      # rsi below -1 impossible
-    if "BRK" not in setups:
-        kw["brk_vol_mult"] = 1e9
-    return replace(Params(), **kw)
+    p = Params()
+    pbs = {k: {**v, "enabled": k in setups} for k, v in p.playbooks.items()}
+    return replace(p, playbooks=pbs)
 
 
 def e2_isolation():
-    for s in ("CAPREV", "BRK"):
+    for s in Params().playbooks:
         res = run_backtest(DATA, _only({s}), **DESIGN)
         show(f"E2 {s} only", res)
 

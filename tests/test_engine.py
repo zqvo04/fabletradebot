@@ -171,3 +171,71 @@ def test_pyramiding_adds_units_on_proof():
                Params(aggression_syms=()), equity0=10_000.0)
     pos2 = res2["open_positions"][SYM]
     assert pos2.adds == 0 and len(pos2.tranches) == 1
+
+
+def test_short_side_accounting_and_funding():
+    # short entry 100, SL 105 (5%); bar2 spikes to 106 -> SL hit
+    path = [(100, 101, 99.5, 100), (100, 100.5, 99.8, 100), (100, 106, 99.9, 105.5)]
+    args = _setup(path, 0, -1, sl=105.0)
+    p = Params()
+    res = run(*args, p, equity0=10_000.0)
+    tr = res["trades"].iloc[0]
+    slip, fee = spec(SYM).slippage, p.taker_fee
+    fill = 100 * (1 - slip)              # short entry improves... slips down
+    stop_frac = (105.0 - fill) / fill
+    risk_frac = p.conf_tiers[0][2] * p.eq_boost_mult
+    notional = min(10_000 * risk_frac / stop_frac, 10_000 * 5.0)
+    exit_px = 105.0 * (1 + slip)
+    expected = -(exit_px - fill) / fill * notional - 2 * notional * fee
+    assert tr["pnl"] == pytest.approx(expected, rel=1e-9)
+    assert tr["pnl"] < 0
+    # liquidation must sit ABOVE the short stop
+    # (validated inside size_position; a raise here would have failed the run)
+
+    # positive funding PAYS a short (sign mirror of the long test)
+    path2 = [(100, 101, 99.5, 100)] * 12
+    frames = _frames(path2)
+    idx = frames[SYM].index
+    cands = {SYM: pd.DataFrame({"dir": [-1], "conf": [0.65], "sl": [105.0],
+                                "setup": ["BRK_S"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND", "btc_dir": -1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    ft = pd.DatetimeIndex([pd.Timestamp("2024-01-01 08:00", tz="UTC")])
+    funding = {SYM: pd.Series([0.001], index=ft)}
+    feats = _features(frames)
+    feats[SYM]["bias4h"] = -1.0   # aligned with the short (no BiasFlip exit)
+    res2 = run(frames, feats, cands, funding, regime, corr,
+               Params(), equity0=10_000.0)
+    pos = res2["open_positions"][SYM]
+    # only the 08:00 settlement falls inside the 12-bar path; +rate pays a short
+    assert pos.realized == pytest.approx(0.001 * pos.notional, rel=1e-9)
+
+
+def test_playbook_exit_overrides_day_trade():
+    # FADE_L overrides: full exit at +1.5R, no trail, 24-bar time stop
+    path = [(100, 101, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 108, 99.9, 107.5)]  # rallies through +1.5R (stop 5% -> tp ~107.5)
+    frames = _frames(path)
+    idx = frames[SYM].index
+    cands = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
+                                "setup": ["FADE_L"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    res = run(frames, _features(frames), cands, {SYM: None}, regime, corr,
+              Params(), equity0=10_000.0)
+    t = res["trades"]
+    assert len(t) == 1 and t.iloc[0]["reason"] == "TP" and t.iloc[0]["pnl"] > 0
+
+    # flat path -> 24-bar timeout closes it (global default would be no timeout)
+    path2 = [(100, 101, 99.5, 100)] * 30
+    frames2 = _frames(path2)
+    idx2 = frames2[SYM].index
+    cands2 = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
+                                 "setup": ["FADE_L"]}, index=[idx2[0]])}
+    regime2 = pd.DataFrame({"state": "TREND", "btc_dir": 1}, index=idx2)
+    corr2 = pd.Series(False, index=idx2)
+    res2 = run(frames2, _features(frames2), cands2, {SYM: None}, regime2, corr2,
+               Params(), equity0=10_000.0)
+    assert len(res2["trades"]) == 1
+    assert res2["trades"].iloc[0]["reason"] == "Timeout"
+    assert res2["trades"].iloc[0]["bars"] >= 24

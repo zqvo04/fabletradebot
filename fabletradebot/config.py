@@ -77,17 +77,45 @@ class Params:
     # 1H noise sweeps stops placed inside ~2 ATR (EXPERIMENTS E5)
     sl_floor_atr: float = 2.0
     sl_swing_atr: float = 0.6        # buffer beyond the structural level
-    # --- CAPREV: capitulation-reversal long — REJECTED in design (E8): the
-    # positive drift rides on 40%-frequency catastrophic MAE paths that a
-    # survival-compatible stop cannot hold through. Kept behind a flag for
-    # future re-measurement only.
-    cap_enabled: bool = False
-    cap_rsi: float = 20.0
-    cap_vol_mult: float = 1.0        # min volume ratio (quality scored above this)
-    cap_confirm: bool = False        # require a bounce-confirmation bar to enter
-    cap_confirm_bars: int = 3        # RSI must have been < cap_rsi within N bars
-    cap_floor_atr: float = 0.0       # extra-wide stop floor for CAPREV (0 = global)
-    # --- BRK: trend-continuation breakout long (secondary, weaker recent edge) ---
+    # --- playbook matrix (E11): every entry structure is a slot with its own
+    # enable flag, direction, gates and exit overrides. A slot may only be
+    # enabled when its edge survived both design half-periods after costs —
+    # the disabled slots below carry their measured verdicts. Exit fields set
+    # to None fall back to the global defaults further down.
+    playbooks: dict = field(default_factory=lambda: {
+        # swing trend-following, long: THE survivor (E6/E9)
+        "BRK_L":   {"enabled": True,  "dir": 1},
+        # swing trend-following, short: REJECTED — breakdown shorts moved
+        # +3.1%/72h AGAINST entry on 12/12 assets in the recent half (E6)
+        "BRK_S":   {"enabled": False, "dir": -1},
+        # day-trade pullback fade at the 4H EMA20, long (TREND_UP):
+        # REJECTED — sign flip across halves (+0.20% -> -0.24%/24h, E11)
+        "FADE_L":  {"enabled": False, "dir": 1,
+                    "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 24,
+                    "trail_atr": 0.0, "biasflip_exit": False},
+        # day-trade rally fade, short (TREND_DOWN): REJECTED — below costs
+        # and horizon-inconsistent (+0.08%/24h vs -0.39%/48h, E11)
+        "FADE_S":  {"enabled": False, "dir": -1,
+                    "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 24,
+                    "trail_atr": 0.0, "biasflip_exit": False},
+        # day-trade range-edge fade, long: REJECTED — sign flip
+        # (-0.97% -> +1.11%/24h across halves, E11)
+        "RANGE_L": {"enabled": False, "dir": 1,
+                    "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
+                    "trail_atr": 0.0, "biasflip_exit": False},
+        # day-trade range-edge fade, short: REJECTED — negative both halves
+        "RANGE_S": {"enabled": False, "dir": -1,
+                    "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
+                    "trail_atr": 0.0, "biasflip_exit": False},
+    })
+    # --- FADE / RANGE playbook shape parameters (a-priori, not fitted) ---
+    fade_zone_atr: float = 0.6       # distance band around the 4H EMA20
+    fade_wick: float = 0.35          # rejection-wick minimum
+    range_lookback: int = 480        # 20d of 1H bars
+    range_edge: float = 0.15         # bottom/top fraction of the range
+    # (CAPREV capitulation-reversal was fully removed after E8 rejection —
+    # its positive drift rides on catastrophic MAE paths; see EXPERIMENTS.md)
+    # --- BRK: trend-continuation breakout (the surviving family) ---
     brk_lookback: int = 168          # 7d of 1H bars
     brk_vol_mult: float = 1.2
     bbw_lookback: int = 240          # squeeze percentile window (BRK quality score)
