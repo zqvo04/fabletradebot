@@ -59,8 +59,11 @@ TRADE_MODE=paper python3 run_live_v3.py
 
 > DB ID는 URL의 `?v=` 앞 32자리 16진수다. 다른 DB를 새로 쓰고 싶으면 그 ID로
 > `NOTION_SIGNAL_DB_ID`를 바꾸되, 스키마(속성 이름)는 아래와 같아야 한다:
-> `Name`(title) · `Bar Time`(date) · `System`/`Asset`/`Direction`(select) ·
-> `Target Weight`/`Prev Weight`/`Delta`/`Equity`(number) · `Note`(text).
+> `Name`(title) · `Bar Time`/`Closed`(date) ·
+> `System`/`Asset`/`Direction`/`Status`(select) ·
+> `Entry`/`TP`/`SL`/`Exit`/`Result R`/`Target Weight`/`Equity`(number).
+> `Status` 옵션: `Open`/`Win`/`Loss`/`Timeout-Win`/`Timeout-Loss`.
+> 신호 발화 시 Open 행이 생기고, TP/SL/타임아웃 판정 시 같은 행이 갱신된다.
 
 ---
 

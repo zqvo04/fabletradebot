@@ -17,12 +17,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from fabletradebot.v3 import V3Backtester, v3_config, v4_config
+from fabletradebot.v3 import V3Backtester, v3_config, v4_config, sleeve_signals
 from fabletradebot.data_okx import update_market
 from fabletradebot.preprocess import resample_ohlcv
 from fabletradebot.okx_account import fetch_equity
-from fabletradebot.journal_notion import post_signal
-from fabletradebot.notify import send_telegram, format_signal
+from fabletradebot.journal_notion import post_scored, update_scored
+from fabletradebot.notify import send_telegram, format_scored_open, format_scored_close
+from fabletradebot.scoring import simulate_scoring, summarize, OPEN
 
 # V3_PROFILE selects the risk profile: "v3" (base, vol budget 0.2) or
 # "v4" (aggressive, 0.4 + liquidation stress guard). Same signal either way;
@@ -33,23 +34,45 @@ JOURNAL = Path("journal")
 WEIGHTS_CSV = JOURNAL / f"{PROFILE}_weights.csv"
 STATE_JSON = JOURNAL / f"{PROFILE}_state.json"
 
-# a signal "fires" when a target weight moves at least this much (fraction of
-# equity) from the last fired target — the notify/log analogue of a rebalance.
-NOTIFY_THRESHOLD = float(os.environ.get("SIGNAL_NOTIFY_THRESHOLD", "0.03"))
+# cap Notion writes per run so a first run over a long history can't hit rate
+# limits; the reconcile is idempotent, so any backlog clears on later runs.
+MAX_NOTION_WRITES = int(os.environ.get("MAX_NOTION_WRITES", "40"))
 
 
-def signal_changes(prev: dict, new: dict, threshold: float) -> list[dict]:
-    """Assets whose target weight moved >= threshold since the last fire.
-    Direction is the sign of the NEW target (the position we now want)."""
-    out = []
-    for a, nw in new.items():
-        pw = float(prev.get(a, 0.0))
-        delta = nw - pw
-        if abs(delta) >= threshold:
-            direction = "LONG" if nw > 1e-9 else "SHORT" if nw < -1e-9 else "FLAT"
-            out.append(dict(asset=a, prev_weight=pw, target_weight=nw,
-                            delta=delta, direction=direction))
-    return out
+def _fresh(ts: str | None, now: pd.Timestamp, days: float = 1.5) -> bool:
+    """True if an event is recent enough to push a Telegram alert — keeps the
+    initial history backfill from spamming notifications for old trades."""
+    if not ts:
+        return False
+    return pd.Timestamp(ts) >= now - pd.Timedelta(days=days)
+
+
+def reconcile_scored(positions: list[dict], scored_state: dict,
+                     now: pd.Timestamp) -> int:
+    """Create Notion rows for newly seen positions and patch ones that just
+    resolved. `scored_state` maps position id -> {page_id, status}; mutated
+    in place. Returns the number of Notion writes performed."""
+    writes = 0
+    for pos in positions:
+        if writes >= MAX_NOTION_WRITES:
+            break
+        known = scored_state.get(pos["id"])
+        if known is None:                       # first sighting -> create
+            page_id = post_scored(pos)
+            writes += 1
+            if page_id:
+                scored_state[pos["id"]] = {"page_id": page_id, "status": pos["status"]}
+                if pos["status"] == OPEN and _fresh(pos["opened_ts"], now):
+                    send_telegram(format_scored_open(pos))
+                elif pos["status"] != OPEN and _fresh(pos["closed_ts"], now):
+                    send_telegram(format_scored_close(pos))
+        elif known["status"] == OPEN and pos["status"] != OPEN:   # just resolved
+            if update_scored(known["page_id"], pos):
+                writes += 1
+                known["status"] = pos["status"]
+                if _fresh(pos["closed_ts"], now):
+                    send_telegram(format_scored_close(pos))
+    return writes
 
 
 def main():
@@ -79,15 +102,14 @@ def main():
     marks = {a: float(df["close"].iloc[-1]) for a, df in data.items()}
     target_qty = {a: target[a] * equity / marks[a] for a in target}
 
-    # --- signal firing: notify + journal when the target moved materially ---
-    prev_fired = state.get("last_signal_weights", {})
-    for sig in signal_changes(prev_fired, target, NOTIFY_THRESHOLD):
-        sig.update(system=PROFILE, equity=equity, bar_time=bar_time,
-                   note="XS 횡단면 모멘텀 리밸런스")
-        post_signal(sig)
-        send_telegram(format_signal(sig))
-        print(f"[signal] {sig['asset']} {sig['direction']} "
-              f"{sig['prev_weight']:+.3f} -> {sig['target_weight']:+.3f}")
+    # --- scored signals: open positions with TP/SL, grade Win/Loss/Timeout ---
+    # Stateless recompute over the full history, then reconcile with Notion
+    # (idempotent, matching the deterministic-replay design of the whole loop).
+    sigs = sleeve_signals(data, cfg)
+    positions = simulate_scoring(out.weights, data, sigs, out.equity, cfg, PROFILE)
+    scored_state = state.get("scored", {})
+    writes = reconcile_scored(positions, scored_state, out.equity.index[-1])
+    stats = summarize(positions)
 
     if mode == "live":
         _reconcile(state.get("live_qty", {}), target_qty)
@@ -98,14 +120,18 @@ def main():
         okx_equity=okx_equity,
         last_bar=bar_time,
         target_weights=target,
-        last_signal_weights=target,
+        scored=scored_state,
         live_qty=target_qty,
         mode=mode,
     )
     STATE_JSON.write_text(json.dumps(state, indent=2))
+    wr = f"{stats['win_rate']:.0%}" if stats.get("n") else "n/a"
     print(f"[{PROFILE}/{mode}] bar {bar_time}  equity {equity:.2f}"
           f"{' (okx)' if okx_equity is not None else ' (paper)'}  "
           f"weights { {a: round(v, 3) for a, v in target.items()} }")
+    print(f"[{PROFILE}/scored] resolved {stats.get('n', 0)} (win {wr}, "
+          f"avgR {stats.get('avg_r', 0):+.2f})  open {stats.get('open', 0)}  "
+          f"notion writes {writes}")
 
 
 def _reconcile(prev: dict, target: dict):

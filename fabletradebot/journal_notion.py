@@ -1,72 +1,100 @@
-"""Notion trade journal + signal log (optional). Fires only when NOTION_TOKEN
-and the relevant database id are set; failures are logged and never break the
-trade loop.
+"""Notion trade journal + signal-position log (optional). Fires only when
+NOTION_TOKEN and the relevant database id are set; failures are logged and
+never break the trade loop.
 
-Trade journal DB (NOTION_DATABASE_ID) properties:
-  Name (title) | Asset (select) | Playbook (select) | Direction (select)
-  R (number) | PnL (number) | Reason (select) | Closed (date)
+Trade journal DB (NOTION_DATABASE_ID) — v2 discrete trades:
+  Name (title) | Asset | Playbook | Direction | R | PnL | Reason | Closed
 
-Signal-log DB (NOTION_SIGNAL_DB_ID) properties (created by the setup agent):
-  Name (title) | Bar Time (date) | System (select) | Asset (select)
-  Direction (select) | Target Weight/Prev Weight/Delta/Equity (number) | Note (text)
+Signal-position DB (NOTION_SIGNAL_DB_ID) — scored v3/v4 signals:
+  Name (title) | Bar Time (date) | System | Asset | Direction | Status
+  Entry/TP/SL/Exit/Result R/Target Weight/Equity (number) | Closed (date)
 """
 import json
 import os
 import urllib.request
 
 _NOTION_VERSION = "2022-06-28"
+_BASE = "https://api.notion.com/v1/pages"
 
 
-def _post_page(body: dict) -> bool:
-    token = os.environ.get("NOTION_TOKEN")
-    req = urllib.request.Request(
-        "https://api.notion.com/v1/pages",
-        data=json.dumps(body).encode(),
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Notion-Version": _NOTION_VERSION,
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
+def _headers() -> dict:
+    return {
+        "Authorization": f"Bearer {os.environ.get('NOTION_TOKEN')}",
+        "Notion-Version": _NOTION_VERSION,
+        "Content-Type": "application/json",
+    }
+
+
+def _request(url: str, body: dict, method: str) -> dict | None:
+    req = urllib.request.Request(url, data=json.dumps(body).encode(),
+                                 headers=_headers(), method=method)
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
-            return resp.status < 300
+            return json.loads(resp.read())
     except Exception as exc:  # journal must never break the trade loop
-        print(f"[journal] Notion post failed: {exc}")
-        return False
+        print(f"[journal] Notion {method} failed: {exc}")
+        return None
 
 
-def post_signal(sig: dict) -> bool:
-    """Log one v2/v3 signal firing to the signal-log database."""
-    token = os.environ.get("NOTION_TOKEN")
-    db = os.environ.get("NOTION_SIGNAL_DB_ID")
-    if not token or not db:
-        return False
-    title = (f"{sig['asset']} {sig['system']} {sig['direction']} "
-             f"({sig['target_weight']:+.3f})")
+def _dir_str(d: int) -> str:
+    return "LONG" if d > 0 else "SHORT" if d < 0 else "FLAT"
+
+
+def _scored_props(pos: dict) -> dict:
+    """Notion properties for a scored position (open or resolved)."""
+    d = _dir_str(pos["direction"])
     props = {
-        "Name": {"title": [{"text": {"content": title}}]},
-        "System": {"select": {"name": sig["system"]}},
-        "Asset": {"select": {"name": sig["asset"]}},
-        "Direction": {"select": {"name": sig["direction"]}},
-        "Target Weight": {"number": round(float(sig["target_weight"]), 6)},
-        "Prev Weight": {"number": round(float(sig["prev_weight"]), 6)},
-        "Delta": {"number": round(float(sig["delta"]), 6)},
-        "Equity": {"number": round(float(sig["equity"]), 2)},
-        "Bar Time": {"date": {"start": str(sig["bar_time"])}},
+        "Name": {"title": [{"text": {"content":
+                 f"{pos['asset']} {pos['system']} {d} @ {pos['entry']:.6g}"}}]},
+        "System": {"select": {"name": pos["system"]}},
+        "Asset": {"select": {"name": pos["asset"]}},
+        "Direction": {"select": {"name": d}},
+        "Status": {"select": {"name": pos["status"]}},
+        "Entry": {"number": round(float(pos["entry"]), 8)},
+        "TP": {"number": round(float(pos["tp"]), 8)},
+        "SL": {"number": round(float(pos["sl"]), 8)},
+        "Target Weight": {"number": round(float(pos["weight"]), 6)},
+        "Equity": {"number": round(float(pos["equity"]), 2)},
+        "Bar Time": {"date": {"start": str(pos["opened_ts"])}},
     }
-    if sig.get("note"):
-        props["Note"] = {"rich_text": [{"text": {"content": str(sig["note"])}}]}
-    return _post_page({"parent": {"database_id": db}, "properties": props})
+    if pos.get("exit") is not None:
+        props["Exit"] = {"number": round(float(pos["exit"]), 8)}
+    if pos.get("result_r") is not None:
+        props["Result R"] = {"number": round(float(pos["result_r"]), 4)}
+    if pos.get("closed_ts"):
+        props["Closed"] = {"date": {"start": str(pos["closed_ts"])}}
+    return props
+
+
+def post_scored(pos: dict) -> str | None:
+    """Create a signal-position row. Returns the Notion page id, or None."""
+    if not os.environ.get("NOTION_TOKEN") or not os.environ.get("NOTION_SIGNAL_DB_ID"):
+        return None
+    body = {"parent": {"database_id": os.environ["NOTION_SIGNAL_DB_ID"]},
+            "properties": _scored_props(pos)}
+    resp = _request(_BASE, body, "POST")
+    return resp.get("id") if resp else None
+
+
+def update_scored(page_id: str, pos: dict) -> bool:
+    """Patch an existing row to its resolved Status/Exit/Result R/Closed."""
+    if not os.environ.get("NOTION_TOKEN") or not page_id:
+        return False
+    props = {"Status": {"select": {"name": pos["status"]}}}
+    if pos.get("exit") is not None:
+        props["Exit"] = {"number": round(float(pos["exit"]), 8)}
+    if pos.get("result_r") is not None:
+        props["Result R"] = {"number": round(float(pos["result_r"]), 4)}
+    if pos.get("closed_ts"):
+        props["Closed"] = {"date": {"start": str(pos["closed_ts"])}}
+    return _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH") is not None
 
 
 def post_trade(trade: dict) -> bool:
-    token = os.environ.get("NOTION_TOKEN")
     db = os.environ.get("NOTION_DATABASE_ID")
-    if not token or not db:
+    if not os.environ.get("NOTION_TOKEN") or not db:
         return False
-    direction = "LONG" if trade["direction"] > 0 else "SHORT"
+    direction = _dir_str(trade["direction"])
     title = f"{trade['asset']} {trade['playbook']} {direction} ({trade['r']:+.2f}R)"
     body = {
         "parent": {"database_id": db},
@@ -81,4 +109,4 @@ def post_trade(trade: dict) -> bool:
             "Closed": {"date": {"start": str(trade["closed_ts"])}},
         },
     }
-    return _post_page(body)
+    return _request(_BASE, body, "POST") is not None

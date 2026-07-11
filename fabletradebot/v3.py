@@ -93,6 +93,16 @@ class V3Config:
     dd_hard: float = -0.15            # floor multiplier here (never full stop)
     dd_floor: float = 0.25
 
+    # ---- signal scoring (diagnostic overlay — does NOT affect trading) ----
+    # A scored position opens when |weight| crosses score_open_min (or flips
+    # sign); TP/SL are placed score_tp_k / score_sl_k daily-sigmas from entry;
+    # unresolved by score_timeout_days -> classified by sign of the P&L.
+    # These are UNFITTED measurement parameters, not tuned for returns.
+    score_open_min: float = 0.05
+    score_tp_k: float = 2.0
+    score_sl_k: float = 1.5
+    score_timeout_days: float = 7.0
+
     def lev(self, a: str) -> float:
         return self.lev_cap.get(a, self.lev_default)
 
