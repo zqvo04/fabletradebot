@@ -239,3 +239,25 @@ def test_playbook_exit_overrides_day_trade():
     assert len(res2["trades"]) == 1
     assert res2["trades"].iloc[0]["reason"] == "Timeout"
     assert res2["trades"].iloc[0]["bars"] >= 24
+
+
+def test_open_position_mark_to_market_scoring():
+    from fabletradebot.scoring import mark_to_market, open_report
+    # open a long at ~100, still open; score it at a higher price
+    path = [(100, 101, 99.5, 100)] * 6
+    frames = _frames(path)
+    idx = frames[SYM].index
+    cands = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
+                                "setup": ["PBK_L"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    res = run(frames, _features(frames), cands, {SYM: None}, regime, corr,
+              Params(), equity0=10_000.0)
+    pos = res["open_positions"][SYM]
+    mtm = mark_to_market(pos, price=110.0)
+    # unrealized R = gross(110) / risk_amt; +10% move on a 5%-ish stop is ~+2R
+    assert mtm["r"] > 0 and mtm["pnl_pct_price"] == pytest.approx(
+        (110.0 - pos.avg_entry()) / pos.avg_entry() * 100)
+    assert mtm["bars"] == pos.bars and mtm["sl"] == pos.sl
+    assert "PBK_L" in open_report({SYM: pos}, {SYM: 110.0})
+    assert open_report({}, {}).endswith("none")

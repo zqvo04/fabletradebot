@@ -18,6 +18,37 @@ def conf_tier_label(conf: float) -> str:
     return "below"
 
 
+def mark_to_market(pos, price: float) -> dict:
+    """Unrealized scoring of one open Position at the latest price."""
+    avg_e = pos.avg_entry()
+    price_pct = pos.direction * (price - avg_e) / avg_e * 100
+    unreal = pos.gross_at(price) + pos.realized
+    r = unreal / pos.risk_amt if pos.risk_amt > 0 else 0.0
+    return {"sym": pos.sym, "setup": pos.setup, "regime": pos.regime,
+            "dir": pos.direction, "leverage": pos.leverage, "bars": pos.bars,
+            "price": price, "sl": pos.sl, "r": r,
+            "pnl_pct_price": price_pct, "pnl_pct_lev": price_pct * pos.leverage,
+            "risk_amt": pos.risk_amt}
+
+
+def open_report(open_pos: dict, prices: dict) -> str:
+    """Hourly scoring of the currently OPEN positions (runs every step,
+    alongside the trade loop, per brief §10)."""
+    if not open_pos:
+        return "== open positions == none"
+    rows = [mark_to_market(p, prices[s]) for s, p in open_pos.items() if s in prices]
+    if not rows:
+        return "== open positions == none priced"
+    tot_r = sum(x["r"] for x in rows)
+    lines = [f"== open positions ({len(rows)}) | unrealized {tot_r:+.2f}R =="]
+    for x in sorted(rows, key=lambda z: z["r"], reverse=True):
+        d = "L" if x["dir"] > 0 else "S"
+        lines.append(f"  {x['sym']:5s} {x['setup']:6s} {d} {x['leverage']:.0f}x "
+                     f"{x['r']:+.2f}R  price {x['pnl_pct_price']:+.2f}%  "
+                     f"held {x['bars']}h  regime {x['regime']}")
+    return "\n".join(lines)
+
+
 def score_report(trades: pd.DataFrame, equity: pd.Series, equity0: float) -> str:
     if len(trades) == 0:
         return "no closed trades yet"
