@@ -62,8 +62,8 @@ def main() -> None:
         except Exception as exc:
             print(f"  {sym}: update FAILED ({exc}) — replay continues on cache")
 
-    p = profile(os.environ.get("PROFILE", "base"))
-    print(f"   leverage profile: {os.environ.get('PROFILE', 'base')}")
+    p = profile(os.environ.get("PROFILE", "whale"))
+    print(f"   leverage profile: {os.environ.get('PROFILE', 'whale')}")
     frames, funding = load_universe(DATA_DIR)
     if "BTC" not in frames:
         raise SystemExit("no BTC data — cannot classify regime")

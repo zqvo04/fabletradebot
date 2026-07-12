@@ -168,7 +168,12 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
         prices_now = {s: bars[s]["close"].iloc[i] for s in positions}
 
         # ---- 1. fill pending entries at this bar's open ----
-        for pend in pendings:
+        # whale mode: only one seat is available, so the highest-confidence
+        # signal across the whole universe must claim it first (cross-coin
+        # selection). Portfolio mode keeps its original fill order.
+        fill_order = sorted(pendings, key=lambda x: x.conf, reverse=True) \
+            if p.whale_mode else pendings
+        for pend in fill_order:
             row = bars[pend.sym].iloc[i]
             if np.isnan(row["open"]):
                 continue
@@ -219,7 +224,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             if (dd <= p.eq_boost_dd and not corr_on
                     and pend.sym in p.aggression_syms):
                 mult *= p.eq_boost_mult   # anti-martingale: press at equity highs
-            sz = size_position(eq, risk_frac * mult, fill, pend.sl, pend.direction, lev)
+            sz = size_position(eq, risk_frac * mult, fill, pend.sl, pend.direction, lev,
+                               full_margin=p.whale_mode)
             open_risk = sum(pos.open_risk(p) for pos in positions.values())
             open_margin = sum(pos.margin for pos in positions.values())
             if open_risk + sz.risk_amt > p.max_open_risk * eq:

@@ -175,6 +175,11 @@ class Params:
     trail_atr: float = 8.0           # wide chandelier, active from entry
     time_stop_bars: int = 0          # 0 = no time stop
     time_stop_min_r: float = 0.3
+    # --- whale mode (V4): concentrate the WHOLE account into the single
+    # highest-confidence signal at that bar, sized full-margin at a
+    # confidence-chosen leverage tier. Off by default (portfolio mode);
+    # profile("whale") turns it on. See the profile block below.
+    whale_mode: bool = False
     # --- portfolio risk ---
     max_positions: int = 4
     max_positions_corr: int = 2
@@ -216,9 +221,21 @@ P = Params()
 #           can reach +80-120%, but 95%p MDD ~ 45% and P(MDD>50%) ~ 8%.
 #   max   — 3x base risk. Reaches the +100%/mo tail in strong-trend months but
 #           95%p MDD ~ 60%+ and P(ruinous DD) is real. Paper-only guard rail.
+#   whale — single-position concentration (V4, the user's crypto-whale design).
+#           Instead of spreading risk over up to 4 positions, hold at most ONE:
+#           each bar the highest-confidence signal across the whole universe
+#           wins the seat and is sized FULL-MARGIN (margin == whole account) at
+#           a confidence-chosen leverage tier (>=0.80 -> 10x, >=0.70 -> 5x,
+#           >=0.62 -> 3x, >=0.55 -> 2x). Highest tail of all profiles and the
+#           highest ruin: a single stop-out costs lev*stop_frac of the account
+#           (e.g. 10x on a 2% stop = -20%). The position is held to its exit —
+#           a fresh signal on another coin never displaces it (no churn).
 #
 # Profiles change ONLY sizing/aggression knobs — never the liquidation-safety
 # invariant (stop always before liquidation) which is non-negotiable in all.
+# whale keeps it too: when the confidence tier's leverage would place the stop
+# beyond liquidation, final_leverage caps the leverage down (a wide stop simply
+# gets a smaller tier), so the account is never sized into a liquidation.
 
 def _scaled_tiers(tiers: tuple, mult: float) -> tuple:
     return tuple((lo, lev, risk * mult) for lo, lev, risk in tiers)
@@ -245,4 +262,24 @@ def profile(name: str = "base") -> Params:
             pyramid_max=3,
             eq_boost_mult=2.0,
         )
-    raise ValueError(f"unknown profile: {name!r} (base|turbo|max)")
+    if name == "whale":
+        return replace(
+            Params(),
+            whale_mode=True,
+            # confidence -> leverage tier (risk field unused under full-margin)
+            conf_tiers=((0.55, 2.0, 0.01), (0.62, 3.0, 0.01),
+                        (0.70, 5.0, 0.01), (0.80, 10.0, 0.01)),
+            conf_entry=0.55,
+            max_positions=1,
+            max_positions_corr=1,
+            # one all-in position IS the whole book: the portfolio-diversification
+            # gates below don't apply, so set them generously out of the way.
+            # (full-margin uses 100% of equity as margin; a single stop-out risks
+            #  at most ~lev*stop_frac, structurally <~35% of the account.)
+            max_open_risk=2.0,
+            max_margin_frac=2.0,
+            # pyramiding needs free margin to add — there is none at full margin
+            pyramid_max=0,
+            aggression_syms=(),
+        )
+    raise ValueError(f"unknown profile: {name!r} (base|turbo|max|whale)")
