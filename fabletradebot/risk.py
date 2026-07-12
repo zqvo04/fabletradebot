@@ -59,15 +59,18 @@ class Sizing:
 
 
 def size_position(equity: float, risk_frac: float, entry: float, sl: float,
-                  direction: int, leverage: float, full_margin: bool = False) -> Sizing:
+                  direction: int, leverage: float, full_margin: bool = False,
+                  margin_frac: float = 1.0) -> Sizing:
     stop_frac = abs(entry - sl) / entry
-    # full_margin (whale mode): deploy the ENTIRE account as margin at the
-    # confidence-chosen leverage — notional = equity*lev, margin == equity.
-    # The stop is still hit before liquidation because `leverage` was already
-    # capped by lev_liq_cap upstream (final_leverage), so risk_amt below is the
-    # true stop-out loss (equity*lev*stop_frac), not a fixed risk budget.
+    # full_margin (whale mode): deploy the account as margin at the
+    # confidence-chosen leverage — notional = equity*lev*margin_frac, so at
+    # margin_frac==1 the WHOLE account is the margin. margin_frac<1 is how the
+    # drawdown governor (dd_half) and correlation halving de-risk in whale mode:
+    # they can't touch risk_frac (unused here), so they scale the deployed
+    # margin instead — the stop-before-liquidation invariant is untouched
+    # because `leverage` (hence the liq distance) is unchanged.
     if full_margin:
-        notional = equity * leverage
+        notional = equity * leverage * margin_frac
     else:
         notional = min(equity * risk_frac / stop_frac, equity * leverage)
     risk_amt = notional * stop_frac   # == equity*risk_frac unless the cap binds

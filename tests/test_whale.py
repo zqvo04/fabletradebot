@@ -37,11 +37,51 @@ def test_full_margin_sizing():
     assert sz.liq_price < 98.0                             # liquidation beyond the stop
 
 
+def test_full_margin_de_risks_with_margin_frac():
+    # margin_frac<1 (dd_half / correlation halving in whale mode) scales the
+    # deployed margin, halving risk, WITHOUT changing leverage or liq distance
+    full = size_position(10_000, 0.005, entry=100.0, sl=98.0, direction=1,
+                         leverage=5.0, full_margin=True, margin_frac=1.0)
+    half = size_position(10_000, 0.005, entry=100.0, sl=98.0, direction=1,
+                         leverage=5.0, full_margin=True, margin_frac=0.5)
+    assert half.notional == pytest.approx(full.notional * 0.5)
+    assert half.margin == pytest.approx(5_000.0)          # half the account
+    assert half.risk_amt == pytest.approx(full.risk_amt * 0.5)
+    assert half.leverage == full.leverage                 # leverage untouched
+    assert half.liq_price == pytest.approx(full.liq_price)  # liq distance untouched
+
+
 def test_whale_liq_safety_caps_leverage_on_wide_stop():
     # confidence wants 10x but an 8% stop would liquidate first -> capped to 3x
     p = profile("whale")
     lev, _ = final_leverage(0.85, 0.08, "TREND_UP", 10.0, p)
     assert lev == 3.0
+
+
+def test_whale_drawdown_governor_halves_deployed_margin():
+    # Engine-level proof that dd_half now works in whale mode: seed a carry
+    # sitting at a 15% drawdown (peak 10k, cash 8.5k) with no open position,
+    # then fire a candidate — the new position must deploy HALF the account.
+    idx = pd.date_range("2024-01-01", periods=4, freq="1h", tz="UTC")
+    df = pd.DataFrame([(100, 101, 99.5, 100)] * 4,
+                      columns=["open", "high", "low", "close"], index=idx)
+    df["volume"] = 1000.0
+    f = pd.DataFrame(index=idx)
+    f["atr1h"], f["bias4h"] = 1.0, 1.0
+    f["hold_L"], f["hold_S"] = 0.9, 0.0
+    cands = {"BTC": pd.DataFrame({"dir": [1], "conf": [0.85], "sl": [95.0],
+                                 "setup": ["BRK_L"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    carry = {"cash": 8_500.0, "peak": 10_000.0, "dd_frozen": False,
+             "circuit_until": None, "loss_log": [], "cooldown": {},
+             "positions": {}, "pendings": []}
+    res = run({"BTC": df}, {"BTC": f}, cands, {"BTC": None}, regime, corr,
+              profile("whale"), start=idx[0], carry=carry)
+    pos = res["open_positions"]["BTC"]
+    # dd = 15% >= dd_half(10%) -> mult 0.5 -> margin is HALF of equity (~8500)
+    assert pos.margin == pytest.approx(8_500.0 * 0.5, rel=1e-6)
+    assert pos.notional == pytest.approx(pos.margin * pos.leverage, rel=1e-6)
 
 
 def _two_coin_frames(conf_btc, conf_eth):

@@ -302,8 +302,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             if (dd <= p.eq_boost_dd and not corr_on
                     and pend.sym in p.aggression_syms):
                 mult *= p.eq_boost_mult   # anti-martingale: press at equity highs
+            # non-whale sizing folds `mult` into risk_frac; whale sizing ignores
+            # risk_frac (full margin), so `mult` must ride in as margin_frac to
+            # keep the dd_half / correlation de-risking alive in whale mode too
             sz = size_position(eq, risk_frac * mult, fill, pend.sl, pend.direction, lev,
-                               full_margin=p.whale_mode)
+                               full_margin=p.whale_mode, margin_frac=mult)
             open_risk = sum(pos.open_risk(p) for pos in positions.values())
             open_margin = sum(pos.margin for pos in positions.values())
             if open_risk + sz.risk_amt > p.max_open_risk * eq:
