@@ -59,9 +59,17 @@ class Sizing:
 
 
 def size_position(equity: float, risk_frac: float, entry: float, sl: float,
-                  direction: int, leverage: float) -> Sizing:
+                  direction: int, leverage: float, full_margin: bool = False) -> Sizing:
     stop_frac = abs(entry - sl) / entry
-    notional = min(equity * risk_frac / stop_frac, equity * leverage)
+    # full_margin (whale mode): deploy the ENTIRE account as margin at the
+    # confidence-chosen leverage — notional = equity*lev, margin == equity.
+    # The stop is still hit before liquidation because `leverage` was already
+    # capped by lev_liq_cap upstream (final_leverage), so risk_amt below is the
+    # true stop-out loss (equity*lev*stop_frac), not a fixed risk budget.
+    if full_margin:
+        notional = equity * leverage
+    else:
+        notional = min(equity * risk_frac / stop_frac, equity * leverage)
     risk_amt = notional * stop_frac   # == equity*risk_frac unless the cap binds
     margin = notional / leverage
     liq_frac = 1.0 / leverage - LIQ_MMR

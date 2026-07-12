@@ -10,7 +10,7 @@ from .config import UNIVERSE, Params
 from .data_okx import load_1h, load_funding, resample
 from .engine import run as engine_run
 from .regime import corr_alert_1h, regime_1d
-from .signals import build_features, scan
+from .signals import build_features, hold_confidence, scan
 
 
 def load_universe(data_dir: str, symbols: list[str] | None = None):
@@ -61,6 +61,10 @@ def prepare(frames: dict, funding: dict, p: Params):
         # scanner regime frame: per-asset state + GLOBAL btc direction
         reg_s = pd.DataFrame({"state": eff, "btc_dir": btc_dir.reindex(df.index).ffill().fillna(0)})
         f = build_features(df, funding.get(s), p)
+        # live re-score of a would-be OPEN position in either direction — the
+        # engine reads the held side each bar for the momentum-fade exit
+        f["hold_L"] = hold_confidence(f, reg_s["state"], reg_s["btc_dir"], 1, p)
+        f["hold_S"] = hold_confidence(f, reg_s["state"], reg_s["btc_dir"], -1, p)
         features[s] = f
         candidates[s] = scan(f, reg_s, p)
     return features, candidates, states, corr

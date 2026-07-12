@@ -28,7 +28,7 @@ def mark_to_market(pos, price: float) -> dict:
             "dir": pos.direction, "leverage": pos.leverage, "bars": pos.bars,
             "price": price, "sl": pos.sl, "r": r,
             "pnl_pct_price": price_pct, "pnl_pct_lev": price_pct * pos.leverage,
-            "risk_amt": pos.risk_amt}
+            "risk_amt": pos.risk_amt, "hold_conf": round(getattr(pos, "hold_conf", 0.0), 3)}
 
 
 def open_report(open_pos: dict, prices: dict) -> str:
@@ -45,7 +45,8 @@ def open_report(open_pos: dict, prices: dict) -> str:
         d = "L" if x["dir"] > 0 else "S"
         lines.append(f"  {x['sym']:5s} {x['setup']:6s} {d} {x['leverage']:.0f}x "
                      f"{x['r']:+.2f}R  price {x['pnl_pct_price']:+.2f}%  "
-                     f"held {x['bars']}h  regime {x['regime']}")
+                     f"held {x['bars']}h  regime {x['regime']}  "
+                     f"hold_conf {x['hold_conf']:.2f}")
     return "\n".join(lines)
 
 
