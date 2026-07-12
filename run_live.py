@@ -3,8 +3,11 @@
 Each run: (1) incrementally extend the CSV cache, (2) replay the engine from
 the anchor (data is the only state, so a duplicate or missed cron firing can
 never corrupt anything), (3) diff the replay against journal/v1_state.json to
-find trades opened/closed since the last run, (4) push Telegram/Notion for the
-diff only, (5) mark every STILL-OPEN position to the latest bar and refresh its
+find trades opened/closed since the last run, (4) push Telegram/Notion ONLY for
+events at/near the latest bar (a freshness guard, so a wiped or hand-edited
+state can never resurrect old trades or re-spam Telegram — deep-history events
+are absorbed into state silently), (5) mark every STILL-OPEN position to the
+latest bar and refresh its
 Notion row (hourly scoring runs alongside the trade loop, brief §10), (6) save
 state + print the scoring report.
 
@@ -69,6 +72,19 @@ def main() -> None:
                      start=pd.Timestamp(ANCHOR, tz="UTC"), equity0=EQUITY0)
     trades, open_pos = res["trades"], res["open_positions"]
 
+    # Freshness guard: only NOTIFY/JOURNAL events at (or near) the latest bar.
+    # The engine replays the whole window from the anchor every run, so without
+    # this a wiped/edited state file would re-fire every historical trade to
+    # Telegram and re-create rows a user had deleted. Deep-history events are
+    # instead absorbed into the state silently (recorded, never re-announced),
+    # which also means state loss can at most double-fire the last few hours.
+    latest_bar = max(df.index.max() for df in frames.values())
+    fresh_h = float(os.environ.get("NOTIFY_FRESH_HOURS", "12"))
+    fresh_cut = latest_bar - pd.Timedelta(hours=fresh_h)
+
+    def is_fresh(ts) -> bool:
+        return pd.Timestamp(ts) >= fresh_cut
+
     state = load_state()
     known_closed = set(state["closed_keys"])
     known_open = state["open"]
@@ -78,10 +94,14 @@ def main() -> None:
         if key in known_closed:
             continue
         page_id = known_open.pop(key, {}).get("page_id")
-        notify.send(notify.fmt_exit(tr.to_dict()))
-        journal_notion.post_close(tr.to_dict(), page_id)
+        # announce only recent closes; older ones are silently marked done
+        if is_fresh(tr["closed"]):
+            notify.send(notify.fmt_exit(tr.to_dict()))
+            journal_notion.post_close(tr.to_dict(), page_id)
+            print(f"  CLOSE {key} {tr['reason']} {tr['r']:+.2f}R")
+        else:
+            print(f"  close {key} absorbed (stale replay history)")
         known_closed.add(key)
-        print(f"  CLOSE {key} {tr['reason']} {tr['r']:+.2f}R")
 
     eq_now = res["equity"].iloc[-1] if len(res["equity"]) else EQUITY0
     for sym, pos in open_pos.items():
@@ -93,11 +113,18 @@ def main() -> None:
                 "sl": pos.sl0, "tp1": pos.tp1, "leverage": pos.leverage,
                 "risk_amt": pos.risk_amt, "risk_pct": pos.risk_amt / eq_now * 100,
                 "equity": eq_now, "opened": pos.opened_ts}
-        notify.send(notify.fmt_entry(info))
-        page_id = journal_notion.post_open(info)
+        # announce + create a Notion row only for genuinely new opens; a
+        # position first seen already deep in the replay is tracked silently
+        # (page_id None -> no row created, no resurrection of deleted rows)
+        if is_fresh(pos.opened_ts):
+            notify.send(notify.fmt_entry(info))
+            page_id = journal_notion.post_open(info)
+            print(f"  OPEN {key} {pos.setup} conf={pos.conf:.2f} {pos.leverage:.0f}x")
+        else:
+            page_id = None
+            print(f"  open {key} tracked silently (stale replay history)")
         known_open[key] = {"page_id": page_id, "sym": sym,
                            "opened": str(pos.opened_ts)}
-        print(f"  OPEN {key} {pos.setup} conf={pos.conf:.2f} {pos.leverage:.0f}x")
 
     # drop stale open entries whose trades were never seen closing (safety)
     known_open = {k: v for k, v in known_open.items()
