@@ -269,13 +269,15 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 else:
                     continue
             eq = mtm(prices_now)
+            peak = max(peak, eq)
             dd = 1 - eq / peak if peak > 0 else 0.0
             if dd_frozen and dd <= p.dd_resume:
                 dd_frozen = False
             if dd >= p.dd_stop:
                 dd_frozen = True
-            recent_loss = sum(x for ts0, x in loss_log
-                              if (t - ts0) <= pd.Timedelta(hours=24))
+            loss_log[:] = [(ts0, x) for ts0, x in loss_log
+                          if (t - ts0) <= pd.Timedelta(hours=24)]  # drop stale entries
+            recent_loss = sum(x for _, x in loss_log)
             if recent_loss >= p.circuit_loss_24h * eq:
                 circuit_until = t + pd.Timedelta(hours=p.circuit_pause_h)
             if (dd_frozen or state == "CRISIS"
@@ -460,7 +462,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 del cooldown[sym]
 
         prices_close = {s: bars[s]["close"].iloc[i] for s in positions}
-        curve.append((t, mtm(prices_close)))
+        eq_close = mtm(prices_close)
+        peak = max(peak, eq_close)   # continuous peak tracking even on bars
+        curve.append((t, eq_close))  # with no pending candidates to evaluate
 
     eq_curve = pd.Series(dict(curve), name="equity")
     return {"trades": pd.DataFrame(trades), "equity": eq_curve,
