@@ -116,6 +116,29 @@ def _tf_align(f: pd.DataFrame, btc_dir: pd.Series, d: int) -> pd.Series:
             + (btc_dir == d).astype(float)) / 3.0
 
 
+def hold_confidence(f: pd.DataFrame, state: pd.Series, btc_dir: pd.Series,
+                    d: int, p: Params) -> pd.Series:
+    """Continuous [0,1] conviction that an OPEN position in direction `d` still
+    has its thesis intact THIS bar — the live re-score used by the hourly
+    scoring loop and by the engine's momentum-fade exit (SignalFade).
+
+    Blends three a-priori (not fitted) reads of "is the trend/momentum that
+    justified this trade still here?":
+      - MTF alignment: 1D / 4H / BTC still pointing the trade's way,
+      - regime fit: are we still in the trade's trend (vs decayed to RANGE / a
+        new opposite state — the "새로운 상황으로 변경" case),
+      - 4H momentum: price still on the right side of the EMA20 and RSI(4H)
+        still leaning the trade's way (the "모멘텀을 잃음" case).
+    """
+    align = _tf_align(f, btc_dir, d)
+    trend = "TREND_UP" if d == 1 else "TREND_DOWN"
+    fit = state.map({trend: 1.0, "RANGE": 0.5, "HIGH_VOL": 0.35}).fillna(0.0)
+    px_ok = (d * (f["close"] - f["ema20_4h"]) > 0).astype(float)
+    rsi_ok = (d * (f["rsi4h"] - 50) / 20).clip(0, 1)
+    mom = 0.5 * px_ok + 0.5 * rsi_ok
+    return (0.45 * align + 0.30 * fit + 0.25 * mom).clip(0, 1)
+
+
 def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
               btc_dir: pd.Series, vol_ratio: pd.Series, p: Params):
     """Returns (mask, sl, base, fit, align) for one playbook slot."""

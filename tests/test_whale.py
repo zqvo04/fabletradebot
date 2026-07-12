@@ -1,10 +1,12 @@
 """Whale mode (V4): single full-margin position on the highest-confidence coin."""
+import numpy as np
 import pandas as pd
 import pytest
 
 from fabletradebot.config import Params, profile
 from fabletradebot.engine import run
 from fabletradebot.risk import conf_tier, final_leverage, size_position
+from fabletradebot.signals import hold_confidence
 
 
 def test_whale_profile_wiring():
@@ -87,3 +89,77 @@ def test_whale_holds_position_no_cross_coin_switch():
     # ETH still holds the seat, BTC never entered
     assert list(res["open_positions"]) == ["ETH"]
     assert len(res["trades"]) == 0
+
+
+# ---- momentum / confidence-fade management (V4) ----
+
+def test_hold_confidence_high_when_aligned_low_when_not():
+    idx = pd.date_range("2024-01-01", periods=3, freq="1h", tz="UTC")
+    f = pd.DataFrame({"bias1d": 1.0, "bias4h": 1.0, "close": 110.0,
+                      "ema20_4h": 100.0, "rsi4h": 70.0}, index=idx)
+    btc = pd.Series(1.0, index=idx)
+    up = hold_confidence(f, pd.Series("TREND_UP", index=idx), btc, 1, Params())
+    assert up.iloc[0] == pytest.approx(1.0)          # every read favourable
+    # fully against a long: opposite trend, below EMA20, weak RSI
+    f2 = f.assign(bias1d=-1.0, bias4h=-1.0, close=90.0, rsi4h=30.0)
+    dn = hold_confidence(f2, pd.Series("TREND_DOWN", index=idx),
+                         pd.Series(-1.0, index=idx), 1, Params())
+    assert dn.iloc[0] == pytest.approx(0.0)
+
+
+# fade params on standard (risk-based) sizing so the R arithmetic is simple:
+# notional 1000, risk_amt 50 -> price 110 ~ +2R, 108 ~ +1.6R, 105 ~ +1R
+_FADE_P = Params(aggression_syms=(), hold_conf_exit=0.50,
+                 hold_conf_bars=2, hold_conf_min_r=1.0, hold_giveback=0.5)
+
+
+def _run_fade(path, hold_seq, p):
+    idx = pd.date_range("2024-01-01", periods=len(path), freq="1h", tz="UTC")
+    df = pd.DataFrame(path, columns=["open", "high", "low", "close"], index=idx)
+    df["volume"] = 1000.0
+    f = pd.DataFrame(index=idx)
+    f["atr1h"], f["bias4h"] = 1.0, 1.0          # bias aligned -> no BiasFlip exit
+    f["hold_L"], f["hold_S"] = hold_seq, 0.0
+    cands = {"BTC": pd.DataFrame({"dir": [1], "conf": [0.85], "sl": [95.0],
+                                 "setup": ["BRK_L"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    return run({"BTC": df}, {"BTC": f}, cands, {"BTC": None}, regime, corr, p,
+               equity0=10_000.0)
+
+
+def test_signalfade_banks_winner_on_giveback():
+    # runs to ~+2R (110) then gives back half to ~+1R (105) -> lock it in
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 110.5, 99.9, 110), (110, 110, 103, 105), (105, 105, 104, 105)]
+    res = _run_fade(path, [0.9] * 5, _FADE_P)
+    assert len(res["trades"]) == 1
+    tr = res["trades"].iloc[0]
+    assert tr["reason"] == "SignalFade" and tr["pnl"] > 0
+
+
+def test_signalfade_banks_winner_on_conviction_collapse():
+    # up ~+1.6R and holding (no give-back), but conviction drops for 2 bars
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 108.5, 99.9, 108), (108, 108.2, 107, 108),
+            (108, 108.2, 107, 108), (108, 108.2, 107, 108)]
+    res = _run_fade(path, [0.9, 0.9, 0.9, 0.2, 0.2, 0.9], _FADE_P)
+    assert len(res["trades"]) == 1
+    tr = res["trades"].iloc[0]
+    assert tr["reason"] == "SignalFade" and tr["pnl"] > 0
+
+
+def test_signalfade_never_banks_a_loser():
+    # underwater with collapsed conviction -> the stop's job, not the fade's
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 100, 97, 97), (97, 97.5, 96.5, 97), (97, 97.5, 96.5, 97)]
+    res = _run_fade(path, [0.2] * 5, _FADE_P)
+    assert "SignalFade" not in list(res["trades"].get("reason", []))
+    assert list(res["open_positions"]) == ["BTC"]
+
+
+def test_signalfade_disabled_when_hold_conf_exit_zero():
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 110.5, 99.9, 110), (110, 110, 103, 105), (105, 105, 104, 105)]
+    res = _run_fade(path, [0.9] * 5, Params(aggression_syms=()))  # fade off
+    assert "SignalFade" not in list(res["trades"].get("reason", []))

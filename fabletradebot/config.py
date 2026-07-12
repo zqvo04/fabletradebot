@@ -175,6 +175,28 @@ class Params:
     trail_atr: float = 8.0           # wide chandelier, active from entry
     time_stop_bars: int = 0          # 0 = no time stop
     time_stop_min_r: float = 0.3
+    # --- position health / momentum-fade management (V4) ---
+    # The hourly scoring loop re-scores every OPEN position (hold_confidence:
+    # MTF alignment + regime fit + 4H momentum). When that live conviction
+    # decays below hold_conf_exit for hold_conf_bars consecutive bars, the
+    # thesis is judged spent and the position is closed (SignalFade) so the
+    # seat is freed for the next signal (wait, or rotate into a better coin).
+    # Only applies to trend slots (those using the bias-based exit); mean-
+    # reversion slots keep their own target/time exits. 0 disables (default).
+    # It is a PROFIT-PROTECTING exit: it only ever banks a position already in
+    # profit (a losing one is left to the stop) once it has run to at least
+    # hold_conf_min_r, then closes it on EITHER read that the move is done:
+    #   - momentum lost: gave back hold_giveback of the peak unrealized R (a
+    #     stalled run rolling over — the "모멘텀을 잃음" case),
+    #   - new situation: live conviction (hold_confidence) collapsed below
+    #     hold_conf_exit for hold_conf_bars bars (regime/alignment flipped —
+    #     the "새로운 상황으로 변경" case).
+    # This locks a stalled winner before it round-trips, ahead of the lagging
+    # bias-flip, and frees the seat for the next coin. 0 disables (default).
+    hold_conf_exit: float = 0.0
+    hold_conf_bars: int = 2
+    hold_conf_min_r: float = 1.0
+    hold_giveback: float = 0.5
     # --- whale mode (V4): concentrate the WHOLE account into the single
     # highest-confidence signal at that bar, sized full-margin at a
     # confidence-chosen leverage tier. Off by default (portfolio mode);
@@ -281,5 +303,12 @@ def profile(name: str = "base") -> Params:
             # pyramiding needs free margin to add — there is none at full margin
             pyramid_max=0,
             aggression_syms=(),
+            # re-score the single held position every bar and bank a winner
+            # when its run stalls (gives back half its peak) or its conviction
+            # collapses, freeing the seat for the next coin
+            hold_conf_exit=0.50,
+            hold_conf_bars=2,
+            hold_conf_min_r=1.0,
+            hold_giveback=0.5,
         )
     raise ValueError(f"unknown profile: {name!r} (base|turbo|max|whale)")

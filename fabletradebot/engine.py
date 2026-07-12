@@ -47,6 +47,9 @@ class Position:
     best_close: float = 0.0
     realized: float = 0.0          # accumulated pnl in account currency
     bias_flip_streak: int = 0
+    fade_streak: int = 0           # consecutive bars of decayed hold_conf
+    hold_conf: float = 0.0         # live re-scored conviction (latest bar)
+    peak_r: float = 0.0            # best unrealized R reached (give-back exit)
 
     def __post_init__(self):
         if not self.tranches:
@@ -103,6 +106,12 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
     bars = {s: df.reindex(grid) for s, df in frames.items()}
     atr1h = {s: features[s]["atr1h"].reindex(grid) for s in frames}
     bias4h = {s: features[s]["bias4h"].reindex(grid) for s in frames}
+    # live position-health series (hold_confidence) for the momentum-fade exit;
+    # absent in bare unit-feature frames, so read defensively / only when armed
+    use_hold = p.hold_conf_exit > 0 and all("hold_L" in features[s].columns for s in frames)
+    hold_at = ({s: {1: features[s]["hold_L"].reindex(grid),
+                    -1: features[s]["hold_S"].reindex(grid)} for s in frames}
+               if use_hold else None)
     cand_at = {s: {ts: row for ts, row in candidates[s].iterrows()} for s in candidates}
     fund_at = {s: dict(zip(funding[s].index, funding[s].values))
                for s in funding if funding[s] is not None}
@@ -323,13 +332,33 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                             pos.liq_price = max(pos.liq_price, liq_add) if d == 1 \
                                 else min(pos.liq_price, liq_add)
             unreal_r = pos.gross_at(close_px) / pos.risk_amt
+            pos.peak_r = max(pos.peak_r, unreal_r)
             b4 = bias4h[sym].iloc[i]
             pos.bias_flip_streak = pos.bias_flip_streak + 1 if b4 == -d else 0
+            # hourly re-score of this held position (the live conviction the
+            # scoring loop reports); a decay below the floor for hold_conf_bars
+            # consecutive bars flags a changed situation
+            if hold_at is not None:
+                h = hold_at[sym][d].iloc[i]
+                if not np.isnan(h):
+                    pos.hold_conf = float(h)
+                    pos.fade_streak = pos.fade_streak + 1 if h < p.hold_conf_exit else 0
             exit_px = close_px * (1 - d * spec(sym).slippage * p.cost_mult)
             time_stop = pb.get("time_stop_bars", p.time_stop_bars)
+            trend_managed = pb.get("biasflip_exit", True)
+            # profit-protecting momentum exit: only ever bank a WINNER that has
+            # run to hold_conf_min_r, when either its run stalls (gave back
+            # hold_giveback of peak R) or its conviction collapsed
+            stalled = (pos.peak_r >= p.hold_conf_min_r
+                       and unreal_r <= pos.peak_r * (1 - p.hold_giveback))
+            conviction_lost = hold_at is not None and pos.fade_streak >= p.hold_conf_bars
+            signal_fade = (p.hold_conf_exit > 0 and trend_managed and unreal_r > 0
+                           and (stalled or conviction_lost))
             if state_at[sym].iloc[i] == "CRISIS":
                 finalize(pos, exit_px, t, "Regime")
-            elif pb.get("biasflip_exit", True) and pos.bias_flip_streak >= 2:
+            elif signal_fade:
+                finalize(pos, exit_px, t, "SignalFade")
+            elif trend_managed and pos.bias_flip_streak >= 2:
                 finalize(pos, exit_px, t, "BiasFlip")
             elif (time_stop > 0 and pos.bars >= time_stop
                   and unreal_r < p.time_stop_min_r):

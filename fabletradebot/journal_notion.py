@@ -86,7 +86,8 @@ def update_open(page_id: str | None, mtm: dict) -> bool:
         "SL": {"number": round(float(mtm["sl"]), 8)},
         "Note": {"rich_text": [{"text": {"content":
                  f"OPEN mtm @ {mtm['price']:.6g} | {mtm['r']:+.2f}R | "
-                 f"setup {mtm['setup']} | regime {mtm['regime']}"}}]},
+                 f"setup {mtm['setup']} | regime {mtm['regime']} | "
+                 f"hold_conf {mtm.get('hold_conf', 0.0):.2f}"}}]},
     }
     return _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH") is not None
 
