@@ -70,6 +70,27 @@ def post_open(pos: dict) -> str | None:
     return resp.get("id") if resp else None
 
 
+def update_open(page_id: str | None, mtm: dict) -> bool:
+    """Hourly mark-to-market of a still-open row (scoring runs alongside the
+    trade loop, brief §10). Status stays 'Open'; unrealized R / PnL% / hold
+    hours and the current price/stop are refreshed each run. No-op without a
+    page id or secrets. Failures never break the loop."""
+    if not _enabled() or not page_id:
+        return False
+    props = {
+        "Status": {"select": {"name": "Open"}},
+        "Result R": {"number": round(float(mtm["r"]), 4)},
+        "PnL %": {"number": round(float(mtm["pnl_pct_price"]), 3)},
+        "Lev PnL %": {"number": round(float(mtm["pnl_pct_lev"]), 3)},
+        "Hold Hours": {"number": int(mtm["bars"])},
+        "SL": {"number": round(float(mtm["sl"]), 8)},
+        "Note": {"rich_text": [{"text": {"content":
+                 f"OPEN mtm @ {mtm['price']:.6g} | {mtm['r']:+.2f}R | "
+                 f"setup {mtm['setup']} | regime {mtm['regime']}"}}]},
+    }
+    return _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH") is not None
+
+
 def post_close(tr: dict, page_id: str | None) -> str | None:
     """Update the Open row to its resolution (or create a resolved row if the
     open row was never journaled)."""

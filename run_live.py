@@ -4,7 +4,9 @@ Each run: (1) incrementally extend the CSV cache, (2) replay the engine from
 the anchor (data is the only state, so a duplicate or missed cron firing can
 never corrupt anything), (3) diff the replay against journal/v1_state.json to
 find trades opened/closed since the last run, (4) push Telegram/Notion for the
-diff only, (5) save state + print the scoring report.
+diff only, (5) mark every STILL-OPEN position to the latest bar and refresh its
+Notion row (hourly scoring runs alongside the trade loop, brief §10), (6) save
+state + print the scoring report.
 
 TRADE_MODE=paper is the default and the only mode V1 executes. TRADE_MODE=live
 additionally requires OKX keys + LIVE_CONFIRM (see okx_exec.py) and still only
@@ -22,7 +24,7 @@ from fabletradebot.backtest import prepare, load_universe, metrics
 from fabletradebot.config import UNIVERSE, Params, profile
 from fabletradebot.data_okx import update_cache
 from fabletradebot.engine import run as engine_run
-from fabletradebot.scoring import score_report
+from fabletradebot.scoring import mark_to_market, open_report, score_report
 
 DATA_DIR = os.environ.get("LIVE_DATA_DIR", "live_data")
 STATE_PATH = "journal/v1_state.json"
@@ -101,10 +103,24 @@ def main() -> None:
     known_open = {k: v for k, v in known_open.items()
                   if k in {trade_key(s, pos.opened_ts) for s, pos in open_pos.items()}}
 
+    # ---- hourly scoring of positions still OPEN in Notion (brief §10) ----
+    # every run, mark each open position to the latest bar and refresh its
+    # Notion row (unrealized R / PnL% / hold hours / current stop).
+    prices_now = {s: float(frames[s]["close"].iloc[-1]) for s in open_pos}
+    for sym, pos in open_pos.items():
+        key = trade_key(sym, pos.opened_ts)
+        page_id = known_open.get(key, {}).get("page_id")
+        if page_id is None:
+            continue
+        mtm = mark_to_market(pos, prices_now[sym])
+        if journal_notion.update_open(page_id, mtm):
+            print(f"  SCORE {key} {mtm['r']:+.2f}R held {mtm['bars']}h (open row updated)")
+
     state.update({"closed_keys": sorted(known_closed), "open": known_open,
                   "equity": float(eq_now), "anchor": ANCHOR,
                   "last_run": str(pd.Timestamp.now("UTC"))})
     save_state(state)
+    print(open_report(open_pos, prices_now))
     print(score_report(trades, res["equity"], EQUITY0))
     print(f"final paper equity: {res['final_equity']:.2f} "
           f"(mtm {eq_now:.2f}), open={list(open_pos)}")
