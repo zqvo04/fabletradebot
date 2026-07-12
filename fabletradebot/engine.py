@@ -106,7 +106,14 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
     cand_at = {s: {ts: row for ts, row in candidates[s].iterrows()} for s in candidates}
     fund_at = {s: dict(zip(funding[s].index, funding[s].values))
                for s in funding if funding[s] is not None}
-    state_at = regime["state"].reindex(grid).fillna("RANGE")
+    # Per-asset regime (V3): `regime` may be a dict[sym -> state Series]
+    # (per-asset, with BTC-crisis already overridden in), or a single DataFrame
+    # (legacy / tests) that is broadcast to every symbol.
+    if isinstance(regime, dict):
+        state_at = {s: regime[s].reindex(grid).ffill().fillna("RANGE") for s in frames}
+    else:
+        base_state = regime["state"].reindex(grid).fillna("RANGE")
+        state_at = {s: base_state for s in frames}
     corr_at = corr_alert.reindex(grid).fillna(False)
 
     cash, peak = equity0, equity0
@@ -159,13 +166,13 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
 
     for i, t in enumerate(grid):
         prices_now = {s: bars[s]["close"].iloc[i] for s in positions}
-        state = state_at.iloc[i]
 
         # ---- 1. fill pending entries at this bar's open ----
         for pend in pendings:
             row = bars[pend.sym].iloc[i]
             if np.isnan(row["open"]):
                 continue
+            state = state_at[pend.sym].iloc[i]
             if pend.sym in positions:
                 # dominance rule: a PROVEN slot (risk_scale 1.0) may displace
                 # an experimental position (<1.0) holding the asset — the
@@ -314,7 +321,7 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             pos.bias_flip_streak = pos.bias_flip_streak + 1 if b4 == -d else 0
             exit_px = close_px * (1 - d * spec(sym).slippage * p.cost_mult)
             time_stop = pb.get("time_stop_bars", p.time_stop_bars)
-            if state == "CRISIS":
+            if state_at[sym].iloc[i] == "CRISIS":
                 finalize(pos, exit_px, t, "Regime")
             elif pb.get("biasflip_exit", True) and pos.bias_flip_streak >= 2:
                 finalize(pos, exit_px, t, "BiasFlip")
@@ -342,7 +349,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                     ("c_base", "c_fit", "c_align", "c_fund") if k in row.index}
             pendings.append(Pending(sym=sym, direction=int(row["dir"]),
                                     conf=float(row["conf"]), sl=float(row["sl"]),
-                                    setup=str(row["setup"]), regime=state,
+                                    setup=str(row["setup"]),
+                                    regime=state_at[sym].iloc[i],
                                     decided_ts=t, meta=meta))
         for sym in list(cooldown):
             cooldown[sym]["bars"] -= 1

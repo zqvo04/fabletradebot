@@ -62,7 +62,7 @@ def build_features(df1h: pd.DataFrame, funding: pd.Series | None, p: Params) -> 
     bb_lo4, bb_hi4 = mid4 - p.bb_k * sd4, mid4 + p.bb_k * sd4
     feat4 = pd.DataFrame({
         "atr4h": atr(d4, 14), "bias4h": np.sign(e20 - e50), "ema20_4h": e20,
-        "rsi4h": rsi4,
+        "ema50_4h": e50, "rsi4h": rsi4,
         # event flags (crossings on closed 4H bars — never levels)
         "osc_up": (rsi4.shift(1) < p.osc_lo) & (rsi4 >= p.osc_lo),
         "osc_dn": (rsi4.shift(1) > p.osc_hi) & (rsi4 <= p.osc_hi),
@@ -122,30 +122,52 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
     body = f["body_up"] if d == 1 else f["body_dn"]
     wick_against = f["wick_lo"] if d == 1 else f["wick_hi"]
     family = name.split("_")[0]
+    trend = "TREND_UP" if d == 1 else "TREND_DOWN"   # V3 direction-explicit state
 
     if family == "BRK":     # swing trend continuation
         level = f["hh"] if d == 1 else f["ll"]
         broke = (f["close"] > level) if d == 1 else (f["close"] < level)
         mask = (broke & (f["bias1d"] == d) & (f["bias4h"] == d)
                 & (btc_dir == d) & (vol_ratio >= p.brk_vol_mult)
-                & state.isin(["TREND", "RANGE"]))
+                & state.isin([trend, "RANGE"]))
         sl = level - d * p.sl_swing_atr * f["atr1h"]
         margin = ((f["close"] - level) * d / f["atr1h"]).clip(0, 1)
         squeeze = (1 - f["bbw_pct"] / 100).clip(0, 1)
         base = (margin + squeeze + body.fillna(0) + (vol_ratio / 3).clip(0, 1)) / 4
-        fit = state.map({"TREND": 1.0, "RANGE": 0.4}).fillna(0.0)
+        fit = state.map({trend: 1.0, "RANGE": 0.4}).fillna(0.0)
+        align = _tf_align(f, btc_dir, d)
+
+    elif family == "PBK":
+        # V3 CONTINUOUS chart-state entry ("whale accumulation"): not a discrete
+        # crossing — evaluated every bar. In a confirmed trend, whenever price
+        # has pulled back into value (between the 4H EMA20 and EMA50, momentum
+        # RESET but not broken) and a 1H bar closes back in the trend direction,
+        # step in. Catches continuation entries that arm/trigger events miss.
+        pull = (f["close"] - f["ema20_4h"]) / f["atr4h"] * d   # +above / -below EMA20
+        deep = (f["close"] - f["ema50_4h"]) / f["atr4h"] * d   # distance past EMA50
+        rsi_d = f["rsi1h"] if d == 1 else 100 - f["rsi1h"]
+        reclaim = (f["close"] > f["prev_high"]) if d == 1 else (f["close"] < f["prev_low"])
+        in_value = pull.between(-p.pbk_deep_atr, p.pbk_shallow_atr) & (deep > -p.pbk_deep_atr)
+        mask = ((state == trend) & (f["bias1d"] == d) & (f["bias4h"] == d)
+                & in_value & rsi_d.between(p.pbk_rsi_lo, p.pbk_rsi_hi)
+                & reclaim & (body > 0.25) & (vol_ratio >= 1.0))
+        swing = f["low"].rolling(8).min() if d == 1 else f["high"].rolling(8).max()
+        sl = swing - d * p.sl_swing_atr * f["atr1h"]
+        shallowness = (1 - (pull.clip(-p.pbk_deep_atr, 0).abs() / p.pbk_deep_atr)).clip(0, 1)
+        base = (shallowness + body.fillna(0) + (vol_ratio / 3).clip(0, 1)) / 3
+        fit = (state == trend).astype(float)
         align = _tf_align(f, btc_dir, d)
 
     elif family == "FADE":  # day-trade pullback fade at the 4H EMA20
         zone = (f["close"] - f["ema20_4h"]) / f["atr4h"] * d
-        mask = ((f["bias1d"] == d) & (f["bias4h"] == d) & (state == "TREND")
+        mask = ((f["bias1d"] == d) & (f["bias4h"] == d) & (state == trend)
                 & zone.between(-p.fade_zone_atr, 0.2)
                 & (body > 0) & (wick_against >= p.fade_wick)
                 & (vol_ratio >= 1.0))
         ext = f["low"] if d == 1 else f["high"]
         sl = ext - d * p.sl_swing_atr * f["atr1h"]
         base = (wick_against + body.fillna(0) + (vol_ratio / 3).clip(0, 1)) / 3
-        fit = (state == "TREND").astype(float)
+        fit = (state == trend).astype(float)
         align = _tf_align(f, btc_dir, d)
 
     elif family == "RANGE":  # day-trade range-edge fade (no 1D trend)
@@ -172,7 +194,8 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
             depth = f["osc_depth_l"] if d == 1 else f["osc_depth_s"]
             ext = f["low4"] if d == 1 else f["high4"]
             allowed = state.isin(["RANGE", "HIGH_VOL"])
-            fit = state.map({"RANGE": 1.0, "HIGH_VOL": 0.6}).fillna(0.0)
+            fit = pd.Series(0.6, index=f.index)
+            fit[state == "RANGE"] = 1.0
         elif family == "BND":   # 2-sigma band re-entry on 4H closes
             armed = f["bnd_up"] if d == 1 else f["bnd_dn"]
             depth = f["bnd_depth_l"] if d == 1 else f["bnd_depth_s"]
@@ -183,8 +206,8 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
             armed = f["rcl_up"] if d == 1 else f["rcl_dn"]
             depth = f["rcl_depth_l"] if d == 1 else f["rcl_depth_s"]
             ext = f["swing3_lo4"] if d == 1 else f["swing3_hi4"]
-            allowed = (state == "TREND") & (f["bias1d"] == d)
-            fit = (state == "TREND").astype(float)
+            allowed = (state == trend) & (f["bias1d"] == d)
+            fit = (state == trend).astype(float)
         # mean-reversion slots must not fight a confirmed 1D trend
         guard = (f["bias1d"] != -d) if family in ("OSC", "BND") else True
         mask = (armed.fillna(False).astype(bool) & trig & allowed & guard

@@ -32,34 +32,48 @@ def load_universe(data_dir: str, symbols: list[str] | None = None):
 
 
 def prepare(frames: dict, funding: dict, p: Params):
-    """Features / regime / candidates for the whole data span (pure, deterministic)."""
-    btc_1d = resample(frames["BTC"], 24)
-    regime = regime_1d(btc_1d, p)
-    grid = pd.DatetimeIndex(sorted(set().union(*[df.index for df in frames.values()])))
+    """Features / regime / candidates for the whole data span (pure, deterministic).
+
+    V3: regime is classified PER ASSET on its own daily bars, then BTC CRISIS
+    is overridden in as a systemic gate. The scanner sees the asset's own state
+    (so an alt can trend while BTC ranges) plus the GLOBAL BTC direction for
+    trend-alignment filters. Returns `states` (dict sym -> 1H state Series) for
+    the engine and per-asset regime frames for the scanner.
+    """
     from .data_okx import closed_asof_1h
-    regime_h = closed_asof_1h(regime, 24, grid)
-    regime_h["state"] = regime_h["state"].fillna("RANGE")
-    regime_h["btc_dir"] = regime_h["btc_dir"].fillna(0)
+    from .regime import effective_state
+
+    grid = pd.DatetimeIndex(sorted(set().union(*[df.index for df in frames.values()])))
+    btc_reg = regime_1d(resample(frames["BTC"], 24), p)
+    btc_reg_h = closed_asof_1h(btc_reg, 24, grid)
+    btc_state = btc_reg_h["state"].fillna("RANGE")
+    btc_dir = btc_reg_h["btc_dir"].fillna(0)
 
     closes = pd.DataFrame({s: frames[s]["close"] for s in frames}).reindex(grid)
     corr = corr_alert_1h(closes, p)
 
-    features, candidates = {}, {}
+    features, candidates, states = {}, {}, {}
     for s, df in frames.items():
+        a_reg = regime_1d(resample(df, 24), p)
+        a_state = closed_asof_1h(a_reg[["state"]], 24, df.index)["state"].fillna("RANGE")
+        eff = effective_state(a_state, btc_state)   # BTC crisis override
+        states[s] = eff
+        # scanner regime frame: per-asset state + GLOBAL btc direction
+        reg_s = pd.DataFrame({"state": eff, "btc_dir": btc_dir.reindex(df.index).ffill().fillna(0)})
         f = build_features(df, funding.get(s), p)
         features[s] = f
-        candidates[s] = scan(f, regime_h, p)
-    return features, candidates, regime_h, corr
+        candidates[s] = scan(f, reg_s, p)
+    return features, candidates, states, corr
 
 
 def run_backtest(data_dir: str, p: Params | None = None, start=None, end=None,
                  equity0: float = 10_000.0, symbols: list[str] | None = None) -> dict:
     p = p or Params()
     frames, funding = load_universe(data_dir, symbols)
-    features, candidates, regime_h, corr = prepare(frames, funding, p)
+    features, candidates, states, corr = prepare(frames, funding, p)
     start = pd.Timestamp(start, tz="UTC") if start else None
     end = pd.Timestamp(end, tz="UTC") if end else None
-    res = engine_run(frames, features, candidates, funding, regime_h, corr, p,
+    res = engine_run(frames, features, candidates, funding, states, corr, p,
                      start=start, end=end, equity0=equity0)
     res["metrics"] = metrics(res["trades"], res["equity"], equity0)
     return res

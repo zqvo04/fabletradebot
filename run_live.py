@@ -19,7 +19,7 @@ import pandas as pd
 
 from fabletradebot import journal_notion, notify
 from fabletradebot.backtest import prepare, load_universe, metrics
-from fabletradebot.config import UNIVERSE, Params
+from fabletradebot.config import UNIVERSE, Params, profile
 from fabletradebot.data_okx import update_cache
 from fabletradebot.engine import run as engine_run
 from fabletradebot.scoring import score_report
@@ -57,7 +57,8 @@ def main() -> None:
         except Exception as exc:
             print(f"  {sym}: update FAILED ({exc}) — replay continues on cache")
 
-    p = Params()
+    p = profile(os.environ.get("PROFILE", "base"))
+    print(f"   leverage profile: {os.environ.get('PROFILE', 'base')}")
     frames, funding = load_universe(DATA_DIR)
     if "BTC" not in frames:
         raise SystemExit("no BTC data — cannot classify regime")

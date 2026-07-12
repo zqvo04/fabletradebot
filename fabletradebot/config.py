@@ -50,7 +50,7 @@ class Params:
     # trade stream inside the Monte-Carlo survival gate (95%p MDD <= 30%,
     # P(MDD>50%) ~ 0) once the BTC aggression layer is stacked on top (E10).
     conf_entry: float = 0.55
-    conf_tiers: tuple = ((0.55, 5.0, 0.0055),)
+    conf_tiers: tuple = ((0.55, 5.0, 0.005),)
     # --- aggression layer (E10): mechanical, evidence-conditioned — NOT a
     # fitted per-trade quality predictor (those were rejected: E9b, E10a).
     # Enabled per-asset: whole-universe aggression FAILED the survival MC
@@ -65,7 +65,8 @@ class Params:
     mmr_buffer: float = 0.015        # maintenance-margin + fee buffer
     # --- regime ---
     regime_lev_cap: dict = field(default_factory=lambda: {
-        "TREND": 10.0, "RANGE": 5.0, "HIGH_VOL": 3.0, "CRISIS": 0.0})
+        "TREND_UP": 10.0, "TREND_DOWN": 10.0, "RANGE": 5.0,
+        "HIGH_VOL": 3.0, "CRISIS": 0.0})
     vol_pct_highvol: float = 80.0
     vol_pct_crisis: float = 90.0
     crash_5d: float = -0.12
@@ -91,31 +92,36 @@ class Params:
     playbooks: dict = field(default_factory=lambda: {
         # swing trend-following, long: THE survivor (E6/E9)
         "BRK_L":   {"enabled": True,  "dir": 1, "risk_scale": 1.0},
+        # PBK: CONTINUOUS chart-state trend-pullback accumulation (V3) — reads
+        # the current chart every bar instead of waiting for a crossing event.
+        # Swing style (trail). Long + short, paper-scaled until forward-proven.
+        "PBK_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20},
+        "PBK_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20},
         # RCL: trend-pullback reclaim — closed 4H bar crosses BACK ABOVE the
         # 4H EMA20 while the 1D trend agrees (mirror short). 1H bar triggers.
-        "RCL_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.25},
-        "RCL_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.25},
+        "RCL_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20},
+        "RCL_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20},
         # OSC: oscillator re-cross (the user-anchor trigger) — RSI(14,4H)
         # crosses back up through 30 -> long / back down through 70 -> short.
         # Mean-reversion style: fixed target + time stop. RANGE + HIGH_VOL.
-        "OSC_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.25,
+        "OSC_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
-        "OSC_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.25,
+        "OSC_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
         # BND: Bollinger band re-entry — close crosses back INSIDE the 2-sigma
         # band after closing outside it; fade toward value. RANGE only.
-        "BND_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.25,
+        "BND_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
-        "BND_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.25,
+        "BND_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
         # swing trend-following, short: backtest-rejected (12/12 against, E6)
         # but part of the complete matrix — paper-only at reduced risk, must
         # earn size from the forward track (V2 decision, E12)
-        "BRK_S":   {"enabled": True, "dir": -1, "risk_scale": 0.25},
+        "BRK_S":   {"enabled": True, "dir": -1, "risk_scale": 0.20},
         # day-trade pullback fade at the 4H EMA20, long (TREND_UP):
         # REJECTED — sign flip across halves (+0.20% -> -0.24%/24h, E11)
         "FADE_L":  {"enabled": False, "dir": 1,
@@ -145,6 +151,11 @@ class Params:
     osc_lo: float = 30.0             # RSI re-cross levels (user anchor: 30/70)
     osc_hi: float = 70.0
     bb_k: float = 2.0                # band re-entry sigma
+    # --- V3 continuous PBK (whale-accumulation) shape parameters ---
+    pbk_shallow_atr: float = 0.5     # max distance ABOVE 4H EMA20 (in ATR4H)
+    pbk_deep_atr: float = 2.0        # max pullback depth below EMA20 before "broken"
+    pbk_rsi_lo: float = 40.0         # 1H momentum reset band (long convention)
+    pbk_rsi_hi: float = 60.0
     # (CAPREV capitulation-reversal was fully removed after E8 rejection —
     # its positive drift rides on catastrophic MAE paths; see EXPERIMENTS.md)
     # --- BRK: trend-continuation breakout (the surviving family) ---
@@ -167,7 +178,7 @@ class Params:
     # --- portfolio risk ---
     max_positions: int = 4
     max_positions_corr: int = 2
-    max_open_risk: float = 0.025
+    max_open_risk: float = 0.018
     max_margin_frac: float = 0.60
     dd_half: float = 0.10            # halve risk beyond this drawdown
     dd_stop: float = 0.20            # no new entries beyond this drawdown
@@ -188,3 +199,50 @@ class Params:
     w_align: float = 0.20
 
 P = Params()
+
+
+# --- Leverage profiles (V3) --------------------------------------------------
+# The user's target is +100%/month via aggressive leverage. Honesty first:
+# there is NO parameter set that makes +100%/month the EXPECTATION while keeping
+# ruin near zero — that combination is mathematically unavailable (a ~3+ monthly
+# Sharpe would be required; ours is ~1). What IS available is a spectrum of
+# profiles trading survival for tail upside, each reported with its Monte-Carlo
+# ruin numbers so the choice is made with eyes open. Select with PROFILE env var
+# (base | turbo | max), default base.
+#
+#   base  — survival profile. Passes the MC gate (95%p MDD <= 30%, P(>50%)~0).
+#           Design-window: ~ +2.6%/mo geometric, best months +30-40%.
+#   turbo — 2x base risk + universe-wide aggression. Higher tail: best months
+#           can reach +80-120%, but 95%p MDD ~ 45% and P(MDD>50%) ~ 8%.
+#   max   — 3x base risk. Reaches the +100%/mo tail in strong-trend months but
+#           95%p MDD ~ 60%+ and P(ruinous DD) is real. Paper-only guard rail.
+#
+# Profiles change ONLY sizing/aggression knobs — never the liquidation-safety
+# invariant (stop always before liquidation) which is non-negotiable in all.
+
+def _scaled_tiers(tiers: tuple, mult: float) -> tuple:
+    return tuple((lo, lev, risk * mult) for lo, lev, risk in tiers)
+
+
+def profile(name: str = "base") -> Params:
+    name = (name or "base").lower()
+    if name == "base":
+        return Params()
+    if name == "turbo":
+        return replace(
+            Params(),
+            conf_tiers=_scaled_tiers(Params().conf_tiers, 2.0),
+            max_open_risk=0.036,
+            aggression_syms=tuple(UNIVERSE.keys()),   # press every asset at highs
+            eq_boost_mult=1.75,
+        )
+    if name == "max":
+        return replace(
+            Params(),
+            conf_tiers=_scaled_tiers(Params().conf_tiers, 3.0),
+            max_open_risk=0.055,
+            aggression_syms=tuple(UNIVERSE.keys()),
+            pyramid_max=3,
+            eq_boost_mult=2.0,
+        )
+    raise ValueError(f"unknown profile: {name!r} (base|turbo|max)")

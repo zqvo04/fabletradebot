@@ -29,7 +29,7 @@ def _setup(path, cand_bar, direction, sl, conf=0.65):
     idx = frames[SYM].index
     cands = {SYM: pd.DataFrame({"dir": [direction], "conf": [conf], "sl": [sl],
                                 "setup": ["S1"]}, index=[idx[cand_bar]])}
-    regime = pd.DataFrame({"state": "TREND", "btc_dir": direction}, index=idx)
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": direction}, index=idx)
     corr = pd.Series(False, index=idx)
     return frames, _features(frames), cands, {SYM: None}, regime, corr
 
@@ -98,7 +98,7 @@ def test_funding_settlement_applied():
     idx = frames[SYM].index
     cands = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
                                 "setup": ["S1"]}, index=[idx[0]])}
-    regime = pd.DataFrame({"state": "TREND", "btc_dir": 1}, index=idx)
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
     corr = pd.Series(False, index=idx)
     ftimes = pd.DatetimeIndex([pd.Timestamp("2024-01-01 08:00", tz="UTC"),
                                pd.Timestamp("2024-01-01 16:00", tz="UTC")])
@@ -122,7 +122,7 @@ def test_cooldown_and_single_position_per_asset():
     # candidate fires every bar; only one open position may exist
     cands = {SYM: pd.DataFrame({"dir": [1] * 10, "conf": [0.65] * 10,
                                 "sl": [95.0] * 10, "setup": ["S1"] * 10}, index=idx)}
-    regime = pd.DataFrame({"state": "TREND", "btc_dir": 1}, index=idx)
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
     corr = pd.Series(False, index=idx)
     res = run(frames, _features(frames), cands, {SYM: None}, regime, corr,
               Params(), equity0=10_000.0)
@@ -136,7 +136,7 @@ def test_crisis_blocks_entry_and_closes_positions():
     idx = frames[SYM].index
     cands = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
                                 "setup": ["S1"]}, index=[idx[0]])}
-    state = pd.Series(["TREND", "TREND", "TREND", "CRISIS", "CRISIS", "CRISIS"], index=idx)
+    state = pd.Series(["TREND_UP", "TREND_UP", "TREND_UP", "CRISIS", "CRISIS", "CRISIS"], index=idx)
     regime = pd.DataFrame({"state": state, "btc_dir": 1})
     corr = pd.Series(False, index=idx)
     res = run(frames, _features(frames), cands, {SYM: None}, regime, corr,
@@ -156,7 +156,7 @@ def test_pyramiding_adds_units_on_proof():
     idx = frames[SYM].index
     cands = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
                                 "setup": ["BRK"]}, index=[idx[0]])}
-    regime = pd.DataFrame({"state": "TREND", "btc_dir": 1}, index=idx)
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
     corr = pd.Series(False, index=idx)
     res = run(frames, _features(frames), cands, {SYM: None}, regime, corr,
               Params(), equity0=10_000.0)
@@ -198,7 +198,7 @@ def test_short_side_accounting_and_funding():
     idx = frames[SYM].index
     cands = {SYM: pd.DataFrame({"dir": [-1], "conf": [0.65], "sl": [105.0],
                                 "setup": ["BRK_S"]}, index=[idx[0]])}
-    regime = pd.DataFrame({"state": "TREND", "btc_dir": -1}, index=idx)
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": -1}, index=idx)
     corr = pd.Series(False, index=idx)
     ft = pd.DatetimeIndex([pd.Timestamp("2024-01-01 08:00", tz="UTC")])
     funding = {SYM: pd.Series([0.001], index=ft)}
@@ -219,7 +219,7 @@ def test_playbook_exit_overrides_day_trade():
     idx = frames[SYM].index
     cands = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
                                 "setup": ["FADE_L"]}, index=[idx[0]])}
-    regime = pd.DataFrame({"state": "TREND", "btc_dir": 1}, index=idx)
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
     corr = pd.Series(False, index=idx)
     res = run(frames, _features(frames), cands, {SYM: None}, regime, corr,
               Params(), equity0=10_000.0)
@@ -232,7 +232,7 @@ def test_playbook_exit_overrides_day_trade():
     idx2 = frames2[SYM].index
     cands2 = {SYM: pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
                                  "setup": ["FADE_L"]}, index=[idx2[0]])}
-    regime2 = pd.DataFrame({"state": "TREND", "btc_dir": 1}, index=idx2)
+    regime2 = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx2)
     corr2 = pd.Series(False, index=idx2)
     res2 = run(frames2, _features(frames2), cands2, {SYM: None}, regime2, corr2,
                Params(), equity0=10_000.0)

@@ -1,8 +1,14 @@
-"""Global market regime from BTC 1D bars, with hysteresis, plus the
-cross-sectional correlation alert. All series are then projected onto the 1H
-decision grid via data_okx.closed_asof_1h (no lookahead).
+"""Regime classification, V3: PER-ASSET direction-explicit states with a
+global BTC systemic override, plus the cross-sectional correlation alert.
+All series are projected onto the 1H decision grid via closed_asof_1h.
 
-States: TREND (with direction +1/-1), RANGE, HIGH_VOL, CRISIS.
+States: TREND_UP, TREND_DOWN, RANGE, HIGH_VOL, CRISIS.
+
+Why per-asset (E13): a single BTC-wide state gates every coin identically,
+which produces structural false negatives — an alt trending cleanly while BTC
+ranges never arms its trend playbooks. Each asset is therefore classified on
+its OWN daily bars; only CRISIS is inherited from BTC (systemic risk is the
+one thing that is always global).
 """
 from __future__ import annotations
 
@@ -11,14 +17,21 @@ import pandas as pd
 from .config import Params
 from .indicators import atr, ema, pct_rank, realized_vol
 
-STATES = ("TREND", "RANGE", "HIGH_VOL", "CRISIS")
+STATES = ("TREND_UP", "TREND_DOWN", "RANGE", "HIGH_VOL", "CRISIS")
 
 
-def raw_regime_1d(btc_1d: pd.DataFrame, p: Params) -> pd.DataFrame:
-    """Per-1D-bar instantaneous state (before hysteresis) + trend direction."""
-    c = btc_1d["close"]
+def raw_regime_1d(d1: pd.DataFrame, p: Params) -> pd.DataFrame:
+    """Per-1D-bar instantaneous state (before hysteresis) + trend direction.
+
+    Priority (highest wins):
+      CRISIS   crash tape: 5D < -12% or 1D < -7%, or vol>90pct & 5D < -8%
+      HIGH_VOL 20D realized vol above its 80th 1y percentile
+      TREND_*  |EMA20-EMA50| > 0.5 ATR and close on the EMA100 side of it
+      RANGE    everything else
+    """
+    c = d1["close"]
     e20, e50, e100 = ema(c, 20), ema(c, 50), ema(c, 100)
-    a = atr(btc_1d, 14)
+    a = atr(d1, 14)
     vol_pct = pct_rank(realized_vol(c, 20), 365)
     r5 = c.pct_change(5)
     r1 = c.pct_change(1)
@@ -26,14 +39,16 @@ def raw_regime_1d(btc_1d: pd.DataFrame, p: Params) -> pd.DataFrame:
     crash = (r5 < p.crash_5d) | (r1 < p.crash_1d)
     crisis = crash | ((vol_pct > p.vol_pct_crisis) & (r5 < -0.08))
     high_vol = vol_pct > p.vol_pct_highvol
-    trending = ((e20 - e50).abs() / a > 0.5) & (
-        ((c > e100) & (e20 > e50)) | ((c < e100) & (e20 < e50)))
+    strength = (e20 - e50).abs() / a > 0.5
+    up = strength & (c > e100) & (e20 > e50)
+    down = strength & (c < e100) & (e20 < e50)
 
-    state = pd.Series("RANGE", index=btc_1d.index)
-    state[trending] = "TREND"
+    state = pd.Series("RANGE", index=d1.index)
+    state[up] = "TREND_UP"
+    state[down] = "TREND_DOWN"
     state[high_vol] = "HIGH_VOL"
     state[crisis] = "CRISIS"
-    direction = pd.Series(0, index=btc_1d.index)
+    direction = pd.Series(0, index=d1.index)
     direction[(e20 > e50) & (c > e100)] = 1
     direction[(e20 < e50) & (c < e100)] = -1
     return pd.DataFrame({"raw_state": state, "btc_dir": direction})
@@ -60,10 +75,19 @@ def apply_hysteresis(raw: pd.Series, confirm: int) -> pd.Series:
     return pd.Series(out, index=raw.index)
 
 
-def regime_1d(btc_1d: pd.DataFrame, p: Params) -> pd.DataFrame:
-    raw = raw_regime_1d(btc_1d, p)
+def regime_1d(d1: pd.DataFrame, p: Params) -> pd.DataFrame:
+    raw = raw_regime_1d(d1, p)
     return pd.DataFrame({"state": apply_hysteresis(raw["raw_state"], p.hysteresis_bars),
                          "btc_dir": raw["btc_dir"]})
+
+
+def effective_state(asset_state: pd.Series, btc_state: pd.Series) -> pd.Series:
+    """Per-asset state with the systemic override: BTC CRISIS forces CRISIS
+    everywhere (indexes are aligned by reindex/ffill on the caller's grid)."""
+    btc = btc_state.reindex(asset_state.index).ffill()
+    out = asset_state.copy()
+    out[btc == "CRISIS"] = "CRISIS"
+    return out
 
 
 def corr_alert_1h(closes_1h: pd.DataFrame, p: Params) -> pd.Series:
