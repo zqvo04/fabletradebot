@@ -19,7 +19,18 @@ SYSTEM = "V1"
 
 
 def _enabled() -> bool:
-    return bool(os.environ.get("NOTION_TOKEN") and os.environ.get("NOTION_SIGNAL_DB_ID"))
+    token = os.environ.get("NOTION_TOKEN")
+    db = os.environ.get("NOTION_SIGNAL_DB_ID")
+    if token and db:
+        return True
+    # loud, not silent: a workflow log showing NOTION_TOKEN: *** only proves the
+    # env var was DECLARED, not that the underlying secret has a real value —
+    # an empty/missing repo secret renders the same masked "***" in the log,
+    # so without this line a misconfigured secret looks identical to a working
+    # one (entries print "OPEN" regardless; Notion gets nothing, silently)
+    missing = [n for n, v in (("NOTION_TOKEN", token), ("NOTION_SIGNAL_DB_ID", db)) if not v]
+    print(f"[journal] Notion disabled — missing/empty env var(s): {', '.join(missing)}")
+    return False
 
 
 def _request(url: str, body: dict, method: str) -> dict | None:

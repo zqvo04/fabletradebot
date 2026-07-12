@@ -126,16 +126,23 @@ def main() -> None:
 
     for sym, pos in open_pos.items():
         key = trade_key(sym, pos.opened_ts)
-        if key in pages:            # carried from a prior run — already journaled
+        if pages.get(key):          # already has a real Notion page — fully done
             continue
+        # `key in pages but pages[key] is None` means a PRIOR run's Notion post
+        # failed (e.g. secrets were missing/misconfigured then) — retry it every
+        # run until it succeeds, instead of giving up on this position forever.
+        already_seen = key in pages
         info = {"sym": sym, "dir": pos.direction, "conf": pos.conf,
                 "setup": pos.setup, "regime": pos.regime, "entry": pos.entry,
                 "sl": pos.sl0, "tp1": pos.tp1, "leverage": pos.leverage,
                 "risk_amt": pos.risk_amt, "risk_pct": pos.risk_amt / eq_now * 100,
                 "equity": eq_now, "opened": pos.opened_ts}
-        notify.send(notify.fmt_entry(info))
+        if not already_seen:
+            notify.send(notify.fmt_entry(info))
+            print(f"  OPEN {key} {pos.setup} conf={pos.conf:.2f} {pos.leverage:.0f}x")
+        else:
+            print(f"  OPEN {key} retrying Notion journal (previous attempt failed)")
         pages[key] = journal_notion.post_open(info)
-        print(f"  OPEN {key} {pos.setup} conf={pos.conf:.2f} {pos.leverage:.0f}x")
 
     # ---- hourly scoring of positions still OPEN (brief §10) ----
     prices_now = {s: float(frames[s]["close"].iloc[-1]) for s in open_pos}
