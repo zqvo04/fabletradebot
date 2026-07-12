@@ -42,15 +42,46 @@ def build_features(df1h: pd.DataFrame, funding: pd.Series | None, p: Params) -> 
     lo_r = df1h["low"].rolling(p.range_lookback).min()
     f["range_pos"] = (df1h["close"] - lo_r) / (hi_r - lo_r).replace(0, np.nan)
     rng = (df1h["high"] - df1h["low"]).replace(0, np.nan)
+    f["prev_high"] = df1h["high"].shift(1)
+    f["prev_low"] = df1h["low"].shift(1)
     f["body_up"] = ((df1h["close"] - df1h["open"]) / rng).clip(0, 1)
     f["body_dn"] = ((df1h["open"] - df1h["close"]) / rng).clip(0, 1)
     f["wick_lo"] = ((df1h[["open", "close"]].min(axis=1) - df1h["low"]) / rng).clip(0, 1)
     f["wick_hi"] = ((df1h["high"] - df1h[["open", "close"]].max(axis=1)) / rng).clip(0, 1)
 
+    # ---- 4H layer: the PRIMARY decision timeframe (V2). Setups are detected
+    # on closed 4H bars; projecting a fired event onto the 1H grid keeps it
+    # visible ("armed") for exactly the following 4 hours, during which the
+    # 1H layer may pull the precision trigger. 1D stays the reference bias.
     d4 = resample(df1h, 4)
-    e20, e50 = ema(d4["close"], 20), ema(d4["close"], 50)
-    feat4 = pd.DataFrame({"atr4h": atr(d4, 14), "bias4h": np.sign(e20 - e50),
-                          "ema20_4h": e20})
+    c4 = d4["close"]
+    e20, e50 = ema(c4, 20), ema(c4, 50)
+    rsi4 = rsi(c4, 14)
+    mid4 = c4.rolling(20).mean()
+    sd4 = c4.rolling(20).std(ddof=0)
+    bb_lo4, bb_hi4 = mid4 - p.bb_k * sd4, mid4 + p.bb_k * sd4
+    feat4 = pd.DataFrame({
+        "atr4h": atr(d4, 14), "bias4h": np.sign(e20 - e50), "ema20_4h": e20,
+        "rsi4h": rsi4,
+        # event flags (crossings on closed 4H bars — never levels)
+        "osc_up": (rsi4.shift(1) < p.osc_lo) & (rsi4 >= p.osc_lo),
+        "osc_dn": (rsi4.shift(1) > p.osc_hi) & (rsi4 <= p.osc_hi),
+        "bnd_up": (c4.shift(1) < bb_lo4.shift(1)) & (c4 >= bb_lo4),
+        "bnd_dn": (c4.shift(1) > bb_hi4.shift(1)) & (c4 <= bb_hi4),
+        "rcl_up": (c4.shift(1) < e20.shift(1)) & (c4 > e20),
+        "rcl_dn": (c4.shift(1) > e20.shift(1)) & (c4 < e20),
+        # event-quality depths (how stretched the market was before the turn)
+        "osc_depth_l": ((p.osc_lo - rsi4.rolling(6).min().shift(1)) / p.osc_lo).clip(0, 1),
+        "osc_depth_s": ((rsi4.rolling(6).max().shift(1) - p.osc_hi) / (100 - p.osc_hi)).clip(0, 1),
+        "bnd_depth_l": ((bb_lo4 - d4["low"].rolling(3).min().shift(0)) / atr(d4, 14)).clip(0, 1),
+        "bnd_depth_s": ((d4["high"].rolling(3).max().shift(0) - bb_hi4) / atr(d4, 14)).clip(0, 1),
+        "rcl_depth_l": ((e20 - d4["low"].rolling(6).min().shift(1)) / atr(d4, 14)).clip(0, 1.5) / 1.5,
+        "rcl_depth_s": ((d4["high"].rolling(6).max().shift(1) - e20) / atr(d4, 14)).clip(0, 1.5) / 1.5,
+        # structural stop anchors from the 4H frame
+        "low4": d4["low"], "high4": d4["high"],
+        "swing3_lo4": d4["low"].rolling(3).min(),
+        "swing3_hi4": d4["high"].rolling(3).max(),
+    })
     f = f.join(closed_asof_1h(feat4, 4, df1h.index))
 
     d1 = resample(df1h, 24)
@@ -129,6 +160,39 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
         base = (depth + wick_against + (vol_ratio / 3).clip(0, 1)) / 3
         fit = (state == "RANGE").astype(float)
         align = pd.Series(0.5, index=f.index)   # counter-trend by nature
+
+    elif family in ("OSC", "BND", "RCL"):
+        # V2 whale-scale pattern: a crossing EVENT on the closed 4H bar arms
+        # the slot for the next 4 hours; a 1H confirmation bar in the trade
+        # direction pulls the precision trigger. 1D bias is the referee.
+        trig = ((f["close"] > f["prev_high"]) & (f["body_up"] > 0.3)) if d == 1 \
+            else ((f["close"] < f["prev_low"]) & (f["body_dn"] > 0.3))
+        if family == "OSC":     # RSI(14,4H) re-cross 30 up / 70 down
+            armed = f["osc_up"] if d == 1 else f["osc_dn"]
+            depth = f["osc_depth_l"] if d == 1 else f["osc_depth_s"]
+            ext = f["low4"] if d == 1 else f["high4"]
+            allowed = state.isin(["RANGE", "HIGH_VOL"])
+            fit = state.map({"RANGE": 1.0, "HIGH_VOL": 0.6}).fillna(0.0)
+        elif family == "BND":   # 2-sigma band re-entry on 4H closes
+            armed = f["bnd_up"] if d == 1 else f["bnd_dn"]
+            depth = f["bnd_depth_l"] if d == 1 else f["bnd_depth_s"]
+            ext = f["low4"] if d == 1 else f["high4"]
+            allowed = state == "RANGE"
+            fit = (state == "RANGE").astype(float)
+        else:                   # RCL: 4H EMA20 reclaim in the 1D trend
+            armed = f["rcl_up"] if d == 1 else f["rcl_dn"]
+            depth = f["rcl_depth_l"] if d == 1 else f["rcl_depth_s"]
+            ext = f["swing3_lo4"] if d == 1 else f["swing3_hi4"]
+            allowed = (state == "TREND") & (f["bias1d"] == d)
+            fit = (state == "TREND").astype(float)
+        # mean-reversion slots must not fight a confirmed 1D trend
+        guard = (f["bias1d"] != -d) if family in ("OSC", "BND") else True
+        mask = (armed.fillna(False).astype(bool) & trig & allowed & guard
+                & (vol_ratio >= 1.0))
+        sl = ext - d * 0.5 * f["atr4h"]
+        base = (depth.fillna(0) + body.fillna(0) + (vol_ratio / 3).clip(0, 1)) / 3
+        align = _tf_align(f, btc_dir, d) if family == "RCL" \
+            else pd.Series(0.5, index=f.index)
 
     else:
         raise ValueError(f"unknown playbook family: {name}")

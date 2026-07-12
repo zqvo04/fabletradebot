@@ -82,12 +82,40 @@ class Params:
     # enabled when its edge survived both design half-periods after costs —
     # the disabled slots below carry their measured verdicts. Exit fields set
     # to None fall back to the global defaults further down.
+    # V2 principled matrix: every slot is an a-priori, textbook-parameter,
+    # EVENT-confirmed trigger (a crossing, never a level) detected on the 4H
+    # base timeframe and executed by a 1H precision bar. Unproven slots run in
+    # paper at risk_scale 0.25 (the largest scale that keeps the universe MC
+    # survival gate green, E12) and must EARN size from forward scoring.
+    # Proven slots (risk_scale 1.0) displace experimental holders (Upgrade).
     playbooks: dict = field(default_factory=lambda: {
         # swing trend-following, long: THE survivor (E6/E9)
-        "BRK_L":   {"enabled": True,  "dir": 1},
-        # swing trend-following, short: REJECTED — breakdown shorts moved
-        # +3.1%/72h AGAINST entry on 12/12 assets in the recent half (E6)
-        "BRK_S":   {"enabled": False, "dir": -1},
+        "BRK_L":   {"enabled": True,  "dir": 1, "risk_scale": 1.0},
+        # RCL: trend-pullback reclaim — closed 4H bar crosses BACK ABOVE the
+        # 4H EMA20 while the 1D trend agrees (mirror short). 1H bar triggers.
+        "RCL_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.25},
+        "RCL_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.25},
+        # OSC: oscillator re-cross (the user-anchor trigger) — RSI(14,4H)
+        # crosses back up through 30 -> long / back down through 70 -> short.
+        # Mean-reversion style: fixed target + time stop. RANGE + HIGH_VOL.
+        "OSC_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.25,
+                    "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
+                    "trail_atr": 0.0, "biasflip_exit": False},
+        "OSC_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.25,
+                    "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
+                    "trail_atr": 0.0, "biasflip_exit": False},
+        # BND: Bollinger band re-entry — close crosses back INSIDE the 2-sigma
+        # band after closing outside it; fade toward value. RANGE only.
+        "BND_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.25,
+                    "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
+                    "trail_atr": 0.0, "biasflip_exit": False},
+        "BND_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.25,
+                    "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
+                    "trail_atr": 0.0, "biasflip_exit": False},
+        # swing trend-following, short: backtest-rejected (12/12 against, E6)
+        # but part of the complete matrix — paper-only at reduced risk, must
+        # earn size from the forward track (V2 decision, E12)
+        "BRK_S":   {"enabled": True, "dir": -1, "risk_scale": 0.25},
         # day-trade pullback fade at the 4H EMA20, long (TREND_UP):
         # REJECTED — sign flip across halves (+0.20% -> -0.24%/24h, E11)
         "FADE_L":  {"enabled": False, "dir": 1,
@@ -113,6 +141,10 @@ class Params:
     fade_wick: float = 0.35          # rejection-wick minimum
     range_lookback: int = 480        # 20d of 1H bars
     range_edge: float = 0.15         # bottom/top fraction of the range
+    # --- V2 event-trigger parameters (textbook standards, not fitted) ---
+    osc_lo: float = 30.0             # RSI re-cross levels (user anchor: 30/70)
+    osc_hi: float = 70.0
+    bb_k: float = 2.0                # band re-entry sigma
     # (CAPREV capitulation-reversal was fully removed after E8 rejection —
     # its positive drift rides on catastrophic MAE paths; see EXPERIMENTS.md)
     # --- BRK: trend-continuation breakout (the surviving family) ---

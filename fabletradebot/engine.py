@@ -153,7 +153,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             "notional": pos.total_notional(),
             "equity_after": cash, **pos.meta,
         })
-        cooldown[pos.sym] = p.cooldown_bars
+        scale = p.playbooks.get(pos.setup, {}).get("risk_scale", 1.0)
+        cooldown[pos.sym] = {"bars": p.cooldown_bars, "exp": scale < 1.0}
         del positions[pos.sym]
 
     for i, t in enumerate(grid):
@@ -163,8 +164,22 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
         # ---- 1. fill pending entries at this bar's open ----
         for pend in pendings:
             row = bars[pend.sym].iloc[i]
-            if np.isnan(row["open"]) or pend.sym in positions:
+            if np.isnan(row["open"]):
                 continue
+            if pend.sym in positions:
+                # dominance rule: a PROVEN slot (risk_scale 1.0) may displace
+                # an experimental position (<1.0) holding the asset — the
+                # validated signal always gets the seat. Never the reverse.
+                held = positions[pend.sym]
+                pend_scale = p.playbooks.get(pend.setup, {}).get("risk_scale", 1.0)
+                held_scale = p.playbooks.get(held.setup, {}).get("risk_scale", 1.0)
+                if pend_scale >= 1.0 > held_scale:
+                    px = row["open"] * (1 - held.direction
+                                        * spec(pend.sym).slippage * p.cost_mult)
+                    finalize(held, px, t, "Upgrade")
+                    cooldown.pop(pend.sym, None)
+                else:
+                    continue
             eq = mtm(prices_now)
             dd = 1 - eq / peak if peak > 0 else 0.0
             if dd_frozen and dd <= p.dd_resume:
@@ -190,6 +205,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                                             spec(pend.sym).lev_cap, p)
             if lev == 0.0:
                 continue
+            # unproven playbook slots run at reduced size until the forward
+            # track earns them full weight (V2 staged-rollout rule)
+            risk_frac *= p.playbooks.get(pend.setup, {}).get("risk_scale", 1.0)
             mult = (0.5 if dd >= p.dd_half else 1.0) * (0.5 if corr_on else 1.0)
             if (dd <= p.eq_boost_dd and not corr_on
                     and pend.sym in p.aggression_syms):
@@ -306,12 +324,19 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
 
         # ---- 3. decide at bar close: candidates -> pending fills for t+1h ----
         for sym in cand_at:
-            if sym in positions:
-                continue
-            if cooldown.get(sym, 0) > 0:
-                continue
             row = cand_at[sym].get(t)
             if row is None:
+                continue
+            cand_scale = p.playbooks.get(str(row["setup"]), {}).get("risk_scale", 1.0)
+            if sym in positions:
+                # only a proven candidate over an experimental holder proceeds
+                # (the fill step executes the actual Upgrade displacement)
+                held_scale = p.playbooks.get(positions[sym].setup, {}) \
+                                        .get("risk_scale", 1.0)
+                if not (cand_scale >= 1.0 > held_scale):
+                    continue
+            cd = cooldown.get(sym)
+            if cd is not None and not (cand_scale >= 1.0 and cd["exp"]):
                 continue
             meta = {k: float(row[k]) for k in
                     ("c_base", "c_fit", "c_align", "c_fund") if k in row.index}
@@ -320,8 +345,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                                     setup=str(row["setup"]), regime=state,
                                     decided_ts=t, meta=meta))
         for sym in list(cooldown):
-            cooldown[sym] -= 1
-            if cooldown[sym] <= 0:
+            cooldown[sym]["bars"] -= 1
+            if cooldown[sym]["bars"] <= 0:
                 del cooldown[sym]
 
         prices_close = {s: bars[s]["close"].iloc[i] for s in positions}
