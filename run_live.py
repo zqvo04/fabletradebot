@@ -1,19 +1,22 @@
-"""Hourly paper-trading step — deterministic replay from LIVE_ANCHOR.
+"""Hourly paper-trading step — INCREMENTAL live replay (rolling anchor).
 
-Each run: (1) incrementally extend the CSV cache, (2) replay the engine from
-the anchor (data is the only state, so a duplicate or missed cron firing can
-never corrupt anything), (3) diff the replay against journal/v1_state.json to
-find trades opened/closed since the last run, (4) push Telegram/Notion ONLY for
-events at/near the latest bar (a freshness guard, so a wiped or hand-edited
-state can never resurrect old trades or re-spam Telegram — deep-history events
-are absorbed into state silently), (5) mark every STILL-OPEN position to the
-latest bar and refresh its
-Notion row (hourly scoring runs alongside the trade loop, brief §10), (6) save
-state + print the scoring report.
+Each run advances a persisted anchor: it replays only the bars that are NEW
+since the last run, seeded with the prior run's carried engine state (open
+positions, equity, cooldowns, pending fills, circuit/DD governor). The updated
+carry + a rolled-forward anchor are saved back to journal/v1_state.json.
 
-TRADE_MODE=paper is the default and the only mode V1 executes. TRADE_MODE=live
-additionally requires OKX keys + LIVE_CONFIRM (see okx_exec.py) and still only
-logs intent in V1 — order placement ships after the 4-week paper gate (G8).
+Why this shape (the resurrection fix): the old loop replayed a FROZEN anchor
+over an ever-growing window every run, so any still-open position was re-derived
+from the data on every run — clearing the state file could never stick, and a
+wiped state re-emitted history. Now the anchor is the single high-water mark:
+once a bar is processed the anchor moves past it, so nothing before the anchor
+is ever re-derived or re-announced. The chunked replay is proven identical to a
+single full pass (tests/test_infra.py), so this changes persistence, not the
+trading rules. A lost/old-schema state is a clean reset — the system simply
+starts fresh from the latest real-time bar (never from ancient history).
+
+TRADE_MODE=paper is the default. LIVE_RESET=1 forces a fresh start from now;
+LIVE_ANCHOR (optional) sets an explicit fresh-start bar instead of the latest.
 """
 from __future__ import annotations
 
@@ -23,23 +26,24 @@ import os
 import pandas as pd
 
 from fabletradebot import journal_notion, notify
-from fabletradebot.backtest import prepare, load_universe, metrics
-from fabletradebot.config import UNIVERSE, Params, profile
+from fabletradebot.backtest import load_universe, prepare
+from fabletradebot.config import UNIVERSE, profile
 from fabletradebot.data_okx import update_cache
+from fabletradebot.engine import deserialize_carry, serialize_carry
 from fabletradebot.engine import run as engine_run
 from fabletradebot.scoring import mark_to_market, open_report, score_report
 
 DATA_DIR = os.environ.get("LIVE_DATA_DIR", "live_data")
 STATE_PATH = "journal/v1_state.json"
-ANCHOR = os.environ.get("LIVE_ANCHOR", "2026-07-12")
 EQUITY0 = float(os.environ.get("PAPER_EQUITY0", "10000"))
+SCHEMA = 2   # incremental-carry state; anything else is treated as a fresh reset
 
 
 def load_state() -> dict:
     if os.path.exists(STATE_PATH):
         with open(STATE_PATH) as fh:
             return json.load(fh)
-    return {"closed_keys": [], "open": {}}
+    return {}
 
 
 def save_state(state: dict) -> None:
@@ -54,7 +58,6 @@ def trade_key(sym: str, opened) -> str:
 
 def main() -> None:
     mode = os.environ.get("TRADE_MODE", "paper")
-    print(f"== V1 run | mode={mode} | anchor={ANCHOR} ==")
     for sym in UNIVERSE:
         try:
             n_c, n_f = update_cache(sym, DATA_DIR)
@@ -63,94 +66,88 @@ def main() -> None:
             print(f"  {sym}: update FAILED ({exc}) — replay continues on cache")
 
     p = profile(os.environ.get("PROFILE", "whale"))
-    print(f"   leverage profile: {os.environ.get('PROFILE', 'whale')}")
     frames, funding = load_universe(DATA_DIR)
     if "BTC" not in frames:
         raise SystemExit("no BTC data — cannot classify regime")
     features, candidates, regime_h, corr = prepare(frames, funding, p)
-    res = engine_run(frames, features, candidates, funding, regime_h, corr, p,
-                     start=pd.Timestamp(ANCHOR, tz="UTC"), equity0=EQUITY0)
-    trades, open_pos = res["trades"], res["open_positions"]
-
-    # Freshness guard: only NOTIFY/JOURNAL events at (or near) the latest bar.
-    # The engine replays the whole window from the anchor every run, so without
-    # this a wiped/edited state file would re-fire every historical trade to
-    # Telegram and re-create rows a user had deleted. Deep-history events are
-    # instead absorbed into the state silently (recorded, never re-announced),
-    # which also means state loss can at most double-fire the last few hours.
     latest_bar = max(df.index.max() for df in frames.values())
-    fresh_h = float(os.environ.get("NOTIFY_FRESH_HOURS", "12"))
-    fresh_cut = latest_bar - pd.Timedelta(hours=fresh_h)
 
-    def is_fresh(ts) -> bool:
-        return pd.Timestamp(ts) >= fresh_cut
-
+    # ---- resolve the replay window from persisted state ----
     state = load_state()
-    known_closed = set(state["closed_keys"])
-    known_open = state["open"]
+    reset = os.environ.get("LIVE_RESET") == "1" or state.get("schema") != SCHEMA
+    if reset:
+        # fresh start: begin from the latest real-time bar (NOT ancient history),
+        # or an explicit LIVE_ANCHOR if the operator set one. No carry, no pages.
+        anchor_env = os.environ.get("LIVE_ANCHOR")
+        start = pd.Timestamp(anchor_env, tz="UTC") if anchor_env else latest_bar
+        carry, pages, closed_keys = None, {}, set()
+    else:
+        start = pd.Timestamp(state["anchor"])
+        carry = deserialize_carry(state["carry"]) if state.get("carry") else None
+        pages = dict(state.get("pages", {}))
+        closed_keys = set(state.get("closed_keys", []))
 
+    print(f"== V1 run | mode={mode} | profile={os.environ.get('PROFILE', 'whale')} | "
+          f"{'RESET ' if reset else ''}anchor={start} | latest={latest_bar} ==")
+
+    res = engine_run(frames, features, candidates, funding, regime_h, corr, p,
+                     start=start, equity0=EQUITY0, carry=carry)
+    trades, open_pos = res["trades"], res["open_positions"]
+    eq_now = res["final_equity"]
+
+    # Every event this run sits on a bar >= anchor, i.e. genuinely new — no
+    # wall-clock freshness heuristic needed. closed_keys / pages only guard the
+    # rare case of a run repeating before its state commit landed.
     for _, tr in trades.iterrows():
         key = trade_key(tr["sym"], tr["opened"])
-        if key in known_closed:
+        if key in closed_keys:
             continue
-        page_id = known_open.pop(key, {}).get("page_id")
-        # announce only recent closes; older ones are silently marked done
-        if is_fresh(tr["closed"]):
-            notify.send(notify.fmt_exit(tr.to_dict()))
-            journal_notion.post_close(tr.to_dict(), page_id)
-            print(f"  CLOSE {key} {tr['reason']} {tr['r']:+.2f}R")
-        else:
-            print(f"  close {key} absorbed (stale replay history)")
-        known_closed.add(key)
+        page_id = pages.pop(key, None)
+        notify.send(notify.fmt_exit(tr.to_dict()))
+        journal_notion.post_close(tr.to_dict(), page_id)
+        closed_keys.add(key)
+        print(f"  CLOSE {key} {tr['reason']} {tr['r']:+.2f}R")
 
-    eq_now = res["equity"].iloc[-1] if len(res["equity"]) else EQUITY0
     for sym, pos in open_pos.items():
         key = trade_key(sym, pos.opened_ts)
-        if key in known_open:
+        if key in pages:            # carried from a prior run — already journaled
             continue
         info = {"sym": sym, "dir": pos.direction, "conf": pos.conf,
                 "setup": pos.setup, "regime": pos.regime, "entry": pos.entry,
                 "sl": pos.sl0, "tp1": pos.tp1, "leverage": pos.leverage,
                 "risk_amt": pos.risk_amt, "risk_pct": pos.risk_amt / eq_now * 100,
                 "equity": eq_now, "opened": pos.opened_ts}
-        # announce + create a Notion row only for genuinely new opens; a
-        # position first seen already deep in the replay is tracked silently
-        # (page_id None -> no row created, no resurrection of deleted rows)
-        if is_fresh(pos.opened_ts):
-            notify.send(notify.fmt_entry(info))
-            page_id = journal_notion.post_open(info)
-            print(f"  OPEN {key} {pos.setup} conf={pos.conf:.2f} {pos.leverage:.0f}x")
-        else:
-            page_id = None
-            print(f"  open {key} tracked silently (stale replay history)")
-        known_open[key] = {"page_id": page_id, "sym": sym,
-                           "opened": str(pos.opened_ts)}
+        notify.send(notify.fmt_entry(info))
+        pages[key] = journal_notion.post_open(info)
+        print(f"  OPEN {key} {pos.setup} conf={pos.conf:.2f} {pos.leverage:.0f}x")
 
-    # drop stale open entries whose trades were never seen closing (safety)
-    known_open = {k: v for k, v in known_open.items()
-                  if k in {trade_key(s, pos.opened_ts) for s, pos in open_pos.items()}}
-
-    # ---- hourly scoring of positions still OPEN in Notion (brief §10) ----
-    # every run, mark each open position to the latest bar and refresh its
-    # Notion row (unrealized R / PnL% / hold hours / current stop).
+    # ---- hourly scoring of positions still OPEN (brief §10) ----
     prices_now = {s: float(frames[s]["close"].iloc[-1]) for s in open_pos}
     for sym, pos in open_pos.items():
         key = trade_key(sym, pos.opened_ts)
-        page_id = known_open.get(key, {}).get("page_id")
+        page_id = pages.get(key)
         if page_id is None:
             continue
         mtm = mark_to_market(pos, prices_now[sym])
         if journal_notion.update_open(page_id, mtm):
-            print(f"  SCORE {key} {mtm['r']:+.2f}R held {mtm['bars']}h (open row updated)")
+            print(f"  SCORE {key} {mtm['r']:+.2f}R held {mtm['bars']}h "
+                  f"hold_conf {mtm['hold_conf']:.2f}")
 
-    state.update({"closed_keys": sorted(known_closed), "open": known_open,
-                  "equity": float(eq_now), "anchor": ANCHOR,
-                  "last_run": str(pd.Timestamp.now("UTC"))})
-    save_state(state)
+    # ---- persist: roll the anchor past the newest processed bar ----
+    save_state({
+        "schema": SCHEMA,
+        "anchor": str(latest_bar + pd.Timedelta(hours=1)),
+        "last_bar": str(latest_bar),
+        "equity": float(eq_now),
+        "carry": serialize_carry(res["carry"]),
+        "pages": pages,
+        "closed_keys": sorted(closed_keys)[-500:],   # dedup guard only — pruned
+        "last_run": str(pd.Timestamp.now("UTC")),
+    })
     print(open_report(open_pos, prices_now))
     print(score_report(trades, res["equity"], EQUITY0))
-    print(f"final paper equity: {res['final_equity']:.2f} "
-          f"(mtm {eq_now:.2f}), open={list(open_pos)}")
+    print(f"paper equity: {eq_now:.2f} | open={list(open_pos)} | "
+          f"next anchor={latest_bar + pd.Timedelta(hours=1)}")
 
 
 if __name__ == "__main__":

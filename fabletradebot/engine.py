@@ -11,7 +11,7 @@ so there is exactly one implementation of the trading rules.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 
 import numpy as np
 import pandas as pd
@@ -87,6 +87,63 @@ class Pending:
     meta: dict = field(default_factory=dict)   # signal components for attribution
 
 
+# --- carry (incremental live state) serialization ---------------------------
+# The live loop replays only NEW bars each run and carries the engine's internal
+# state forward (open positions, equity, cooldowns, pending fills, circuit/DD).
+# These helpers round-trip that carry through JSON so run_live can persist it —
+# which is what lets the anchor roll forward instead of re-deriving history.
+
+def _pos_to_dict(pos: Position) -> dict:
+    d = asdict(pos)
+    d["opened_ts"] = str(pos.opened_ts)
+    d["tranches"] = [[float(e), float(n)] for e, n in pos.tranches]
+    return d
+
+
+def _pos_from_dict(d: dict) -> Position:
+    d = dict(d)
+    d["opened_ts"] = pd.Timestamp(d["opened_ts"])
+    d["tranches"] = [tuple(t) for t in d["tranches"]]
+    return Position(**d)
+
+
+def _pending_to_dict(pd_: Pending) -> dict:
+    d = asdict(pd_)
+    d["decided_ts"] = str(pd_.decided_ts)
+    return d
+
+
+def _pending_from_dict(d: dict) -> Pending:
+    d = dict(d)
+    d["decided_ts"] = pd.Timestamp(d["decided_ts"])
+    return Pending(**d)
+
+
+def serialize_carry(c: dict) -> dict:
+    return {
+        "cash": float(c["cash"]), "peak": float(c["peak"]),
+        "dd_frozen": bool(c["dd_frozen"]),
+        "circuit_until": None if c["circuit_until"] is None else str(c["circuit_until"]),
+        "loss_log": [[str(ts), float(x)] for ts, x in c["loss_log"]],
+        "cooldown": c["cooldown"],
+        "positions": {s: _pos_to_dict(p) for s, p in c["positions"].items()},
+        "pendings": [_pending_to_dict(p) for p in c["pendings"]],
+    }
+
+
+def deserialize_carry(d: dict) -> dict:
+    return {
+        "cash": float(d["cash"]), "peak": float(d["peak"]),
+        "dd_frozen": bool(d["dd_frozen"]),
+        "circuit_until": None if d.get("circuit_until") is None
+        else pd.Timestamp(d["circuit_until"]),
+        "loss_log": [(pd.Timestamp(ts), float(x)) for ts, x in d.get("loss_log", [])],
+        "cooldown": {k: dict(v) for k, v in d.get("cooldown", {}).items()},
+        "positions": {s: _pos_from_dict(v) for s, v in d.get("positions", {}).items()},
+        "pendings": [_pending_from_dict(x) for x in d.get("pendings", [])],
+    }
+
+
 def _cost(notional: float, sym: str, p: Params) -> float:
     """Fee component only — slippage is charged inside fill/exit prices."""
     return notional * p.taker_fee * p.cost_mult
@@ -96,7 +153,7 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
         candidates: dict[str, pd.DataFrame], funding: dict[str, pd.Series],
         regime: pd.DataFrame, corr_alert: pd.Series, p: Params,
         start: pd.Timestamp | None = None, end: pd.Timestamp | None = None,
-        equity0: float = 10_000.0) -> dict:
+        equity0: float = 10_000.0, carry: dict | None = None) -> dict:
     grid = pd.DatetimeIndex(sorted(set().union(*[df.index for df in frames.values()])))
     if start is not None:
         grid = grid[grid >= start]
@@ -125,13 +182,23 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
         state_at = {s: base_state for s in frames}
     corr_at = corr_alert.reindex(grid).fillna(False)
 
-    cash, peak = equity0, equity0
-    dd_frozen = False
-    circuit_until: pd.Timestamp | None = None
-    loss_log: list[tuple[pd.Timestamp, float]] = []   # realized losses for 24h circuit
-    cooldown: dict[str, int] = {}
-    positions: dict[str, Position] = {}
-    pendings: list[Pending] = []
+    # fresh, or resumed from a prior run's carry (incremental live replay)
+    if carry is None:
+        cash, peak = equity0, equity0
+        dd_frozen = False
+        circuit_until: pd.Timestamp | None = None
+        loss_log: list[tuple[pd.Timestamp, float]] = []   # realized losses for 24h circuit
+        cooldown: dict[str, int] = {}
+        positions: dict[str, Position] = {}
+        pendings: list[Pending] = []
+    else:
+        cash, peak = carry["cash"], carry["peak"]
+        dd_frozen = carry["dd_frozen"]
+        circuit_until = carry["circuit_until"]
+        loss_log = list(carry["loss_log"])
+        cooldown = dict(carry["cooldown"])
+        positions = dict(carry["positions"])
+        pendings = list(carry["pendings"])
     trades: list[dict] = []
     curve: list[tuple[pd.Timestamp, float]] = []
 
@@ -397,4 +464,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
 
     eq_curve = pd.Series(dict(curve), name="equity")
     return {"trades": pd.DataFrame(trades), "equity": eq_curve,
-            "open_positions": positions, "final_equity": cash}
+            "open_positions": positions, "final_equity": cash,
+            "carry": {"cash": cash, "peak": peak, "dd_frozen": dd_frozen,
+                      "circuit_until": circuit_until, "loss_log": loss_log,
+                      "cooldown": cooldown, "positions": positions,
+                      "pendings": pendings}}
