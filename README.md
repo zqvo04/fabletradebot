@@ -39,7 +39,7 @@
  ├─ 보유 중: 8×ATR 샹들리에 트레일 / 4H bias 플립 청산 / CRISIS 청산
  │    (BTC만) +2R·+4R 도달 시 피라미딩 유닛 추가
  │    매 봉 오픈 포지션 재채점(hold_confidence) → 승자 모멘텀 페이드 청산 [§12]
- └─ Telegram 알림 + Notion 저널 + 상태 커밋 (결정론적 리플레이 = 상태는 데이터뿐)
+ └─ Telegram 알림 + Notion 저널 + 상태 커밋 (롤링 앵커 = 새 봉만 증분 처리, §운영)
 ```
 
 > **운영 모드 두 가지**: 위는 **포트폴리오 모드**(기본 로직, 동시 최대 4포지션 분산).
@@ -378,15 +378,20 @@ hold_confidence(d) = 0.45×MTF정렬 + 0.30×국면적합 + 0.25×4H모멘텀
 ```
 스케줄: cron-job.org가 매시 3분 GitHub Actions workflow_dispatch 호출 (CRON_SETUP.md)
         └ 내장 cron은 지연/누락 → 외부 스케줄러 사용
-매 실행 (run_live.py, 결정론적 리플레이 — 상태는 CSV 데이터뿐):
+매 실행 (run_live.py, 증분 리플레이 — 롤링 앵커):
   1. OKX 1H 캔들 + 8h 펀딩 증분 수집 (마감봉만, live_data/ CSV)
-  2. LIVE_ANCHOR부터 엔진 리플레이 → 오픈/청산 diff 산출
+  2. 상태의 앵커부터 **새 봉만** 리플레이 (직전 실행의 carry=오픈포지션·에쿼티·
+     쿨다운·펜딩·서킷/DD를 주입해 이어감) → 오픈/청산 산출
   3. 신규 진입 → Telegram 즉시 알림 + Notion Open 행 생성
   4. 청산 → Telegram 손익 알림 + Notion 행 갱신(승률·R·레버리지 손익·보유시간)
   4b. 오픈 포지션 시간별 재채점: 마크투마켓 + hold_confidence 재계산 → Notion/
       리포트 갱신, 고래 모드는 이 재채점으로 SignalFade 익절 판단 (§12)
-  5. journal/v1_state.json 저장 + git 커밋 (중복/누락 트리거는 무해 — 리플레이라 멱등)
-프로파일: PROFILE=base|turbo|max|whale (기본 base). §10·§11 참조.
+  5. journal/v1_state.json 저장(앵커를 최신봉 다음으로 전진 + carry 직렬화) + git 커밋
+멱등성: 앵커가 단조 전진하므로 앵커 이전 봉은 재유도·재알림되지 않는다 → **지운
+  과거는 되살아나지 않는다**. 상태 유실/구스키마는 깨끗한 리셋(최신 실시간 봉부터
+  새 출발, 과거 재유도 없음). LIVE_RESET=1로 수동 리셋(현재 시점부터 플랫 재시작).
+  청크 리플레이가 단일 패스와 동일함은 tests/test_infra.py가 증명(규칙 불변, 저장만 변경).
+프로파일: PROFILE=base|turbo|max|whale (run_live 기본 whale). §10·§11 참조.
 라이브 전환: TRADE_MODE=live + OKX 3키 + LIVE_CONFIRM + OKX_DEMO 검증 (4중 잠금),
         단 V1 okx_exec는 스켈레톤 — 실주문은 페이퍼 전방 게이트(G8) 통과 후.
 채점: 전방 트랙이 setup별·프로파일별 기대값을 분해 측정 → 실험 슬롯 승급/강등 심사.

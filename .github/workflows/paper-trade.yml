@@ -40,7 +40,10 @@ jobs:
       - name: Run V1 paper-trading step
         env:
           TRADE_MODE: paper
-          LIVE_ANCHOR: "2026-07-12"
+          # No frozen LIVE_ANCHOR: the anchor now lives in journal/v1_state.json
+          # and rolls forward each run. A reset (wiped/old state) starts fresh
+          # from the latest real-time bar, never from frozen history. Set
+          # LIVE_RESET=1 here once to force a clean restart from now.
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_SIGNAL_DB_ID: ${{ secrets.NOTION_SIGNAL_DB_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
