@@ -330,7 +330,15 @@ base 모드가 손절폭에서 역산해 **리스크 0.55%**를 고정하는 것
 | 사이징 | 리스크 0.55% 고정 | **풀마진 (증거금=전 자산)** |
 | 손절 시 손실 | 계좌 0.55%×부스트 | **L×손절폭 (가변, 최대 ~35%)** |
 | 청산 봉쇄 | L_liq 캡 (불변) | **L_liq 캡 (불변, 동일)** |
+| DD 거버너 | −10% DD 리스크 반감 | **−10% DD 증거금 반감**(전 계좌×0.5), 상관경보도 반감 |
 | 관리 청산 | 트레일·bias플립 | **+ SignalFade 모멘텀 페이드(§12)** |
+
+> **완결성 수정(감사 로그)**: 초기 whale 구현에서 `dd_half`(드로다운 시 사이즈
+> 반감)와 상관경보 반감이 **풀마진 사이징에서 무시**되고 있었다(`risk_frac`을
+> 거치는 두 컨트롤이 full-margin 경로에서 미적용). 실제 캐시 백테스트에서 진입
+> 8건 중 3건이 이 반감을 발동시켰으나 전액 사이징돼 있었다. 수정: 두 컨트롤이
+> 이제 **증거금 비율**(`margin_frac`)로 반영돼 whale에서도 드로다운·상관 국면에
+> 노출을 줄인다(레버리지·청산 거리 불변). 결과 whale MDD −35%→−27%.
 
 ### 12. 채점(scoring) 워크플로우 — 두 층위
 
@@ -433,7 +441,7 @@ hold_confidence(d) = 0.45×MTF정렬 + 0.30×국면적합 + 0.25×4H모멘텀
 
 ```bash
 pip install pandas numpy pytest
-python3 -m pytest tests/ -q                       # 메커니즘 게이트 (38 tests)
+python3 -m pytest tests/ -q                       # 메커니즘 게이트 (43 tests)
 python3 fetch_data.py data                        # OKX 히스토리 백필
 python3 run_backtest.py 2023-06-01 2026-01-31     # 백테스트
 python3 scripts/fn_fp.py                          # 필터 FN/FP 분석
