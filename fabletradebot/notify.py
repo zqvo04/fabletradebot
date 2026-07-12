@@ -11,6 +11,12 @@ def send(text: str) -> bool:
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat = os.environ.get("TELEGRAM_CHAT_ID")
     if not token or not chat:
+        # same class of bug as journal_notion's silent disable: a workflow log
+        # showing TELEGRAM_BOT_TOKEN: *** only proves the env var was declared,
+        # not that the repo secret has a real value — stay loud about it
+        missing = [n for n, v in (("TELEGRAM_BOT_TOKEN", token),
+                                  ("TELEGRAM_CHAT_ID", chat)) if not v]
+        print(f"[notify] Telegram disabled — missing/empty env var(s): {', '.join(missing)}")
         return False
     body = json.dumps({"chat_id": chat, "text": text,
                        "disable_web_page_preview": True}).encode()

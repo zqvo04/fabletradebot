@@ -42,7 +42,15 @@ SCHEMA = 2   # incremental-carry state; anything else is treated as a fresh rese
 def load_state() -> dict:
     if os.path.exists(STATE_PATH):
         with open(STATE_PATH) as fh:
-            return json.load(fh)
+            try:
+                return json.load(fh)
+            except json.JSONDecodeError as exc:
+                # a corrupted/partial write (e.g. an interrupted commit) must
+                # never crash the loop — treat it exactly like a missing file:
+                # schema check below sees no "schema" key and triggers a clean
+                # reset from the latest real-time bar (never ancient history)
+                print(f"  state file unreadable ({exc}) — treating as a reset")
+                return {}
     return {}
 
 
@@ -80,12 +88,13 @@ def main() -> None:
         # or an explicit LIVE_ANCHOR if the operator set one. No carry, no pages.
         anchor_env = os.environ.get("LIVE_ANCHOR")
         start = pd.Timestamp(anchor_env, tz="UTC") if anchor_env else latest_bar
-        carry, pages, closed_keys = None, {}, set()
+        carry, pages, closed_list = None, {}, []
     else:
         start = pd.Timestamp(state["anchor"])
         carry = deserialize_carry(state["carry"]) if state.get("carry") else None
         pages = dict(state.get("pages", {}))
-        closed_keys = set(state.get("closed_keys", []))
+        closed_list = list(state.get("closed_keys", []))   # chronological order
+    closed_keys = set(closed_list)
 
     print(f"== V1 run | mode={mode} | profile={os.environ.get('PROFILE', 'whale')} | "
           f"{'RESET ' if reset else ''}anchor={start} | latest={latest_bar} ==")
@@ -93,7 +102,13 @@ def main() -> None:
     res = engine_run(frames, features, candidates, funding, regime_h, corr, p,
                      start=start, equity0=EQUITY0, carry=carry)
     trades, open_pos = res["trades"], res["open_positions"]
-    eq_now = res["final_equity"]
+    # mark-to-market equity (cash + unrealized), NOT res["final_equity"] (cash
+    # only) — whale mode concentrates the whole account in one position, so
+    # its unrealized swing is exactly what must be reflected here. Empty curve
+    # means no new bar existed this run (e.g. a cron tick before OKX published
+    # the next candle) — carry forward the last known equity unchanged.
+    eq_now = (float(res["equity"].iloc[-1]) if len(res["equity"])
+             else float(state.get("equity", EQUITY0)) if not reset else EQUITY0)
 
     # Every event this run sits on a bar >= anchor, i.e. genuinely new — no
     # wall-clock freshness heuristic needed. closed_keys / pages only guard the
@@ -106,20 +121,28 @@ def main() -> None:
         notify.send(notify.fmt_exit(tr.to_dict()))
         journal_notion.post_close(tr.to_dict(), page_id)
         closed_keys.add(key)
+        closed_list.append(key)   # append-order == chronological (trades are time-sorted)
         print(f"  CLOSE {key} {tr['reason']} {tr['r']:+.2f}R")
 
     for sym, pos in open_pos.items():
         key = trade_key(sym, pos.opened_ts)
-        if key in pages:            # carried from a prior run — already journaled
+        if pages.get(key):          # already has a real Notion page — fully done
             continue
+        # `key in pages but pages[key] is None` means a PRIOR run's Notion post
+        # failed (e.g. secrets were missing/misconfigured then) — retry it every
+        # run until it succeeds, instead of giving up on this position forever.
+        already_seen = key in pages
         info = {"sym": sym, "dir": pos.direction, "conf": pos.conf,
                 "setup": pos.setup, "regime": pos.regime, "entry": pos.entry,
                 "sl": pos.sl0, "tp1": pos.tp1, "leverage": pos.leverage,
                 "risk_amt": pos.risk_amt, "risk_pct": pos.risk_amt / eq_now * 100,
                 "equity": eq_now, "opened": pos.opened_ts}
-        notify.send(notify.fmt_entry(info))
+        if not already_seen:
+            notify.send(notify.fmt_entry(info))
+            print(f"  OPEN {key} {pos.setup} conf={pos.conf:.2f} {pos.leverage:.0f}x")
+        else:
+            print(f"  OPEN {key} retrying Notion journal (previous attempt failed)")
         pages[key] = journal_notion.post_open(info)
-        print(f"  OPEN {key} {pos.setup} conf={pos.conf:.2f} {pos.leverage:.0f}x")
 
     # ---- hourly scoring of positions still OPEN (brief §10) ----
     prices_now = {s: float(frames[s]["close"].iloc[-1]) for s in open_pos}
@@ -141,7 +164,7 @@ def main() -> None:
         "equity": float(eq_now),
         "carry": serialize_carry(res["carry"]),
         "pages": pages,
-        "closed_keys": sorted(closed_keys)[-500:],   # dedup guard only — pruned
+        "closed_keys": closed_list[-500:],   # dedup guard only — chronologically pruned
         "last_run": str(pd.Timestamp.now("UTC")),
     })
     print(open_report(open_pos, prices_now))

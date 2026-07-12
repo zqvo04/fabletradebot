@@ -241,6 +241,61 @@ def test_playbook_exit_overrides_day_trade():
     assert res2["trades"].iloc[0]["bars"] >= 24
 
 
+def test_equity_peak_tracks_true_high_not_initial_capital():
+    # Regression test for a pre-existing bug: `peak` was initialized to equity0
+    # and never updated, so `dd = 1 - eq/peak` was measured from INITIAL
+    # capital, not the running equity HIGH. Once equity ever exceeded equity0
+    # dd went permanently negative and the drawdown governor (dd_stop / DD
+    # halving / anti-martingale eq_boost) could never trip again, no matter
+    # how large a peak-to-trough crash followed — silently disabling the
+    # exact mechanism the whole system's ruin-avoidance design depends on.
+    #
+    # BTC rallies hard (unrealized equity peaks well above equity0), then
+    # gives most of it back while STAYING above equity0. A probe ETH
+    # candidate arrives after the give-back: it must be blocked by dd_stop
+    # measured from the TRUE peak, even though current equity > equity0.
+    idx = pd.date_range("2024-01-01", periods=5, freq="1h", tz="UTC")
+    btc = pd.DataFrame([
+        (100, 101, 99.5, 100), (100, 100.5, 99.8, 100),
+        (100, 141, 99.5, 140), (140, 140, 107, 108), (108, 108.5, 107.5, 108),
+    ], columns=["open", "high", "low", "close"], index=idx)
+    btc["volume"] = 1000.0
+    eth = pd.DataFrame([(100, 101, 99.5, 100)] * 5,
+                       columns=["open", "high", "low", "close"], index=idx)
+    eth["volume"] = 1000.0
+    frames = {"BTC": btc, "ETH": eth}
+    feats = {s: pd.DataFrame({"atr1h": 1.0, "bias4h": 1.0}, index=idx) for s in frames}
+    cands = {
+        "BTC": pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
+                             "setup": ["S1"]}, index=[idx[0]]),
+        "ETH": pd.DataFrame({"dir": [1], "conf": [0.65], "sl": [95.0],
+                             "setup": ["S1"]}, index=[idx[3]]),   # probe, post-crash
+    }
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    funding = {s: None for s in frames}
+    # high-leverage synthetic sizing to produce a large equity swing from one
+    # position; trail disabled so the give-back isn't cut short by the trail;
+    # open-risk/margin caps widened since this deliberately oversized position
+    # is just a vehicle to swing equity, not what's under test
+    p = Params(conf_tiers=((0.55, 10.0, 0.05),), trail_atr=0.0,
+              aggression_syms=(), pyramid_max=0,
+              max_open_risk=1.0, max_margin_frac=1.0)
+
+    res = run(frames, feats, cands, funding, regime, corr, p, equity0=10_000.0)
+
+    assert "BTC" in res["open_positions"]
+    peak = res["carry"]["peak"]
+    eq_now = res["equity"].iloc[-1]   # mark-to-market equity (position still open)
+    assert peak > 12_000, f"peak should capture the rally high, got {peak}"
+    assert eq_now > 10_000, "equity gave back gains but is still net positive"
+    # the discriminating assertion: ETH must be BLOCKED even though eq > equity0
+    assert "ETH" not in res["open_positions"]
+    assert res["carry"]["dd_frozen"] is True
+    true_dd = 1 - eq_now / peak
+    assert true_dd >= p.dd_stop
+
+
 def test_open_position_mark_to_market_scoring():
     from fabletradebot.scoring import mark_to_market, open_report
     # open a long at ~100, still open; score it at a higher price
