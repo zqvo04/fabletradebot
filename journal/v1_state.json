@@ -1,11 +1,11 @@
 {
  "schema": 2,
- "anchor": "2026-07-12 19:00:00+00:00",
- "last_bar": "2026-07-12 18:00:00+00:00",
- "equity": 10003.995168639472,
+ "anchor": "2026-07-12 20:00:00+00:00",
+ "last_bar": "2026-07-12 19:00:00+00:00",
+ "equity": 10062.036468248654,
  "carry": {
   "cash": 10000.0,
-  "peak": 10003.995168639472,
+  "peak": 10062.036468248654,
   "dd_frozen": false,
   "circuit_until": null,
   "loss_log": [],
@@ -42,14 +42,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
-    "best_close": 77.54,
+    "best_close": 77.63,
     "realized": -1.808961321455,
-    "bias_flip_streak": 4,
-    "fade_streak": 4,
+    "bias_flip_streak": 5,
+    "fade_streak": 5,
     "hold_conf": 0.15,
-    "peak_r": 0.005069116366268549
+    "peak_r": 0.055760280028865995
    }
   },
   "pendings": []
@@ -58,5 +58,5 @@
   "SOL|2026-07-12 15:00:00+00:00": "39b8b798-76e3-81a0-9e64-cab0a2f4fae1"
  },
  "closed_keys": [],
- "last_run": "2026-07-12 19:03:46.305012+00:00"
+ "last_run": "2026-07-12 20:03:45.879310+00:00"
 }
