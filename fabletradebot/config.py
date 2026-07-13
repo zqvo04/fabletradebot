@@ -201,17 +201,23 @@ class Params:
     # Symmetric counterpart to the winner-only SignalFade above, for the side
     # the profit-protecting exit deliberately ignores: a LOSING trend position.
     # The same live hold_confidence (regime fit + MTF alignment + 4H momentum)
-    # is watched; when it collapses below hold_loss_exit for hold_conf_bars
+    # is watched; when it stays below hold_loss_exit for hold_conf_bars
     # consecutive bars WHILE the trade is underwater, the thesis has turned
     # adverse ("모멘텀/국면이 포지션에 악영향") and the position is closed ahead of
     # the structural stop (LossFade) — banking the smaller loss instead of
-    # riding a broken trade down to a full SL. hold_loss_exit sits BELOW
-    # hold_conf_exit on purpose: it demands a CLEAR breakdown (roughly two of
-    # the three health dimensions turned against the trade) rather than the
-    # single-component wobble a 0.50 floor would trip on, so it never degrades
-    # into a tight in-the-noise stop (the swept-stop failure of E5). It is NOT
-    # a price stop and never overrides the liq-before-stop invariant. 0 = off
-    # (default); the whale profile arms it. Same hold_conf_bars as the winner.
+    # riding a broken trade down to a full SL.
+    #
+    # Floor choice is EVIDENCE-set, not a-priori (G5, design window): while a
+    # trend position is still open AND underwater its live conviction clusters
+    # ~0.45-0.55, so a floor there cuts the below-median-conviction losers at
+    # ~ -0.3R vs a full -1R stop. Across 0.45-0.60 expectancy stays +0.055R and
+    # max_dd is unchanged (portfolio n=1529): the edge sign never flips — the
+    # cut is measurably HARMLESS, its payoff a forward tail-risk hedge on slow
+    # bleeders. Below ~0.40 it never binds (inert); it is deliberately NOT a
+    # tight in-the-noise price stop (the swept-stop failure of E5). It catches
+    # SLOW thesis-decay, not a FAST structural stop-out (that is an entry-
+    # leverage matter, not an exit one), and never overrides liq-before-stop.
+    # 0 = off (default); the whale profile arms it. Same bars as the winner.
     hold_loss_exit: float = 0.0
     # --- whale mode (V4): concentrate the WHOLE account into the single
     # highest-confidence signal at that bar, sized full-margin at a
@@ -327,8 +333,10 @@ def profile(name: str = "base") -> Params:
             hold_conf_min_r=1.0,
             hold_giveback=0.5,
             # and cut a LOSING single position early when its live conviction
-            # collapses below this (adverse regime/momentum), protecting the
-            # concentrated account before the full leveraged stop is reached
-            hold_loss_exit=0.35,
+            # stays below this (adverse regime/momentum) for hold_conf_bars,
+            # protecting the concentrated account before a full leveraged stop.
+            # 0.50 is the lowest floor that actually binds on a slow-bleed loser
+            # (below ~0.40 is inert); G5-validated harmless in portfolio mode.
+            hold_loss_exit=0.50,
         )
     raise ValueError(f"unknown profile: {name!r} (base|turbo|max|whale)")
