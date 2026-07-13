@@ -1,62 +1,62 @@
 {
  "schema": 2,
- "anchor": "2026-07-13 03:00:00+00:00",
- "last_bar": "2026-07-13 02:00:00+00:00",
- "equity": 9294.83624881821,
+ "anchor": "2026-07-13 04:00:00+00:00",
+ "last_bar": "2026-07-13 03:00:00+00:00",
+ "equity": 8783.88541320898,
  "carry": {
-  "cash": 10000.0,
+  "cash": 8783.88541320898,
   "peak": 10062.036468248654,
   "dd_frozen": false,
   "circuit_until": null,
-  "loss_log": [],
-  "cooldown": {},
-  "positions": {
+  "loss_log": [
+   [
+    "2026-07-13 03:00:00+00:00",
+    1216.114586791019
+   ]
+  ],
+  "cooldown": {
    "SOL": {
-    "sym": "SOL",
-    "direction": 1,
-    "conf": 0.7039485292805437,
-    "setup": "BND_L",
-    "regime": "RANGE",
-    "entry": 77.53099999999999,
-    "sl": 75.75554263234055,
-    "sl0": 75.75554263234055,
-    "tp1": 80.19418605148915,
-    "notional": 50000.0,
-    "margin": 10000.0,
-    "risk_amt": 1144.998366885144,
-    "leverage": 5.0,
-    "liq_price": 62.80011,
-    "opened_ts": "2026-07-12 15:00:00+00:00",
-    "risk_frac": 0.002,
-    "init_stop_frac": 0.02289996733770288,
-    "meta": {
-     "c_base": 0.6435427805100796,
-     "c_fit": 1.0,
-     "c_align": 0.5,
-     "c_fund": 0.0
-    },
-    "tranches": [
-     [
-      77.53099999999999,
-      50000.0
-     ]
-    ],
-    "adds": 0,
-    "bars": 12,
-    "tp1_done": false,
-    "best_close": 77.63,
-    "realized": -1.57421925263,
-    "bias_flip_streak": 12,
-    "fade_streak": 12,
-    "hold_conf": 0.15,
-    "peak_r": 0.055760280028865995
+    "bars": 11,
+    "exp": true
    }
   },
-  "pendings": []
+  "positions": {},
+  "pendings": [
+   {
+    "sym": "ETH",
+    "direction": -1,
+    "conf": 0.8554459893995217,
+    "sl": 1859.973698092071,
+    "setup": "RCL_S",
+    "regime": "TREND_DOWN",
+    "decided_ts": "2026-07-13 03:00:00+00:00",
+    "meta": {
+     "c_base": 0.8583866473930697,
+     "c_fit": 1.0,
+     "c_align": 0.6666666666666666,
+     "c_fund": 0.0
+    }
+   },
+   {
+    "sym": "LINK",
+    "direction": -1,
+    "conf": 0.8017321993361847,
+    "sl": 8.193732192476677,
+    "setup": "RCL_S",
+    "regime": "TREND_DOWN",
+    "decided_ts": "2026-07-13 03:00:00+00:00",
+    "meta": {
+     "c_base": 0.7607252109142751,
+     "c_fit": 1.0,
+     "c_align": 0.6666666666666666,
+     "c_fund": 0.0
+    }
+   }
+  ]
  },
- "pages": {
-  "SOL|2026-07-12 15:00:00+00:00": "39b8b798-76e3-81a0-9e64-cab0a2f4fae1"
- },
- "closed_keys": [],
- "last_run": "2026-07-13 03:03:47.296141+00:00"
+ "pages": {},
+ "closed_keys": [
+  "SOL|2026-07-12 15:00:00+00:00"
+ ],
+ "last_run": "2026-07-13 04:03:52.060018+00:00"
 }
