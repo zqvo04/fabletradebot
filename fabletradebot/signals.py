@@ -120,7 +120,10 @@ def hold_confidence(f: pd.DataFrame, state: pd.Series, btc_dir: pd.Series,
                     d: int, p: Params) -> pd.Series:
     """Continuous [0,1] conviction that an OPEN position in direction `d` still
     has its thesis intact THIS bar — the live re-score used by the hourly
-    scoring loop and by the engine's momentum-fade exit (SignalFade).
+    scoring loop and by BOTH engine fade exits: the winner-only SignalFade and
+    the losing-side early cut (LossFade). It is direction-symmetric, so the same
+    read protects a winner (bank a stalled/decayed run) and a loser (cut before
+    the stop once regime/momentum have clearly turned adverse).
 
     Blends three a-priori (not fitted) reads of "is the trend/momentum that
     justified this trade still here?":
@@ -133,7 +136,12 @@ def hold_confidence(f: pd.DataFrame, state: pd.Series, btc_dir: pd.Series,
     align = _tf_align(f, btc_dir, d)
     trend = "TREND_UP" if d == 1 else "TREND_DOWN"
     fit = state.map({trend: 1.0, "RANGE": 0.5, "HIGH_VOL": 0.35}).fillna(0.0)
-    px_ok = (d * (f["close"] - f["ema20_4h"]) > 0).astype(float)
+    # 4H momentum: how decisively price sits on the trade's side of the value
+    # line (EMA20), graded by ATR4H instead of a binary sign — a hard 0/1 cliff
+    # makes hold_conf flicker whenever price hovers on the EMA and turns the
+    # streak-based fade exits jittery. Saturates at 1 ATR either way (0.5 == at
+    # the line), mirroring how rsi_ok saturates at 20 RSI points.
+    px_ok = (d * (f["close"] - f["ema20_4h"]) / f["atr4h"]).clip(-1, 1) * 0.5 + 0.5
     rsi_ok = (d * (f["rsi4h"] - 50) / 20).clip(0, 1)
     mom = 0.5 * px_ok + 0.5 * rsi_ok
     return (0.45 * align + 0.30 * fit + 0.25 * mom).clip(0, 1)

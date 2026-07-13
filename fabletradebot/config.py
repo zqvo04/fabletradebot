@@ -197,6 +197,22 @@ class Params:
     hold_conf_bars: int = 2
     hold_conf_min_r: float = 1.0
     hold_giveback: float = 0.5
+    # --- losing-position early cut (V5) --------------------------------------
+    # Symmetric counterpart to the winner-only SignalFade above, for the side
+    # the profit-protecting exit deliberately ignores: a LOSING trend position.
+    # The same live hold_confidence (regime fit + MTF alignment + 4H momentum)
+    # is watched; when it collapses below hold_loss_exit for hold_conf_bars
+    # consecutive bars WHILE the trade is underwater, the thesis has turned
+    # adverse ("모멘텀/국면이 포지션에 악영향") and the position is closed ahead of
+    # the structural stop (LossFade) — banking the smaller loss instead of
+    # riding a broken trade down to a full SL. hold_loss_exit sits BELOW
+    # hold_conf_exit on purpose: it demands a CLEAR breakdown (roughly two of
+    # the three health dimensions turned against the trade) rather than the
+    # single-component wobble a 0.50 floor would trip on, so it never degrades
+    # into a tight in-the-noise stop (the swept-stop failure of E5). It is NOT
+    # a price stop and never overrides the liq-before-stop invariant. 0 = off
+    # (default); the whale profile arms it. Same hold_conf_bars as the winner.
+    hold_loss_exit: float = 0.0
     # --- whale mode (V4): concentrate the WHOLE account into the single
     # highest-confidence signal at that bar, sized full-margin at a
     # confidence-chosen leverage tier. Off by default (portfolio mode);
@@ -310,5 +326,9 @@ def profile(name: str = "base") -> Params:
             hold_conf_bars=2,
             hold_conf_min_r=1.0,
             hold_giveback=0.5,
+            # and cut a LOSING single position early when its live conviction
+            # collapses below this (adverse regime/momentum), protecting the
+            # concentrated account before the full leveraged stop is reached
+            hold_loss_exit=0.35,
         )
     raise ValueError(f"unknown profile: {name!r} (base|turbo|max|whale)")

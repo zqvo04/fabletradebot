@@ -47,7 +47,8 @@ class Position:
     best_close: float = 0.0
     realized: float = 0.0          # accumulated pnl in account currency
     bias_flip_streak: int = 0
-    fade_streak: int = 0           # consecutive bars of decayed hold_conf
+    fade_streak: int = 0           # consecutive bars of decayed hold_conf (winner)
+    loss_fade_streak: int = 0      # consecutive bars of collapsed hold_conf (loser)
     hold_conf: float = 0.0         # live re-scored conviction (latest bar)
     peak_r: float = 0.0            # best unrealized R reached (give-back exit)
 
@@ -165,7 +166,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
     bias4h = {s: features[s]["bias4h"].reindex(grid) for s in frames}
     # live position-health series (hold_confidence) for the momentum-fade exit;
     # absent in bare unit-feature frames, so read defensively / only when armed
-    use_hold = p.hold_conf_exit > 0 and all("hold_L" in features[s].columns for s in frames)
+    use_hold = (p.hold_conf_exit > 0 or p.hold_loss_exit > 0) \
+        and all("hold_L" in features[s].columns for s in frames)
     hold_at = ({s: {1: features[s]["hold_L"].reindex(grid),
                     -1: features[s]["hold_S"].reindex(grid)} for s in frames}
                if use_hold else None)
@@ -415,6 +417,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 if not np.isnan(h):
                     pos.hold_conf = float(h)
                     pos.fade_streak = pos.fade_streak + 1 if h < p.hold_conf_exit else 0
+                    pos.loss_fade_streak = (pos.loss_fade_streak + 1
+                                            if h < p.hold_loss_exit else 0)
             exit_px = close_px * (1 - d * spec(sym).slippage * p.cost_mult)
             time_stop = pb.get("time_stop_bars", p.time_stop_bars)
             trend_managed = pb.get("biasflip_exit", True)
@@ -426,10 +430,19 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             conviction_lost = hold_at is not None and pos.fade_streak >= p.hold_conf_bars
             signal_fade = (p.hold_conf_exit > 0 and trend_managed and unreal_r > 0
                            and (stalled or conviction_lost))
+            # capital-protecting early cut: a LOSING trend position whose live
+            # conviction has collapsed below the loss floor for hold_conf_bars
+            # consecutive bars — regime/momentum turned against the trade — is
+            # closed ahead of the structural stop, banking the smaller loss.
+            loss_fade = (p.hold_loss_exit > 0 and hold_at is not None
+                         and trend_managed and unreal_r < 0
+                         and pos.loss_fade_streak >= p.hold_conf_bars)
             if state_at[sym].iloc[i] == "CRISIS":
                 finalize(pos, exit_px, t, "Regime")
             elif signal_fade:
                 finalize(pos, exit_px, t, "SignalFade")
+            elif loss_fade:
+                finalize(pos, exit_px, t, "LossFade")
             elif trend_managed and pos.bias_flip_streak >= 2:
                 finalize(pos, exit_px, t, "BiasFlip")
             elif (time_stop > 0 and pos.bars >= time_stop

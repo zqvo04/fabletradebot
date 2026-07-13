@@ -136,7 +136,7 @@ def test_whale_holds_position_no_cross_coin_switch():
 def test_hold_confidence_high_when_aligned_low_when_not():
     idx = pd.date_range("2024-01-01", periods=3, freq="1h", tz="UTC")
     f = pd.DataFrame({"bias1d": 1.0, "bias4h": 1.0, "close": 110.0,
-                      "ema20_4h": 100.0, "rsi4h": 70.0}, index=idx)
+                      "ema20_4h": 100.0, "atr4h": 5.0, "rsi4h": 70.0}, index=idx)
     btc = pd.Series(1.0, index=idx)
     up = hold_confidence(f, pd.Series("TREND_UP", index=idx), btc, 1, Params())
     assert up.iloc[0] == pytest.approx(1.0)          # every read favourable
@@ -203,3 +203,55 @@ def test_signalfade_disabled_when_hold_conf_exit_zero():
             (100, 110.5, 99.9, 110), (110, 110, 103, 105), (105, 105, 104, 105)]
     res = _run_fade(path, [0.9] * 5, Params(aggression_syms=()))  # fade off
     assert "SignalFade" not in list(res["trades"].get("reason", []))
+
+
+# ---- losing-position early cut (V5) ----
+
+# winner-fade off, loss-fade armed at a floor below the neutral 0.50
+_LOSS_P = Params(aggression_syms=(), hold_conf_exit=0.0, hold_loss_exit=0.40,
+                 hold_conf_bars=2)
+
+
+def test_lossfade_cuts_loser_on_conviction_collapse():
+    # long fills ~100; price drifts underwater but never reaches the 95 stop,
+    # while live conviction collapses for 2 consecutive bars -> cut early
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 100, 98, 98.5), (98.5, 98.7, 97.5, 98),
+            (98, 98.3, 97.4, 98)]
+    res = _run_fade(path, [0.9, 0.9, 0.2, 0.2, 0.2], _LOSS_P)
+    assert len(res["trades"]) == 1
+    tr = res["trades"].iloc[0]
+    assert tr["reason"] == "LossFade"
+    assert tr["pnl"] < 0                 # a loss — but banked before the full SL
+    assert tr["r"] > -1.0                # smaller than a stop-out (~ -1R)
+
+
+def test_lossfade_needs_consecutive_collapse():
+    # conviction dips one bar then recovers -> streak resets, no early cut
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 100, 98, 98.5), (98.5, 99, 97.5, 98.5),
+            (98.5, 99, 98, 98.5)]
+    res = _run_fade(path, [0.9, 0.9, 0.2, 0.9, 0.9], _LOSS_P)
+    assert "LossFade" not in list(res["trades"].get("reason", []))
+    assert list(res["open_positions"]) == ["BTC"]
+
+
+def test_lossfade_leaves_winner_to_the_winner_exit():
+    # collapsed conviction but the trade is in PROFIT -> LossFade must not fire
+    # (SignalFade owns winners; here winner-fade is off, so it simply holds)
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 106, 99.9, 105), (105, 106, 104, 105), (105, 106, 104, 105)]
+    res = _run_fade(path, [0.9, 0.9, 0.2, 0.2, 0.2], _LOSS_P)
+    assert "LossFade" not in list(res["trades"].get("reason", []))
+    assert list(res["open_positions"]) == ["BTC"]
+
+
+def test_lossfade_disabled_by_default():
+    # default params never arm the loss cut -> underwater position rides to the
+    # stop's job, exactly as before this feature existed
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 100, 98, 98.5), (98.5, 98.7, 97.5, 98),
+            (98, 98.3, 97.4, 98)]
+    res = _run_fade(path, [0.2] * 5, Params(aggression_syms=()))
+    assert "LossFade" not in list(res["trades"].get("reason", []))
+    assert list(res["open_positions"]) == ["BTC"]
