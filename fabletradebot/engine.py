@@ -171,6 +171,14 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
     hold_at = ({s: {1: features[s]["hold_L"].reindex(grid),
                     -1: features[s]["hold_S"].reindex(grid)} for s in frames}
                if use_hold else None)
+    # 4H momentum component alone (loss-side second read): full adverse
+    # saturation (mom == 0) also counts toward the LossFade streak, because
+    # the regime/alignment 75% of hold_confidence lags a V-reversal and can
+    # hold the blended score above the loss floor while the chart has turned
+    mom_at = ({s: {1: features[s]["mom_L"].reindex(grid),
+                   -1: features[s]["mom_S"].reindex(grid)} for s in frames}
+              if use_hold and all("mom_L" in features[s].columns for s in frames)
+              else None)
     cand_at = {s: {ts: row for ts, row in candidates[s].iterrows()} for s in candidates}
     fund_at = {s: dict(zip(funding[s].index, funding[s].values))
                for s in funding if funding[s] is not None}
@@ -246,11 +254,18 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
         prices_now = {s: bars[s]["close"].iloc[i] for s in positions}
 
         # ---- 1. fill pending entries at this bar's open ----
-        # whale mode: only one seat is available, so the highest-confidence
-        # signal across the whole universe must claim it first (cross-coin
-        # selection). Portfolio mode keeps its original fill order.
-        fill_order = sorted(pendings, key=lambda x: x.conf, reverse=True) \
-            if p.whale_mode else pendings
+        # whale mode: only one seat is available, so it must go to the best
+        # signal across the whole universe (cross-coin selection). Validation
+        # status outranks confidence (E15): a PROVEN slot (risk_scale 1.0)
+        # always beats an experimental one — regime-lagging markets hand
+        # experimental counter-trend slots mechanically high conf (fit/align
+        # saturate), and conf does not rank R (E9), so conf alone must never
+        # let an unproven signal take the seat from the validated one.
+        # Portfolio mode keeps its original fill order.
+        fill_order = sorted(
+            pendings, reverse=True,
+            key=lambda x: (p.playbooks.get(x.setup, {}).get("risk_scale", 1.0),
+                           x.conf)) if p.whale_mode else pendings
         for pend in fill_order:
             row = bars[pend.sym].iloc[i]
             if np.isnan(row["open"]):
@@ -282,7 +297,14 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             recent_loss = sum(x for _, x in loss_log)
             if recent_loss >= p.circuit_loss_24h * eq:
                 circuit_until = t + pd.Timedelta(hours=p.circuit_pause_h)
-            if (dd_frozen or state == "CRISIS"
+            # dd_stop freeze: while positions are open, no risk may be added
+            # until either recovery to dd_resume or the book goes flat. A FLAT
+            # frozen book may re-enter (at the automatic dd_half-halved size):
+            # with no open positions equity cannot move, so a full stop would
+            # make the documented release ("-15% 회복 시 해제") unreachable — a
+            # permanent coma, not the designed pause (E15: whale replays halted
+            # forever after the first -20% streak).
+            if ((dd_frozen and positions) or state == "CRISIS"
                     or (circuit_until is not None and t < circuit_until)):
                 continue
             corr_on = bool(corr_at.iloc[i])
@@ -299,16 +321,19 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 continue
             # unproven playbook slots run at reduced size until the forward
             # track earns them full weight (V2 staged-rollout rule)
-            risk_frac *= p.playbooks.get(pend.setup, {}).get("risk_scale", 1.0)
+            scale = p.playbooks.get(pend.setup, {}).get("risk_scale", 1.0)
+            risk_frac *= scale
             mult = (0.5 if dd >= p.dd_half else 1.0) * (0.5 if corr_on else 1.0)
             if (dd <= p.eq_boost_dd and not corr_on
                     and pend.sym in p.aggression_syms):
                 mult *= p.eq_boost_mult   # anti-martingale: press at equity highs
             # non-whale sizing folds `mult` into risk_frac; whale sizing ignores
-            # risk_frac (full margin), so `mult` must ride in as margin_frac to
-            # keep the dd_half / correlation de-risking alive in whale mode too
+            # risk_frac (full margin), so `mult` — AND the experimental
+            # risk_scale (E15: it used to vanish here, letting rejected/unproven
+            # slots deploy the whole account) — must ride in as margin_frac to
+            # keep staged rollout and dd/corr de-risking alive in whale mode too
             sz = size_position(eq, risk_frac * mult, fill, pend.sl, pend.direction, lev,
-                               full_margin=p.whale_mode, margin_frac=mult)
+                               full_margin=p.whale_mode, margin_frac=mult * scale)
             open_risk = sum(pos.open_risk(p) for pos in positions.values())
             open_margin = sum(pos.margin for pos in positions.values())
             if open_risk + sz.risk_amt > p.max_open_risk * eq:
@@ -417,8 +442,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 if not np.isnan(h):
                     pos.hold_conf = float(h)
                     pos.fade_streak = pos.fade_streak + 1 if h < p.hold_conf_exit else 0
+                    m = mom_at[sym][d].iloc[i] if mom_at is not None else np.nan
+                    mom_broken = not np.isnan(m) and m <= 1e-9
                     pos.loss_fade_streak = (pos.loss_fade_streak + 1
-                                            if h < p.hold_loss_exit else 0)
+                                            if h < p.hold_loss_exit or mom_broken
+                                            else 0)
             exit_px = close_px * (1 - d * spec(sym).slippage * p.cost_mult)
             time_stop = pb.get("time_stop_bars", p.time_stop_bars)
             trend_managed = pb.get("biasflip_exit", True)

@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from fabletradebot.config import Params, profile
-from fabletradebot.engine import run
+from fabletradebot.engine import Position, run
 from fabletradebot.risk import conf_tier, final_leverage, size_position
 from fabletradebot.signals import hold_confidence
 
@@ -115,6 +115,76 @@ def test_whale_picks_highest_confidence_coin_single_position():
     # full-margin: whole account is the margin
     assert pos.margin == pytest.approx(10_000.0, rel=1e-6)
     assert pos.notional == pytest.approx(pos.margin * pos.leverage, rel=1e-6)
+
+
+def test_whale_experimental_slot_deploys_scaled_margin():
+    # E15: an unproven slot (risk_scale 0.20) must NOT take the whole account
+    # as margin in whale mode — full margin scaled by the playbook risk_scale.
+    args = _two_coin_frames(conf_btc=0.85, conf_eth=0.0)
+    frames, features, cands, funding, regime, corr = args
+    cands["ETH"] = cands["ETH"].iloc[0:0]                  # only BTC fires
+    cands["BTC"] = cands["BTC"].assign(setup="PBK_L")      # experimental slot
+    res = run(frames, features, cands, funding, regime, corr,
+              profile("whale"), equity0=10_000.0)
+    pos = res["open_positions"]["BTC"]
+    scale = profile("whale").playbooks["PBK_L"]["risk_scale"]
+    assert pos.margin == pytest.approx(10_000.0 * scale, rel=1e-6)
+    assert pos.notional == pytest.approx(pos.margin * pos.leverage, rel=1e-6)
+
+
+def test_whale_seat_goes_to_proven_slot_over_higher_conf_experimental():
+    # E15: validation status outranks confidence — a proven BRK_L (conf 0.65)
+    # beats an experimental PBK_L (conf 0.95) firing on the same bar.
+    args = _two_coin_frames(conf_btc=0.65, conf_eth=0.95)
+    frames, features, cands, funding, regime, corr = args
+    cands["ETH"] = cands["ETH"].assign(setup="PBK_L")
+    res = run(frames, features, cands, funding, regime, corr,
+              profile("whale"), equity0=10_000.0)
+    assert list(res["open_positions"]) == ["BTC"]
+
+
+def test_dd_freeze_flat_book_may_reenter():
+    # E15 deadlock fix: a FROZEN but FLAT book must be able to re-enter (at the
+    # automatic dd-half sizing) — otherwise equity can never move and the
+    # documented dd_resume release is unreachable forever.
+    idx = pd.date_range("2024-01-01", periods=4, freq="1h", tz="UTC")
+    df = pd.DataFrame([(100, 101, 99.5, 100)] * 4,
+                      columns=["open", "high", "low", "close"], index=idx)
+    df["volume"] = 1000.0
+    f = pd.DataFrame(index=idx)
+    f["atr1h"], f["bias4h"] = 1.0, 1.0
+    f["hold_L"], f["hold_S"] = 0.9, 0.0
+    cands = {"BTC": pd.DataFrame({"dir": [1], "conf": [0.85], "sl": [95.0],
+                                 "setup": ["BRK_L"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    carry = {"cash": 7_500.0, "peak": 10_000.0, "dd_frozen": True,
+             "circuit_until": None, "loss_log": [], "cooldown": {},
+             "positions": {}, "pendings": []}
+    res = run({"BTC": df}, {"BTC": f}, cands, {"BTC": None}, regime, corr,
+              profile("whale"), start=idx[0], carry=carry)
+    pos = res["open_positions"]["BTC"]
+    assert pos.margin == pytest.approx(7_500.0 * 0.5, rel=1e-6)  # dd-half sizing
+
+
+def test_dd_freeze_still_blocks_while_positions_open():
+    # while frozen WITH an open position, no new risk may be added
+    frames, features, cands, funding, regime, corr = _two_coin_frames(0.85, 0.0)
+    idx = frames["BTC"].index
+    cands["BTC"] = cands["BTC"].iloc[0:0]                  # only ETH fires
+    cands["ETH"] = pd.DataFrame({"dir": [1], "conf": [0.85], "sl": [95.0],
+                                 "setup": ["BRK_L"]}, index=[idx[0]])
+    held = Position(sym="BTC", direction=1, conf=0.8, setup="BRK_L",
+                    regime="TREND_UP", entry=100.0, sl=95.0, sl0=95.0, tp1=0.0,
+                    notional=20_000.0, margin=10_000.0, risk_amt=1_000.0,
+                    leverage=2.0, liq_price=51.0, opened_ts=idx[0])
+    carry = {"cash": 7_500.0, "peak": 10_000.0, "dd_frozen": True,
+             "circuit_until": None, "loss_log": [], "cooldown": {},
+             "positions": {"BTC": held}, "pendings": []}
+    p = profile("whale")
+    res = run(frames, features, cands, funding, regime, corr, p,
+              start=idx[0], carry=carry)
+    assert "ETH" not in res["open_positions"]
 
 
 def test_whale_holds_position_no_cross_coin_switch():
@@ -244,6 +314,32 @@ def test_lossfade_leaves_winner_to_the_winner_exit():
     res = _run_fade(path, [0.9, 0.9, 0.2, 0.2, 0.2], _LOSS_P)
     assert "LossFade" not in list(res["trades"].get("reason", []))
     assert list(res["open_positions"]) == ["BTC"]
+
+
+def test_lossfade_fires_on_adverse_momentum_saturation():
+    # E15: even while the blended hold_conf stays ABOVE the loss floor (the
+    # regime/alignment 75% lags a V-reversal), a fully saturated adverse 4H
+    # momentum read (mom == 0) for hold_conf_bars bars cuts the loser early.
+    path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
+            (100, 100, 98, 98.5), (98.5, 98.7, 97.5, 98),
+            (98, 98.3, 97.4, 98)]
+    idx = pd.date_range("2024-01-01", periods=len(path), freq="1h", tz="UTC")
+    df = pd.DataFrame(path, columns=["open", "high", "low", "close"], index=idx)
+    df["volume"] = 1000.0
+    f = pd.DataFrame(index=idx)
+    f["atr1h"], f["bias4h"] = 1.0, 1.0
+    f["hold_L"], f["hold_S"] = 0.9, 0.0          # conviction NOT collapsed
+    f["mom_L"] = [0.5, 0.5, 0.0, 0.0, 0.0]       # momentum fully broken
+    f["mom_S"] = 1.0
+    cands = {"BTC": pd.DataFrame({"dir": [1], "conf": [0.85], "sl": [95.0],
+                                 "setup": ["BRK_L"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    res = run({"BTC": df}, {"BTC": f}, cands, {"BTC": None}, regime, corr,
+              _LOSS_P, equity0=10_000.0)
+    assert len(res["trades"]) == 1
+    tr = res["trades"].iloc[0]
+    assert tr["reason"] == "LossFade" and tr["r"] > -1.0
 
 
 def test_lossfade_disabled_by_default():

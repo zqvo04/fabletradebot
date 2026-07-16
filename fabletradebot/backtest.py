@@ -10,7 +10,7 @@ from .config import UNIVERSE, Params
 from .data_okx import load_1h, load_funding, resample
 from .engine import run as engine_run
 from .regime import corr_alert_1h, regime_1d
-from .signals import build_features, hold_confidence, scan
+from .signals import build_features, hold_confidence, hold_momentum, scan
 
 
 def load_universe(data_dir: str, symbols: list[str] | None = None):
@@ -65,6 +65,8 @@ def prepare(frames: dict, funding: dict, p: Params):
         # engine reads the held side each bar for the momentum-fade exit
         f["hold_L"] = hold_confidence(f, reg_s["state"], reg_s["btc_dir"], 1, p)
         f["hold_S"] = hold_confidence(f, reg_s["state"], reg_s["btc_dir"], -1, p)
+        f["mom_L"] = hold_momentum(f, 1)
+        f["mom_S"] = hold_momentum(f, -1)
         features[s] = f
         candidates[s] = scan(f, reg_s, p)
     return features, candidates, states, corr

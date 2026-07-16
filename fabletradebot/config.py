@@ -267,13 +267,19 @@ P = Params()
 #           95%p MDD ~ 60%+ and P(ruinous DD) is real. Paper-only guard rail.
 #   whale — single-position concentration (V4, the user's crypto-whale design).
 #           Instead of spreading risk over up to 4 positions, hold at most ONE:
-#           each bar the highest-confidence signal across the whole universe
-#           wins the seat and is sized FULL-MARGIN (margin == whole account) at
-#           a confidence-chosen leverage tier (>=0.80 -> 10x, >=0.70 -> 5x,
-#           >=0.62 -> 3x, >=0.55 -> 2x). Highest tail of all profiles and the
-#           highest ruin: a single stop-out costs lev*stop_frac of the account
-#           (e.g. 10x on a 2% stop = -20%). The position is held to its exit —
-#           a fresh signal on another coin never displaces it (no churn).
+#           each bar the best signal across the whole universe wins the seat —
+#           PROVEN slots (risk_scale 1.0) outrank experimental ones, then conf
+#           breaks ties (E15; conf does not rank R, E9) — sized FULL-MARGIN
+#           (margin == whole account × the slot's risk_scale) at a
+#           confidence-chosen leverage tier (>=0.80 -> 10x, >=0.70 -> 5x,
+#           >=0.62 -> 3x, >=0.55 -> 2x). Experimental slots deploy only
+#           risk_scale (0.20) of the account as margin — the staged-rollout
+#           rule survives concentration (E15: it used to be silently dropped
+#           here). Highest tail of all profiles and the highest ruin: a single
+#           proven stop-out costs lev*stop_frac of the account (e.g. 10x on a
+#           2% stop = -20%). The position is held to its exit — a fresh signal
+#           on another coin never displaces it (no churn), except the Upgrade
+#           rule (proven displaces experimental).
 #
 # Profiles change ONLY sizing/aggression knobs — never the liquidation-safety
 # invariant (stop always before liquidation) which is non-negotiable in all.
