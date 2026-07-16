@@ -136,15 +136,28 @@ def hold_confidence(f: pd.DataFrame, state: pd.Series, btc_dir: pd.Series,
     align = _tf_align(f, btc_dir, d)
     trend = "TREND_UP" if d == 1 else "TREND_DOWN"
     fit = state.map({trend: 1.0, "RANGE": 0.5, "HIGH_VOL": 0.35}).fillna(0.0)
-    # 4H momentum: how decisively price sits on the trade's side of the value
-    # line (EMA20), graded by ATR4H instead of a binary sign — a hard 0/1 cliff
-    # makes hold_conf flicker whenever price hovers on the EMA and turns the
-    # streak-based fade exits jittery. Saturates at 1 ATR either way (0.5 == at
-    # the line), mirroring how rsi_ok saturates at 20 RSI points.
+    mom = hold_momentum(f, d)
+    return (0.45 * align + 0.30 * fit + 0.25 * mom).clip(0, 1)
+
+
+def hold_momentum(f: pd.DataFrame, d: int) -> pd.Series:
+    """The 4H-momentum component of hold_confidence, exposed on its own: how
+    decisively price sits on the trade's side of the value line (EMA20), graded
+    by ATR4H instead of a binary sign — a hard 0/1 cliff makes hold_conf flicker
+    whenever price hovers on the EMA and turns the streak-based fade exits
+    jittery. Saturates at 1 ATR either way (0.5 == at the line), mirroring how
+    rsi_ok saturates at 20 RSI points.
+
+    mom == 0 is full ADVERSE saturation: price a whole ATR4H beyond the value
+    line against the trade AND RSI(4H) on the wrong side of 50. The engine's
+    LossFade uses that saturation as a second, price-based read of a broken
+    thesis (E15) — the regime/alignment 75% of hold_confidence lags exactly
+    when a V-reversal runs over a counter-trend position, so the blended score
+    can stay above the loss floor while the chart has plainly turned.
+    """
     px_ok = (d * (f["close"] - f["ema20_4h"]) / f["atr4h"]).clip(-1, 1) * 0.5 + 0.5
     rsi_ok = (d * (f["rsi4h"] - 50) / 20).clip(0, 1)
-    mom = 0.5 * px_ok + 0.5 * rsi_ok
-    return (0.45 * align + 0.30 * fit + 0.25 * mom).clip(0, 1)
+    return 0.5 * px_ok + 0.5 * rsi_ok
 
 
 def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
@@ -158,8 +171,12 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
     if family == "BRK":     # swing trend continuation
         level = f["hh"] if d == 1 else f["ll"]
         broke = (f["close"] > level) if d == 1 else (f["close"] < level)
+        # E15: the global-BTC-direction hard gate was removed — with V3
+        # per-asset regimes it double-counted BTC (still 1/3 of c_align) and
+        # was the sole blocker on 23/94 recent live breakouts (measured FN).
+        # The asset's own 1D bias / state / 4H bias gates stay as designed.
         mask = (broke & (f["bias1d"] == d) & (f["bias4h"] == d)
-                & (btc_dir == d) & (vol_ratio >= p.brk_vol_mult)
+                & (vol_ratio >= p.brk_vol_mult)
                 & state.isin([trend, "RANGE"]))
         sl = level - d * p.sl_swing_atr * f["atr1h"]
         margin = ((f["close"] - level) * d / f["atr1h"]).clip(0, 1)
