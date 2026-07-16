@@ -14,6 +14,11 @@ def test_whale_profile_wiring():
     assert p.whale_mode is True
     assert p.max_positions == 1 and p.max_positions_corr == 1
     assert p.pyramid_max == 0 and p.aggression_syms == ()
+    # E16: the giveback leg of SignalFade is disabled (1.0 = never fires) —
+    # it was cutting the compounding trend winners (E9 re-confirmed at whale
+    # scale). Conviction-collapse (0.50) and LossFade stay armed.
+    assert p.hold_giveback == 1.0
+    assert p.hold_conf_exit == 0.50 and p.hold_loss_exit == 0.50
 
 
 def test_whale_confidence_leverage_tiers():

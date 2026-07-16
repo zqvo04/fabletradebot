@@ -332,12 +332,17 @@ def profile(name: str = "base") -> Params:
             pyramid_max=0,
             aggression_syms=(),
             # re-score the single held position every bar and bank a winner
-            # when its run stalls (gives back half its peak) or its conviction
-            # collapses, freeing the seat for the next coin
+            # when its conviction collapses (regime/alignment/momentum turned),
+            # freeing the seat for the next coin. The GIVEBACK leg is disabled
+            # (1.0 = never): E16 re-measured E9's finding at whale scale — the
+            # 50%-of-peak giveback exit was cutting the compounding trend
+            # winners this profile lives on (design window +318% -> +5,434%,
+            # MDD -64% -> -48% with the leg off; trail + conviction-collapse
+            # + LossFade remain the only exits).
             hold_conf_exit=0.50,
             hold_conf_bars=2,
             hold_conf_min_r=1.0,
-            hold_giveback=0.5,
+            hold_giveback=1.0,
             # and cut a LOSING single position early when its live conviction
             # stays below this (adverse regime/momentum) for hold_conf_bars,
             # protecting the concentrated account before a full leveraged stop.
