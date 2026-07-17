@@ -65,8 +65,8 @@ def prepare(frames: dict, funding: dict, p: Params):
         # engine reads the held side each bar for the momentum-fade exit
         f["hold_L"] = hold_confidence(f, reg_s["state"], reg_s["btc_dir"], 1, p)
         f["hold_S"] = hold_confidence(f, reg_s["state"], reg_s["btc_dir"], -1, p)
-        f["mom_L"] = hold_momentum(f, 1)
-        f["mom_S"] = hold_momentum(f, -1)
+        f["mom_L"] = hold_momentum(f, 1, p)
+        f["mom_S"] = hold_momentum(f, -1, p)
         features[s] = f
         candidates[s] = scan(f, reg_s, p)
     return features, candidates, states, corr

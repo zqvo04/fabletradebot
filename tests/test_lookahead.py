@@ -34,6 +34,39 @@ def test_truncation_invariance_of_candidates():
         pd.testing.assert_frame_equal(a, part[part.index <= t_cut], check_dtype=False)
 
 
+def test_cva_conf_is_cbase_only_and_funding_is_a_veto():
+    """E17 CV-A: under conf_clean the entry score equals c_base alone (c_fit /
+    c_align leave the score, their mask gates stay), and a direction-crowded
+    funding reading vetoes the entry instead of nudging the score."""
+    from dataclasses import replace
+
+    df = make_1h(3000, seed=7, regime_switch=True, vol=0.008)
+    funding = make_funding(df.index, seed=7)
+    btc = make_1h(3000, seed=8, regime_switch=True)
+    reg = regime_1d(resample(btc, 24), P)
+    reg_h = closed_asof_1h(reg, 24, df.index)
+    reg_h["state"] = reg_h["state"].fillna("RANGE")
+    reg_h["btc_dir"] = reg_h["btc_dir"].fillna(0)
+
+    pc = replace(P, conf_clean=True)
+    f = build_features(df, funding, pc)
+    cand = scan(f, reg_h, pc)
+    if len(cand):
+        # score == c_base exactly (clipped), c_fit/c_align contribute nothing
+        assert (cand["conf"] - cand["c_base"].clip(0, 1)).abs().max() < 1e-9
+
+    # crowding veto: force a strongly positive same-direction funding z on a long
+    f2 = f.copy()
+    f2["fund_z"] = pc.funding_z_ext + 1.0        # crowded along any long
+    cand_veto = scan(f2, reg_h, pc)
+    longs = cand_veto[cand_veto["dir"] == 1]
+    assert len(longs) == 0, "crowded-long entries must be vetoed under CV-A"
+
+
+def test_base_profile_defaults_adopt_v5():
+    assert P.conf_clean is True and P.hold_cont is True
+
+
 def test_donchian_uses_prior_bars_only():
     df = make_1h(500, seed=1)
     hi, _ = donchian(df, 48)

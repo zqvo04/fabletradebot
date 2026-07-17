@@ -135,12 +135,23 @@ def hold_confidence(f: pd.DataFrame, state: pd.Series, btc_dir: pd.Series,
     """
     align = _tf_align(f, btc_dir, d)
     trend = "TREND_UP" if d == 1 else "TREND_DOWN"
-    fit = state.map({trend: 1.0, "RANGE": 0.5, "HIGH_VOL": 0.35}).fillna(0.0)
-    mom = hold_momentum(f, d)
+    if p.hold_cont:
+        # HV-A: continuous trend fit from the trade's own 4H frame. The stepped
+        # daily-regime map (1.0/0.5/0.35) lags the tape by up to the hysteresis
+        # window and makes hold_conf jump in 0.15 cliffs on each label flip; the
+        # signed EMA20-EMA50 gap graded by ATR4H reads the same trend definition
+        # regime.py uses (|EMA20-EMA50| > 0.5 ATR) as a smooth [0,1]. HIGH_VOL /
+        # CRISIS are not trend states, so hard-zero fit there (unchanged intent).
+        fit = ((d * (f["ema20_4h"] - f["ema50_4h"]) / f["atr4h"]).clip(-1, 1)
+               * 0.5 + 0.5)
+        fit = fit.where(~state.isin(["HIGH_VOL", "CRISIS"]), 0.0).fillna(0.0)
+    else:
+        fit = state.map({trend: 1.0, "RANGE": 0.5, "HIGH_VOL": 0.35}).fillna(0.0)
+    mom = hold_momentum(f, d, p)
     return (0.45 * align + 0.30 * fit + 0.25 * mom).clip(0, 1)
 
 
-def hold_momentum(f: pd.DataFrame, d: int) -> pd.Series:
+def hold_momentum(f: pd.DataFrame, d: int, p: Params | None = None) -> pd.Series:
     """The 4H-momentum component of hold_confidence, exposed on its own: how
     decisively price sits on the trade's side of the value line (EMA20), graded
     by ATR4H instead of a binary sign — a hard 0/1 cliff makes hold_conf flicker
@@ -156,7 +167,16 @@ def hold_momentum(f: pd.DataFrame, d: int) -> pd.Series:
     can stay above the loss floor while the chart has plainly turned.
     """
     px_ok = (d * (f["close"] - f["ema20_4h"]) / f["atr4h"]).clip(-1, 1) * 0.5 + 0.5
-    rsi_ok = (d * (f["rsi4h"] - 50) / 20).clip(0, 1)
+    if p is not None and p.hold_cont:
+        # HV-A: symmetric rsi, restoring the adverse-side gradient. The old
+        # clip(0,1) collapses the whole RSI4H<50 (for a long) region to 0, so
+        # hold_conf could not tell RSI 45 from RSI 30 — exactly the region the
+        # LossFade must grade. Now RSI a full 20 pts wrong side saturates to 0,
+        # mirroring px_ok; mom==0 (the E15 "chart has plainly turned" second
+        # read) therefore now means price 1 ATR adverse AND RSI 20 pts wrong.
+        rsi_ok = (d * (f["rsi4h"] - 50) / 20).clip(-1, 1) * 0.5 + 0.5
+    else:
+        rsi_ok = (d * (f["rsi4h"] - 50) / 20).clip(0, 1)
     return 0.5 * px_ok + 0.5 * rsi_ok
 
 
@@ -284,7 +304,21 @@ def scan(f: pd.DataFrame, regime: pd.DataFrame, p: Params) -> pd.DataFrame:
         mask, sl, base, fit, align = _playbook(name, d, f, state, btc_dir,
                                                vol_ratio, p)
         fm = _fund_mod(f, d, p)
-        conf = (p.w_base * base + p.w_regime * fit + p.w_align * align + fm).clip(0, 1)
+        if p.conf_clean:
+            # CV-A: the mask already hard-requires the regime/1D/4H conditions
+            # that c_fit and c_align encode, so on the entry-conditional set
+            # those components are saturated (c_align) or sign-inverted (c_fit,
+            # RANGE-breakouts score highest R yet get fit=0.4). Drop them from
+            # the SCORE — conf now grades only the continuous evidence (c_base).
+            # Funding leaves the score too: instead of a bonus/penalty addend it
+            # becomes a hard CROWDING VETO — a new entry crowded along its own
+            # direction (fund_z*d > funding_z_ext) is blocked, never sized up.
+            conf = base.clip(0, 1)
+            crowded = (f["fund_z"].fillna(0.0) * d) > p.funding_z_ext
+            mask = mask & ~crowded
+        else:
+            conf = (p.w_base * base + p.w_regime * fit
+                    + p.w_align * align + fm).clip(0, 1)
         idx = f.index[mask.fillna(False)]
         if len(idx) == 0:
             continue

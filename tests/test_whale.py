@@ -19,6 +19,11 @@ def test_whale_profile_wiring():
     # scale). Conviction-collapse (0.50) and LossFade stay armed.
     assert p.hold_giveback == 1.0
     assert p.hold_conf_exit == 0.50 and p.hold_loss_exit == 0.50
+    # E17: whale keeps the LEGACY entry conf (CV-A off) — its conf->leverage
+    # tier map is load-bearing, so the c_base-only clean conf must not apply.
+    # HV-A (continuous hold_conf) is inherited on.
+    assert p.conf_clean is False
+    assert p.hold_cont is True
 
 
 def test_whale_confidence_leverage_tiers():
@@ -210,13 +215,16 @@ def test_whale_holds_position_no_cross_coin_switch():
 
 def test_hold_confidence_high_when_aligned_low_when_not():
     idx = pd.date_range("2024-01-01", periods=3, freq="1h", tz="UTC")
+    # ema50 below ema20 by >=1 ATR -> continuous fit saturates to 1 (HV-A)
     f = pd.DataFrame({"bias1d": 1.0, "bias4h": 1.0, "close": 110.0,
-                      "ema20_4h": 100.0, "atr4h": 5.0, "rsi4h": 70.0}, index=idx)
+                      "ema20_4h": 100.0, "ema50_4h": 95.0, "atr4h": 5.0,
+                      "rsi4h": 70.0}, index=idx)
     btc = pd.Series(1.0, index=idx)
     up = hold_confidence(f, pd.Series("TREND_UP", index=idx), btc, 1, Params())
     assert up.iloc[0] == pytest.approx(1.0)          # every read favourable
-    # fully against a long: opposite trend, below EMA20, weak RSI
-    f2 = f.assign(bias1d=-1.0, bias4h=-1.0, close=90.0, rsi4h=30.0)
+    # fully against a long: opposite trend (ema50 above ema20), below EMA20,
+    # weak RSI a full 20 pts on the wrong side -> fit/px/rsi all saturate to 0
+    f2 = f.assign(bias1d=-1.0, bias4h=-1.0, close=90.0, ema50_4h=105.0, rsi4h=30.0)
     dn = hold_confidence(f2, pd.Series("TREND_DOWN", index=idx),
                          pd.Series(-1.0, index=idx), 1, Params())
     assert dn.iloc[0] == pytest.approx(0.0)
