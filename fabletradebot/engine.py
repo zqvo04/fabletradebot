@@ -515,6 +515,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 continue
             meta = {k: float(row[k]) for k in
                     ("c_base", "c_fit", "c_align", "c_fund") if k in row.index}
+            # Phase 0 (V5.1): stamp the decision-bar held-side conviction into
+            # the trade record (attribution-only, read by no logic). It is the
+            # forward judge for WF-A — corr(hold_entry, R) and the hold_entry
+            # distribution — and 1.0 on disarmed profiles (constant, inert).
+            meta["hold_entry"] = round(hold_dec, 4)
             pendings.append(Pending(sym=sym, direction=d_i,
                                     conf=float(row["conf"]), sl=float(row["sl"]),
                                     setup=str(row["setup"]),
