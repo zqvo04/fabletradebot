@@ -1,4 +1,6 @@
 """Whale mode (V4): single full-margin position on the highest-confidence coin."""
+from dataclasses import replace
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -211,6 +213,50 @@ def test_whale_holds_position_no_cross_coin_switch():
     assert len(res["trades"]) == 0
 
 
+# ---- WF-A: entry / hold coherence gate (V5.1, I1) ----
+
+def _one_coin_armed(hold_at_entry: float, p):
+    """BTC fires one BRK_L candidate at bar0 on a flat path; hold_L is pinned to
+    `hold_at_entry` so the decision-bar hold_confidence is controllable."""
+    idx = pd.date_range("2024-01-01", periods=5, freq="1h", tz="UTC")
+    df = pd.DataFrame([(100, 100.5, 99.5, 100)] * len(idx),
+                      columns=["open", "high", "low", "close"], index=idx)
+    df["volume"] = 1000.0
+    f = pd.DataFrame(index=idx)
+    f["atr1h"], f["bias4h"] = 1.0, 1.0
+    f["hold_L"], f["hold_S"] = float(hold_at_entry), 0.0
+    cands = {"BTC": pd.DataFrame({"dir": [1], "conf": [0.85], "sl": [95.0],
+                                 "setup": ["BRK_L"]}, index=[idx[0]])}
+    regime = pd.DataFrame({"state": "TREND_UP", "btc_dir": 1}, index=idx)
+    corr = pd.Series(False, index=idx)
+    return run({"BTC": df}, {"BTC": f}, cands, {"BTC": None}, regime, corr, p,
+               equity0=10_000.0)
+
+
+def test_wfa_whale_skips_candidate_below_hold_exit():
+    # decision-bar hold 0.40 < hold_conf_exit 0.50 -> the seat is refused: this
+    # candidate would open straight into a 2-bar SignalFade, so it never fills.
+    res = _one_coin_armed(0.40, profile("whale"))
+    assert list(res["open_positions"]) == []
+    assert len(res["trades"]) == 0
+
+
+def test_wfa_whale_fills_candidate_at_or_above_hold_exit():
+    # decision-bar hold 0.60 >= 0.50 -> coherent, takes the seat as before.
+    res = _one_coin_armed(0.60, profile("whale"))
+    assert list(res["open_positions"]) == ["BTC"]
+
+
+def test_wfa_disarmed_profile_fills_same_low_hold_candidate():
+    # base has hold_conf_exit 0 -> hold system disarmed -> the gate never binds,
+    # so the identical low-hold candidate still enters (non-whale invariance).
+    p = replace(Params(), max_positions=1, whale_mode=True, hold_conf_exit=0.0,
+                hold_loss_exit=0.0, max_open_risk=2.0, max_margin_frac=2.0,
+                conf_tiers=((0.55, 2.0, 0.01),), aggression_syms=())
+    res = _one_coin_armed(0.40, p)
+    assert list(res["open_positions"]) == ["BTC"]
+
+
 # ---- momentum / confidence-fade management (V4) ----
 
 def test_hold_confidence_high_when_aligned_low_when_not():
@@ -273,10 +319,13 @@ def test_signalfade_banks_winner_on_conviction_collapse():
 
 
 def test_signalfade_never_banks_a_loser():
-    # underwater with collapsed conviction -> the stop's job, not the fade's
+    # underwater with collapsed conviction -> the stop's job, not the fade's.
+    # Entry-bar hold is coherent (0.9, so WF-A lets it fill), then conviction
+    # collapses while the trade goes underwater — the winner-only SignalFade
+    # must still leave it to the stop.
     path = [(100, 100.5, 99.5, 100), (100, 100.5, 99.8, 100),
             (100, 100, 97, 97), (97, 97.5, 96.5, 97), (97, 97.5, 96.5, 97)]
-    res = _run_fade(path, [0.2] * 5, _FADE_P)
+    res = _run_fade(path, [0.9, 0.2, 0.2, 0.2, 0.2], _FADE_P)
     assert "SignalFade" not in list(res["trades"].get("reason", []))
     assert list(res["open_positions"]) == ["BTC"]
 
