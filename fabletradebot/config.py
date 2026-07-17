@@ -246,6 +246,29 @@ class Params:
     w_base: float = 0.55
     w_regime: float = 0.25
     w_align: float = 0.20
+    # --- V5 conf / hold_conf redesign (E17, CONF_REDESIGN.md) ----------------
+    # Two pre-registered variants cleared their gates and are ADOPTED as the
+    # defaults below; four were measured and REJECTED (kept off, with verdicts
+    # in CONF_REDESIGN.md §3): HV-B streak 2->4 (delays winners' exit, whale
+    # ret -6%), HV-C drop BTC hold-vote (both halves worse — the entry-gate
+    # double-count does NOT transfer to exit), CV-B percentile c_base (its only
+    # rationale, whale seat comparability, is moot once whale keeps legacy conf),
+    # CV-C structural whale leverage (whale MDD -48%->-65%: the conf tier's
+    # stop-width-correlated de-risking is load-bearing).
+    #   hold_cont  (HV-A, ADOPTED): continuous 4H-EMA-gap fit + symmetric rsi in
+    #     hold_confidence, replacing the stepped daily-regime-map fit and the
+    #     one-sided rsi_ok deadzone. base is inert (hold disarmed); whale exp
+    #     +0.134->+0.196R, MDD -47.9%->-46.5%, both halves up.
+    #   conf_clean (CV-A, ADOPTED): entry conf grades only the continuous
+    #     evidence c_base; c_fit (sign-inverted: RANGE breakouts score the best R
+    #     yet get fit=0.4) and c_align (mask-saturated) leave the SCORE — their
+    #     mask GATES stay. Funding leaves the score too, becoming a crowding
+    #     veto. base exp +0.107->+0.110R, pf 1.57->1.63, MC p95 -20.7%->-18.6%.
+    #     conf_entry stays 0.55 (base n 1381->1267, inside the pre-set +-10%
+    #     band, so no threshold re-fitting). WHALE opts OUT (conf_clean=False in
+    #     the profile): its conf->leverage tier map is measured load-bearing.
+    hold_cont: bool = True
+    conf_clean: bool = True
 
 P = Params()
 
@@ -316,6 +339,13 @@ def profile(name: str = "base") -> Params:
         return replace(
             Params(),
             whale_mode=True,
+            # whale keeps the LEGACY entry conf (CV-A off): unlike base/turbo/max
+            # — which use conf only as a >=conf_entry gate under a single
+            # leverage tier — whale maps conf -> leverage tier (0.55/0.62/0.70/
+            # 0.80 -> 2/3/5/10x). CV-A's lower c_base-only conf distribution
+            # collapses that mapping (ret 54x->13x, MDD -48%->-60%); the tier's
+            # stop-width/regime-correlated de-risking is load-bearing (E17).
+            conf_clean=False,
             # confidence -> leverage tier (risk field unused under full-margin)
             conf_tiers=((0.55, 2.0, 0.01), (0.62, 3.0, 0.01),
                         (0.70, 5.0, 0.01), (0.80, 10.0, 0.01)),
