@@ -86,6 +86,12 @@ class Pending:
     regime: str
     decided_ts: pd.Timestamp
     meta: dict = field(default_factory=dict)   # signal components for attribution
+    # WF-A/WF-C (V5.1): the held-side conviction (hold_confidence) read at the
+    # DECISION bar, in this candidate's own direction. 1.0 when the hold system
+    # is disarmed (base/turbo/max: hold_at is None) so it neither gates nor
+    # reorders anything there. In whale it is the same continuous score the
+    # hold/exit logic uses, so entry, seat-tiebreak and exit all read one scale.
+    hold_dec: float = 1.0
 
 
 # --- carry (incremental live state) serialization ---------------------------
@@ -493,13 +499,32 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             cd = cooldown.get(sym)
             if cd is not None and not (cand_scale >= 1.0 and cd["exp"]):
                 continue
+            # WF-A (V5.1, I1): entry/hold coherence gate. Read the held-side
+            # conviction this candidate would open into, at the decision bar. On
+            # an armed profile (hold_conf_exit>0 -> whale) a candidate the hold
+            # logic would immediately judge spent (hold_dec < hold_conf_exit,
+            # i.e. a 2-bar SignalFade waiting to happen) never takes the seat.
+            # Disarmed profiles keep hold_at None -> hold_dec 1.0 -> no gate.
+            d_i = int(row["dir"])
+            hold_dec = 1.0
+            if hold_at is not None:
+                hv = hold_at[sym][d_i].iloc[i]
+                if not np.isnan(hv):
+                    hold_dec = float(hv)
+            if p.hold_conf_exit > 0 and hold_dec < p.hold_conf_exit:
+                continue
             meta = {k: float(row[k]) for k in
                     ("c_base", "c_fit", "c_align", "c_fund") if k in row.index}
-            pendings.append(Pending(sym=sym, direction=int(row["dir"]),
+            # Phase 0 (V5.1): stamp the decision-bar held-side conviction into
+            # the trade record (attribution-only, read by no logic). It is the
+            # forward judge for WF-A — corr(hold_entry, R) and the hold_entry
+            # distribution — and 1.0 on disarmed profiles (constant, inert).
+            meta["hold_entry"] = round(hold_dec, 4)
+            pendings.append(Pending(sym=sym, direction=d_i,
                                     conf=float(row["conf"]), sl=float(row["sl"]),
                                     setup=str(row["setup"]),
                                     regime=state_at[sym].iloc[i],
-                                    decided_ts=t, meta=meta))
+                                    decided_ts=t, meta=meta, hold_dec=hold_dec))
         for sym in list(cooldown):
             cooldown[sym]["bars"] -= 1
             if cooldown[sym]["bars"] <= 0:
