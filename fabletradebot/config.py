@@ -236,6 +236,12 @@ class Params:
     circuit_pause_h: int = 24
     cooldown_bars: int = 12          # per-asset bars to wait after a close
                                      # (RSI<20 persists; avoid re-catching a knife)
+    # SR-B / SR-C (E19) were measured on the design window and REJECTED — see
+    # EXPERIMENTS.md E19 / SEAT_REDESIGN.md. SR-C (reason-split cooldown) moved
+    # whale terminal wealth non-monotonically (win_cd 2/4/6/8/12 -> 28/31/31/72/68x,
+    # a G5 sign-flip = path noise, avg_r rising the whole time = the E9 mirage);
+    # SR-B (dead-seat rotation) never fired (rot=0, the losing-armed-holder +
+    # pending-cross-candidate coincidence does not occur). Neither is in the code.
     # --- costs ---
     taker_fee: float = 0.0005        # one way
     # OKX only serves ~3 months of funding history; before that the engine
