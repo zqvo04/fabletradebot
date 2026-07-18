@@ -25,7 +25,7 @@ import os
 
 import pandas as pd
 
-from fabletradebot import journal_notion, notify
+from fabletradebot import journal_notion, notify, promotion
 from fabletradebot.backtest import load_universe, prepare
 from fabletradebot.config import UNIVERSE, profile
 from fabletradebot.data_okx import update_cache
@@ -74,6 +74,14 @@ def main() -> None:
             print(f"  {sym}: update FAILED ({exc}) — replay continues on cache")
 
     p = profile(os.environ.get("PROFILE", "whale"))
+    # SR-D (E19): let the FORWARD track earn each experimental slot its size.
+    # Reads only journal/forward_ledger.csv (never the design window), so this
+    # is inert until a slot accumulates >=30 forward trades. The seat then flows
+    # to slots with proven forward edge — the only stable entry-quality lever
+    # (E19c: the same-scale conf tiebreak has no cross-half selection skill).
+    promo = promotion.apply_promotions(p)
+    for name, b, s in promo:
+        print(f"  SR-D promote {name}: risk_scale {b} -> {s}")
     frames, funding = load_universe(DATA_DIR)
     if "BTC" not in frames:
         raise SystemExit("no BTC data — cannot classify regime")
@@ -120,6 +128,7 @@ def main() -> None:
         page_id = pages.pop(key, None)
         notify.send(notify.fmt_exit(tr.to_dict()))
         journal_notion.post_close(tr.to_dict(), page_id)
+        promotion.append_trade(tr.to_dict())   # SR-D forward ledger (persisted via CI)
         closed_keys.add(key)
         closed_list.append(key)   # append-order == chronological (trades are time-sorted)
         print(f"  CLOSE {key} {tr['reason']} {tr['r']:+.2f}R")
