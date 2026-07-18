@@ -51,6 +51,8 @@ class Position:
     loss_fade_streak: int = 0      # consecutive bars of collapsed hold_conf (loser)
     hold_conf: float = 0.0         # live re-scored conviction (latest bar)
     peak_r: float = 0.0            # best unrealized R reached (give-back exit)
+    stall_count: int = 0           # consecutive bars with no new best_close (X-A)
+    trail_tightened: bool = False  # X-A width ratchet, one-way once armed
 
     def __post_init__(self):
         if not self.tranches:
@@ -398,10 +400,26 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 pos.tp1_done = True
                 pos.sl = pos.entry  # break-even stop for the runner
             # close-based management
+            prev_best = pos.best_close
             pos.best_close = max(pos.best_close, close_px) if d == 1 \
                 else min(pos.best_close, close_px)
             a = atr1h[sym].iloc[i]
             trail_w = pb.get("trail_atr", p.trail_atr)
+            # X-A stall-tightened chandelier (EXIT_REDESIGN.md §2): count bars
+            # since the last new best_close; once a proven winner (peak_r >=
+            # stall_peak_r) has gone flat for stall_bars, ratchet the width
+            # down one-way. peak_r read here is up to the PREVIOUS bar (it is
+            # updated below) — immaterial for a 0.5R gate over a multi-bar
+            # stall. Inert where the slot has no trail (min keeps trail_w at 0),
+            # so it only ever tightens an existing chandelier, never adds one.
+            if p.stall_bars > 0:
+                pos.stall_count = 0 if pos.best_close != prev_best \
+                    else pos.stall_count + 1
+                if (not pos.trail_tightened and pos.peak_r >= p.stall_peak_r
+                        and pos.stall_count >= p.stall_bars):
+                    pos.trail_tightened = True
+                if pos.trail_tightened:
+                    trail_w = min(trail_w, p.stall_trail_atr)
             if trail_w > 0 and not np.isnan(a):  # chandelier, active from entry
                 trail = pos.best_close - d * trail_w * a
                 if d * (trail - pos.sl) > 0:

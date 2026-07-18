@@ -296,6 +296,53 @@ def test_equity_peak_tracks_true_high_not_initial_capital():
     assert true_dd >= p.dd_stop
 
 
+def test_stall_tightened_trail_banks_a_flat_winner():
+    # X-A (EXIT_REDESIGN.md §2): a long runs to ~+1R (best_close 105), then goes
+    # flat for 3 bars printing no new best_close. atr1h=1.0, so the default 8-ATR
+    # chandelier sits at 105-8=97 (never hit), while the tightened 3-ATR sits at
+    # 105-3=102. A later bar dips to 101.5: it hits the TIGHTENED stop but not the
+    # wide one — so stall_bars ON exits via Trail, OFF stays open.
+    path = [
+        (100, 101, 99.5, 100),        # bar0: candidate decided
+        (100, 100.5, 99.8, 100),      # bar1: fill ~100
+        (100, 105.2, 99.9, 105),      # bar2: rally, best_close=105, peak_r ~1R
+        (105, 105.1, 104.2, 104.5),   # bar3: flat, no new best -> stall=1
+        (104.5, 104.8, 104.2, 104.5), # bar4: stall=2
+        (104.5, 104.8, 104.2, 104.5), # bar5: stall=3 -> tighten, sl->102
+        (104.5, 104.8, 101.5, 104),   # bar6: low 101.5 hits tightened stop only
+    ]
+    args = _setup(path, 0, 1, sl=95.0)
+    on = run(*args, Params(stall_bars=3, stall_trail_atr=3.0, stall_peak_r=0.5),
+             equity0=10_000.0)
+    off = run(*_setup(path, 0, 1, sl=95.0), Params(stall_bars=0), equity0=10_000.0)
+    assert len(on["trades"]) == 1 and on["trades"].iloc[0]["reason"] == "Trail"
+    assert on["trades"].iloc[0]["pnl"] > 0  # banked the stalled winner in profit
+    assert SYM not in on["open_positions"]
+    # OFF: wide 8-ATR trail never reached -> position still open, no trade
+    assert len(off["trades"]) == 0 and SYM in off["open_positions"]
+
+
+def test_stall_tighten_gated_on_peak_r_and_is_one_way():
+    # Same flat stall, but the position never reaches stall_peak_r (peaks ~+0.2R):
+    # the width must NOT tighten, so the wide trail leaves it open. Proves the
+    # gate keeps X-A off non-winners (a loser is the SL/LossFade's job).
+    path = [
+        (100, 101, 99.5, 100),        # bar0: decided
+        (100, 100.5, 99.8, 100),      # bar1: fill ~100
+        (100, 101.2, 99.9, 101),      # bar2: best_close=101, peak_r ~0.2R
+        (101, 101.1, 100.5, 100.8),   # bar3: flat -> stall=1
+        (100.8, 101.0, 100.4, 100.8), # bar4: stall=2
+        (100.8, 101.0, 100.4, 100.8), # bar5: stall=3 (but peak_r<0.5)
+        (100.8, 101.0, 98.5, 100.0),  # bar6: dip to 98.5 (tightened would be ~98,
+                                      #        wide is 101-8=93) -> neither hits
+    ]
+    args = _setup(path, 0, 1, sl=95.0)
+    res = run(*args, Params(stall_bars=3, stall_trail_atr=3.0, stall_peak_r=0.5),
+              equity0=10_000.0)
+    assert len(res["trades"]) == 0 and SYM in res["open_positions"]
+    assert res["open_positions"][SYM].trail_tightened is False
+
+
 def test_open_position_mark_to_market_scoring():
     from fabletradebot.scoring import mark_to_market, open_report
     # open a long at ~100, still open; score it at a higher price
