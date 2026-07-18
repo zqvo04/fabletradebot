@@ -175,25 +175,6 @@ class Params:
     trail_atr: float = 8.0           # wide chandelier, active from entry
     time_stop_bars: int = 0          # 0 = no time stop
     time_stop_min_r: float = 0.3
-    # --- X-A stall-tightened chandelier (V6, EXIT_REDESIGN.md §2) -------------
-    # A WINNING trend position that stops printing new best_closes for
-    # stall_bars consecutive bars (gone flat — neither running nor breaking
-    # down) has its chandelier width ratcheted from trail_atr down to
-    # stall_trail_atr, banking the stalled winner near its high instead of
-    # holding a dead seat through a sideways drift back out to the wide stop.
-    # ONE-WAY: once tightened the width never widens back, even if a fresh
-    # best_close later prints. Gated on peak_r>=stall_peak_r so only a proven
-    # winner is touched (a loser is the SL/LossFade's job, never this axis).
-    # A genuinely running trend keeps printing new best_closes, so its stall
-    # counter never reaches the threshold — the runner is STRUCTURALLY immune,
-    # which is what keeps this off the E9/E16 failure mode (those cut runners
-    # unconditionally; this fires only on the flat-and-stuck case). Parameters
-    # are a-priori: 24 bars = 1 day flat, 3 ATR = textbook chandelier, 0.5R =
-    # "was actually a winner". 0 = off (default); pre-registered candidate that
-    # must earn adoption via the G5 gate (EXIT_REDESIGN.md §3) before arming.
-    stall_bars: int = 0
-    stall_trail_atr: float = 3.0
-    stall_peak_r: float = 0.5
     # --- position health / momentum-fade management (V4) ---
     # The hourly scoring loop re-scores every OPEN position (hold_confidence:
     # MTF alignment + regime fit + 4H momentum). When that live conviction
