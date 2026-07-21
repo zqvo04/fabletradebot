@@ -1,0 +1,19 @@
+{
+ "schema": 2,
+ "anchor": "2026-07-21 13:00:00+00:00",
+ "last_bar": "2026-07-21 12:00:00+00:00",
+ "equity": 10000.0,
+ "carry": {
+  "cash": 10000.0,
+  "peak": 10000.0,
+  "dd_frozen": false,
+  "circuit_until": null,
+  "loss_log": [],
+  "cooldown": {},
+  "positions": {},
+  "pendings": []
+ },
+ "pages": {},
+ "closed_keys": [],
+ "last_run": "2026-07-21 13:07:30.398247+00:00"
+}
