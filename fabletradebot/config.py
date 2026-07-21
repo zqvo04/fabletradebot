@@ -72,6 +72,17 @@ class Params:
     crash_5d: float = -0.12
     crash_1d: float = -0.07
     hysteresis_bars: int = 2         # 1D bars to confirm a regime switch
+    # X-R trend staleness (DOWN-only, E6 asymmetry): demote TREND_DOWN to RANGE
+    # when the daily close has not printed a new 20D low for this many 1D bars
+    # (a compressing box keeps |EMA20-EMA50|/ATR above 0.5 because gap and ATR
+    # shrink together — the ratio cannot end a dead trend; new extremes can).
+    # Prevents stale-downtrend continuation ENTRIES (PBK_S/RCL_S) from taking
+    # the whale seat; never touches an open position; BRK still fires in RANGE.
+    # NOT G5-passed (design-window cost -9% at K=20, H1-loaded, judged path
+    # noise; symmetric variant measured -82~-88% and is rejected outright) —
+    # arming is an owner override judged by the forward track, SR-D style.
+    # 0 = off (default; base and current whale byte-identical).
+    trend_stale_days: int = 0
     corr_window_h: int = 720         # 30d of 1H returns
     corr_alert: float = 0.80
     # --- stops (all setups) ---
