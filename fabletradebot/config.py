@@ -13,21 +13,20 @@ class AssetSpec:
     slippage: float       # one-way slippage fraction
     listed: str           # earliest date to request data from
 
-# Universe. New/illiquid assets default to lev_cap=2, slippage=0.0008.
+# Universe — major, liquidity/movement-rich coins only (2026-07-21 retarget:
+# 13 -> 9). Trimmed to the majors the owner trades; XRP/ADA are new (no cache
+# yet — update_cache fetches them from `listed` on the first live run).
+# New/illiquid assets default to lev_cap=2, slippage=0.0008.
 UNIVERSE: dict[str, AssetSpec] = {s.symbol: s for s in [
     AssetSpec("BTC",  10.0, 0.0002, "2023-01-01"),
     AssetSpec("ETH",  10.0, 0.0002, "2023-01-01"),
     AssetSpec("SOL",   5.0, 0.0004, "2023-01-01"),
-    AssetSpec("BNB",   5.0, 0.0004, "2023-01-01"),
-    AssetSpec("LINK",  5.0, 0.0004, "2023-01-01"),
-    AssetSpec("AVAX",  5.0, 0.0004, "2023-01-01"),
+    AssetSpec("XRP",   5.0, 0.0004, "2023-01-01"),
     AssetSpec("DOGE",  5.0, 0.0004, "2023-01-01"),
+    AssetSpec("ADA",   5.0, 0.0004, "2023-01-01"),
     AssetSpec("HYPE",  3.0, 0.0006, "2024-12-01"),
     AssetSpec("SUI",   3.0, 0.0006, "2023-05-01"),
-    AssetSpec("WLD",   3.0, 0.0006, "2023-07-25"),
-    AssetSpec("TAO",   3.0, 0.0006, "2023-11-01"),
     AssetSpec("ONDO",  3.0, 0.0006, "2024-01-20"),
-    AssetSpec("LIT",   2.0, 0.0008, "2025-06-01"),
 ]}
 
 DEFAULT_ASSET = AssetSpec("_NEW_", 2.0, 0.0008, "2024-01-01")
@@ -72,17 +71,6 @@ class Params:
     crash_5d: float = -0.12
     crash_1d: float = -0.07
     hysteresis_bars: int = 2         # 1D bars to confirm a regime switch
-    # X-R trend staleness (DOWN-only, E6 asymmetry): demote TREND_DOWN to RANGE
-    # when the daily close has not printed a new 20D low for this many 1D bars
-    # (a compressing box keeps |EMA20-EMA50|/ATR above 0.5 because gap and ATR
-    # shrink together — the ratio cannot end a dead trend; new extremes can).
-    # Prevents stale-downtrend continuation ENTRIES (PBK_S/RCL_S) from taking
-    # the whale seat; never touches an open position; BRK still fires in RANGE.
-    # NOT G5-passed (design-window cost -9% at K=20, H1-loaded, judged path
-    # noise; symmetric variant measured -82~-88% and is rejected outright) —
-    # arming is an owner override judged by the forward track, SR-D style.
-    # 0 = off (default; base and current whale byte-identical).
-    trend_stale_days: int = 0
     corr_window_h: int = 720         # 30d of 1H returns
     corr_alert: float = 0.80
     # --- stops (all setups) ---
@@ -415,19 +403,5 @@ def profile(name: str = "base") -> Params:
             # 0.50 is the lowest floor that actually binds on a slow-bleed loser
             # (below ~0.40 is inert); G5-validated harmless in portfolio mode.
             hold_loss_exit=0.50,
-            # X-R OWNER OVERRIDE (armed 2026-07-21, NOT a G5-passed adoption).
-            # Demote a stale DOWNtrend (no new 20D close low for 20 1D bars) to
-            # RANGE so a stalled short (PBK_S/RCL_S) cannot take the single seat
-            # in a month-long box — the AVAX 2026-07 case (last new low 06-19,
-            # age 26 at entry). Design-window cost was bounded and path-noise-
-            # like (whale 67.5x->61.7x, MDD/avg_r flat, H1 -/H2 +), below
-            # baseline in every cell so it did NOT pass G5; it is armed on the
-            # owner's stated priority (seat time is the scarcest edge), judged
-            # forward SR-D style. ROLLBACK RULE: set back to 0 if the forward
-            # track shows whale rolling-30-trade expectancy or terminal wealth
-            # slope degrade vs the pre-arming forward baseline for 30+ trades
-            # (blocked entries are 0.20 shorts, so a real forward drop is
-            # attributable, not noise). Down-only: never blocks a long.
-            trend_stale_days=20,
         )
     raise ValueError(f"unknown profile: {name!r} (base|turbo|max|whale)")

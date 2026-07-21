@@ -12,7 +12,6 @@ one thing that is always global).
 """
 from __future__ import annotations
 
-import numpy as np
 import pandas as pd
 
 from .config import Params
@@ -47,22 +46,6 @@ def raw_regime_1d(d1: pd.DataFrame, p: Params) -> pd.DataFrame:
     state = pd.Series("RANGE", index=d1.index)
     state[up] = "TREND_UP"
     state[down] = "TREND_DOWN"
-    # X-R trend staleness (EXIT_REDESIGN.md): a DOWNTREND that has not printed
-    # a new 20D closing low for trend_stale_days is a box, not a trend —
-    # demote to RANGE. The strength ratio alone cannot see this: in a long box
-    # the EMA gap and ATR shrink TOGETHER, so |EMA20-EMA50|/ATR stays above
-    # 0.5 indefinitely (measured on AVAX 2026-06/07: gap -0.95->-0.40 with ATR
-    # 0.44->0.31 keeps strength ~1.3 for 30 days without one new low). A
-    # running trend keeps making new extremes, so it is never demoted.
-    # DOWN-ONLY on the measured E6 asymmetry (longs carry the edge, shorts
-    # 12/12 negative): the symmetric version also demotes stale UPtrends and
-    # blocks PBK_L continuation entries in trend pauses — measured -82~-88% of
-    # whale terminal wealth at binding K. 0 disables (default).
-    if p.trend_stale_days > 0:
-        pos_i = pd.Series(np.arange(len(c)), index=c.index, dtype=float)
-        lo20 = c.rolling(20).min()
-        age_lo = pos_i - pos_i.where(lo20 < lo20.shift(1)).ffill()
-        state[down & (age_lo > p.trend_stale_days)] = "RANGE"
     state[high_vol] = "HIGH_VOL"
     state[crisis] = "CRISIS"
     direction = pd.Series(0, index=d1.index)
