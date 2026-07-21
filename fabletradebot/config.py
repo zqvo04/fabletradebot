@@ -415,5 +415,19 @@ def profile(name: str = "base") -> Params:
             # 0.50 is the lowest floor that actually binds on a slow-bleed loser
             # (below ~0.40 is inert); G5-validated harmless in portfolio mode.
             hold_loss_exit=0.50,
+            # X-R OWNER OVERRIDE (armed 2026-07-21, NOT a G5-passed adoption).
+            # Demote a stale DOWNtrend (no new 20D close low for 20 1D bars) to
+            # RANGE so a stalled short (PBK_S/RCL_S) cannot take the single seat
+            # in a month-long box — the AVAX 2026-07 case (last new low 06-19,
+            # age 26 at entry). Design-window cost was bounded and path-noise-
+            # like (whale 67.5x->61.7x, MDD/avg_r flat, H1 -/H2 +), below
+            # baseline in every cell so it did NOT pass G5; it is armed on the
+            # owner's stated priority (seat time is the scarcest edge), judged
+            # forward SR-D style. ROLLBACK RULE: set back to 0 if the forward
+            # track shows whale rolling-30-trade expectancy or terminal wealth
+            # slope degrade vs the pre-arming forward baseline for 30+ trades
+            # (blocked entries are 0.20 shorts, so a real forward drop is
+            # attributable, not noise). Down-only: never blocks a long.
+            trend_stale_days=20,
         )
     raise ValueError(f"unknown profile: {name!r} (base|turbo|max|whale)")
