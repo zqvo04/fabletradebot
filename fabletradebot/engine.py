@@ -174,7 +174,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
     bias4h = {s: features[s]["bias4h"].reindex(grid) for s in frames}
     # live position-health series (hold_confidence) for the momentum-fade exit;
     # absent in bare unit-feature frames, so read defensively / only when armed
-    use_hold = (p.hold_conf_exit > 0 or p.hold_loss_exit > 0) \
+    # DEC-A: the WF-A entry gate threshold (independent of the exit); <0 inherits
+    entry_gate = p.hold_conf_exit if p.hold_entry_min < 0 else p.hold_entry_min
+    use_hold = (p.hold_conf_exit > 0 or p.hold_loss_exit > 0 or entry_gate > 0) \
         and all("hold_L" in features[s].columns for s in frames)
     hold_at = ({s: {1: features[s]["hold_L"].reindex(grid),
                     -1: features[s]["hold_S"].reindex(grid)} for s in frames}
@@ -534,7 +536,7 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 hv = hold_at[sym][d_i].iloc[i]
                 if not np.isnan(hv):
                     hold_dec = float(hv)
-            if p.hold_conf_exit > 0 and hold_dec < p.hold_conf_exit:
+            if entry_gate > 0 and hold_dec < entry_gate:
                 continue
             meta = {k: float(row[k]) for k in
                     ("c_base", "c_fit", "c_align", "c_fund", "c_base_pct")

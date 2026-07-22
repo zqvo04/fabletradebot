@@ -212,6 +212,18 @@ class Params:
     # This locks a stalled winner before it round-trips, ahead of the lagging
     # bias-flip, and frees the seat for the next coin. 0 disables (default).
     hold_conf_exit: float = 0.0
+    # DEC-A (E20, TAIL_REDESIGN.md §2): the WF-A entry coherence gate threshold,
+    # SEPARATED from hold_conf_exit. As shipped, one knob (hold_conf_exit=0.50)
+    # triple-duties: it arms the hold feature, gates ENTRY (refuse a candidate
+    # opening into hold_dec<0.50), AND triggers the SignalFade EXIT — so entry
+    # and exit share one score AND one threshold, and a marginal entry sits one
+    # component-flip from its own exit line. Measurement (E20 ablation) shows the
+    # hold system earns its keep almost entirely as the ENTRY gate (SignalFade
+    # fires ~0x in whale; the working exits — Trail/Regime — are path/structural,
+    # conf-independent). This knob lets the entry gate stay armed while the
+    # hold_confidence EXIT is dialed independently (or to 0). <0 inherits
+    # hold_conf_exit (back-compat: base stays byte-identical).
+    hold_entry_min: float = -1.0
     hold_conf_bars: int = 2
     hold_conf_min_r: float = 1.0
     hold_giveback: float = 0.5
