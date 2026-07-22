@@ -455,5 +455,25 @@ def profile(name: str = "base") -> Params:
             # 0.50 is the lowest floor that actually binds on a slow-bleed loser
             # (below ~0.40 is inert); G5-validated harmless in portfolio mode.
             hold_loss_exit=0.50,
+            # --- V6 ADOPTED (E20, TAIL_REDESIGN.md) ------------------------
+            # trail_atr 8->10: the whale winner-exit (best_close chandelier, a
+            # pure PATH signal — fully independent of entry conf) was mistuned
+            # at the global default 8. Widening to 10 lets winners run: design
+            # window exp +0.124->+0.193, ret 10.5x->26.3x, MDD -60%->-57%, MC
+            # P(>50%DD) 0.73->0.48, final_p5 0.83->1.84; G5 ±20% all-positive,
+            # G6 cost-2x pf 1.53->1.74, both half-crosses positive. THE single
+            # change that survived the one-shot G3 holdout (2026-02..07): it was
+            # the only config with pf>1 out-of-sample (holdout exp -0.048/pf
+            # 1.006 vs baseline -0.064/0.960) — best in BOTH samples.
+            trail_atr=10.0,
+            # min_r contract enforced on the conviction-collapse exit too
+            # (design-window byte-identical; near-zero live impact — correctness).
+            hold_minr_strict=True,
+            # NOT adopted: SEL-A (seat_rank_cbase) helped in-sample (+0.045R,
+            # both halves) but REVERSED out-of-sample on the G3 holdout
+            # (-0.024R) AND compressed the tail (f_p95 359->133) — the overfit
+            # one; kept OFF. B1 (conf_fund_veto) marginally hurt the holdout
+            # (funding binds live) — left OFF as owner's principle call, not a
+            # default. See TAIL_REDESIGN.md §3-holdout.
         )
     raise ValueError(f"unknown profile: {name!r} (base|turbo|max|whale)")
