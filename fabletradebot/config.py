@@ -212,9 +212,30 @@ class Params:
     # This locks a stalled winner before it round-trips, ahead of the lagging
     # bias-flip, and frees the seat for the next coin. 0 disables (default).
     hold_conf_exit: float = 0.0
+    # DEC-A (E20, TAIL_REDESIGN.md §2): the WF-A entry coherence gate threshold,
+    # SEPARATED from hold_conf_exit. As shipped, one knob (hold_conf_exit=0.50)
+    # triple-duties: it arms the hold feature, gates ENTRY (refuse a candidate
+    # opening into hold_dec<0.50), AND triggers the SignalFade EXIT — so entry
+    # and exit share one score AND one threshold, and a marginal entry sits one
+    # component-flip from its own exit line. Measurement (E20 ablation) shows the
+    # hold system earns its keep almost entirely as the ENTRY gate (SignalFade
+    # fires ~0x in whale; the working exits — Trail/Regime — are path/structural,
+    # conf-independent). This knob lets the entry gate stay armed while the
+    # hold_confidence EXIT is dialed independently (or to 0). <0 inherits
+    # hold_conf_exit (back-compat: base stays byte-identical).
+    hold_entry_min: float = -1.0
     hold_conf_bars: int = 2
     hold_conf_min_r: float = 1.0
     hold_giveback: float = 0.5
+    # W-MINR (review, off by default): enforce the documented min_r contract on
+    # the conviction-collapse leg too. As shipped, only the giveback leg reads
+    # hold_conf_min_r; with giveback disabled (whale: 1.0) the ONLY live
+    # SignalFade path exits any barely-green position (+0.05R) on a 2-bar
+    # conviction dip — min_r is a dead parameter there and the "only banks a
+    # winner that has RUN" contract in the comment above does not hold. When
+    # armed, conviction-collapse also requires peak_r >= hold_conf_min_r, so an
+    # unripe position is held (to its stop/trail) until it has proven a run.
+    hold_minr_strict: bool = False
     # --- losing-position early cut (V5) --------------------------------------
     # Symmetric counterpart to the winner-only SignalFade above, for the side
     # the profit-protecting exit deliberately ignores: a LOSING trend position.
@@ -237,11 +258,31 @@ class Params:
     # leverage matter, not an exit one), and never overrides liq-before-stop.
     # 0 = off (default); the whale profile arms it. Same bars as the winner.
     hold_loss_exit: float = 0.0
+    # HLD-A (E20/TAIL_REDESIGN.md) — a momentum-led LOSS-side score (0.5*fit_c +
+    # 0.5*mom, align dropped) replacing the blended hold_confidence in the
+    # LossFade streak — was measured and REJECTED: harmful on the 7-asset
+    # universe (whale MDD -65%->-69%, exp +0.146->+0.097, Trail winners cut
+    # 54->49 while LossFade exploded 10->90 at -34R) and merely neutral on the
+    # 9-asset one — no robust edge, and it re-confirms E9/E16: early loss cuts
+    # amputate the not-yet-proven trend positions this profile compounds on.
+    # The wiring is not in the code (house rule: rejected variants leave).
     # --- whale mode (V4): concentrate the WHOLE account into the single
     # highest-confidence signal at that bar, sized full-margin at a
     # confidence-chosen leverage tier. Off by default (portfolio mode);
     # profile("whale") turns it on. See the profile block below.
     whale_mode: bool = False
+    # W-PYR (E20/TAIL_REDESIGN.md) — a whale margin RESERVE (enter at 70%
+    # margin, pyramid the remaining 30% in slices as the trade proves itself at
+    # +2R steps) — was measured and REJECTED across the board: exp +0.124 ->
+    # -0.128 (both halves negative), MC final_p95 226 -> 96. At whale scale a
+    # +2R add re-buys the top of the R distribution and doubles the giveback on
+    # the 8-ATR trail stop-out; E10's portfolio pyramiding (1%-risk units) does
+    # not transplant to 15%-margin units. Wiring removed (house rule).
+    # SEL-A (review, off by default): break the single-seat cross-coin tie by
+    # c_base (the only +corr(·,R) conf component) instead of the composite conf.
+    # risk_scale stays the primary key (proven outranks experimental); this only
+    # reorders same-risk_scale contenders for an empty seat.
+    seat_rank_cbase: bool = False
     # --- portfolio risk ---
     max_positions: int = 4
     max_positions_corr: int = 2
@@ -293,6 +334,17 @@ class Params:
     #     the profile): its conf->leverage tier map is measured load-bearing.
     hold_cont: bool = True
     conf_clean: bool = True
+    # --- V6 (E20, TAIL_REDESIGN.md) ------------------------------------------
+    # conf_fund_veto (B1): in the LEGACY conf path (conf_clean=False — whale),
+    # drop the funding addend (+0.05/-0.10) from the score and apply the same
+    # hard crowding veto CV-A introduced. The addend has design-window variance
+    # ZERO (funding history absent, CONF_REDESIGN §1d) so this is byte-identical
+    # on every design-window backtest; what it removes is LIVE-ONLY: an
+    # unvalidated component nudging composite conf across the whale leverage
+    # tier boundaries (0.62/0.70/0.80) with data no backtest ever graded.
+    conf_fund_veto: bool = False
+    # seat_rank_cbase (SEL-A): see whale_mode block above.
+    # hold_minr_strict (W-MINR): see the hold_conf block above.
 
 P = Params()
 
@@ -403,5 +455,25 @@ def profile(name: str = "base") -> Params:
             # 0.50 is the lowest floor that actually binds on a slow-bleed loser
             # (below ~0.40 is inert); G5-validated harmless in portfolio mode.
             hold_loss_exit=0.50,
+            # --- V6 ADOPTED (E20, TAIL_REDESIGN.md) ------------------------
+            # trail_atr 8->10: the whale winner-exit (best_close chandelier, a
+            # pure PATH signal — fully independent of entry conf) was mistuned
+            # at the global default 8. Widening to 10 lets winners run: design
+            # window exp +0.124->+0.193, ret 10.5x->26.3x, MDD -60%->-57%, MC
+            # P(>50%DD) 0.73->0.48, final_p5 0.83->1.84; G5 ±20% all-positive,
+            # G6 cost-2x pf 1.53->1.74, both half-crosses positive. THE single
+            # change that survived the one-shot G3 holdout (2026-02..07): it was
+            # the only config with pf>1 out-of-sample (holdout exp -0.048/pf
+            # 1.006 vs baseline -0.064/0.960) — best in BOTH samples.
+            trail_atr=10.0,
+            # min_r contract enforced on the conviction-collapse exit too
+            # (design-window byte-identical; near-zero live impact — correctness).
+            hold_minr_strict=True,
+            # NOT adopted: SEL-A (seat_rank_cbase) helped in-sample (+0.045R,
+            # both halves) but REVERSED out-of-sample on the G3 holdout
+            # (-0.024R) AND compressed the tail (f_p95 359->133) — the overfit
+            # one; kept OFF. B1 (conf_fund_veto) marginally hurt the holdout
+            # (funding binds live) — left OFF as owner's principle call, not a
+            # default. See TAIL_REDESIGN.md §3-holdout.
         )
     raise ValueError(f"unknown profile: {name!r} (base|turbo|max|whale)")

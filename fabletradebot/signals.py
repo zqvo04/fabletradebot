@@ -317,18 +317,34 @@ def scan(f: pd.DataFrame, regime: pd.DataFrame, p: Params) -> pd.DataFrame:
             crowded = (f["fund_z"].fillna(0.0) * d) > p.funding_z_ext
             mask = mask & ~crowded
         else:
+            # B1 (V6): legacy composite score, but funding as a crowding VETO
+            # instead of a score addend — byte-identical where funding history
+            # is absent (design window), live-only tier-jump risk removed.
+            fm_add = 0.0 if p.conf_fund_veto else fm
             conf = (p.w_base * base + p.w_regime * fit
-                    + p.w_align * align + fm).clip(0, 1)
+                    + p.w_align * align + fm_add).clip(0, 1)
+            if p.conf_fund_veto:
+                crowded = (f["fund_z"].fillna(0.0) * d) > p.funding_z_ext
+                mask = mask & ~crowded
         idx = f.index[mask.fillna(False)]
         if len(idx) == 0:
             continue
+        # SEL-A (review): per-asset causal percentile of this slot's own base,
+        # so the seat tiebreak compares slots on one scale (CV-B normalization,
+        # reusing bbw_lookback — no new window). Inert unless seat_rank_cbase.
+        base_pct = (pct_rank(base, p.bbw_lookback) / 100).clip(0, 1)
         rows.append(pd.DataFrame({
             "dir": d, "conf": conf.loc[idx], "sl": sl.loc[idx], "setup": name,
             "c_base": base.loc[idx], "c_fit": fit.loc[idx],
-            "c_align": align.loc[idx], "c_fund": fm.loc[idx]}, index=idx))
+            "c_align": align.loc[idx], "c_fund": fm.loc[idx],
+            "c_base_pct": base_pct.loc[idx]}, index=idx))
     if not rows:
         return pd.DataFrame(columns=CAND_COLS)
-    cand = pd.concat(rows).sort_values("conf", ascending=False)
+    # stable sort: on an exact conf tie the earlier playbook in config order
+    # wins deterministically — the default quicksort is unstable, so a tie's
+    # winner could flip with unrelated changes elsewhere in the array (a
+    # live-vs-backtest reproducibility hazard, found in E20).
+    cand = pd.concat(rows).sort_values("conf", ascending=False, kind="stable")
     cand = cand[~cand.index.duplicated(keep="first")].sort_index()
     # volatility floor: never place a stop inside sl_floor_atr * ATR of price
     close_c = f["close"].reindex(cand.index)

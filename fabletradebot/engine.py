@@ -174,7 +174,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
     bias4h = {s: features[s]["bias4h"].reindex(grid) for s in frames}
     # live position-health series (hold_confidence) for the momentum-fade exit;
     # absent in bare unit-feature frames, so read defensively / only when armed
-    use_hold = (p.hold_conf_exit > 0 or p.hold_loss_exit > 0) \
+    # DEC-A: the WF-A entry gate threshold (independent of the exit); <0 inherits
+    entry_gate = p.hold_conf_exit if p.hold_entry_min < 0 else p.hold_entry_min
+    use_hold = (p.hold_conf_exit > 0 or p.hold_loss_exit > 0 or entry_gate > 0) \
         and all("hold_L" in features[s].columns for s in frames)
     hold_at = ({s: {1: features[s]["hold_L"].reindex(grid),
                     -1: features[s]["hold_S"].reindex(grid)} for s in frames}
@@ -273,7 +275,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
         fill_order = sorted(
             pendings, reverse=True,
             key=lambda x: (p.playbooks.get(x.setup, {}).get("risk_scale", 1.0),
-                           x.conf)) if p.whale_mode else pendings
+                           x.meta.get("c_base_pct", x.meta.get("c_base", x.conf))
+                           if p.seat_rank_cbase
+                           else x.conf)) if p.whale_mode else pendings
         for pend in fill_order:
             row = bars[pend.sym].iloc[i]
             if np.isnan(row["open"]):
@@ -479,7 +483,10 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # hold_giveback of peak R) or its conviction collapsed
             stalled = (pos.peak_r >= p.hold_conf_min_r
                        and unreal_r <= pos.peak_r * (1 - p.hold_giveback))
-            conviction_lost = hold_at is not None and pos.fade_streak >= p.hold_conf_bars
+            conviction_lost = (hold_at is not None
+                               and pos.fade_streak >= p.hold_conf_bars
+                               and (not p.hold_minr_strict
+                                    or pos.peak_r >= p.hold_conf_min_r))
             signal_fade = (p.hold_conf_exit > 0 and trend_managed and unreal_r > 0
                            and (stalled or conviction_lost))
             # capital-protecting early cut: a LOSING trend position whose live
@@ -529,10 +536,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                 hv = hold_at[sym][d_i].iloc[i]
                 if not np.isnan(hv):
                     hold_dec = float(hv)
-            if p.hold_conf_exit > 0 and hold_dec < p.hold_conf_exit:
+            if entry_gate > 0 and hold_dec < entry_gate:
                 continue
             meta = {k: float(row[k]) for k in
-                    ("c_base", "c_fit", "c_align", "c_fund") if k in row.index}
+                    ("c_base", "c_fit", "c_align", "c_fund", "c_base_pct")
+                    if k in row.index}
             # Phase 0 (V5.1): stamp the decision-bar held-side conviction into
             # the trade record (attribution-only, read by no logic). It is the
             # forward judge for WF-A — corr(hold_entry, R) and the hold_entry
