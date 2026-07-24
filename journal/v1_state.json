@@ -1,11 +1,11 @@
 {
  "schema": 2,
- "anchor": "2026-07-24 04:00:00+00:00",
- "last_bar": "2026-07-24 03:00:00+00:00",
- "equity": 10416.013827593708,
+ "anchor": "2026-07-24 05:00:00+00:00",
+ "last_bar": "2026-07-24 04:00:00+00:00",
+ "equity": 10463.000435470733,
  "carry": {
   "cash": 10000.0,
-  "peak": 10450.562803973873,
+  "peak": 10463.000435470733,
   "dd_frozen": false,
   "circuit_until": null,
   "loss_log": [],
@@ -43,15 +43,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 39,
+    "bars": 40,
     "tp1_done": false,
-    "best_close": 0.06912,
+    "best_close": 0.06903,
     "realized": 2.663793561585,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9554749749384559,
-    "peak_r": 2.495555200098348,
+    "peak_r": 2.564853848314438,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -62,5 +62,5 @@
   "DOGE|2026-07-22 13:00:00+00:00": "3a58b798-76e3-81f7-aec8-c2e138635807"
  },
  "closed_keys": [],
- "last_run": "2026-07-24 04:03:43.340483+00:00"
+ "last_run": "2026-07-24 05:03:47.392576+00:00"
 }
