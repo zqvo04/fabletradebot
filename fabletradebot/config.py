@@ -233,16 +233,18 @@ class Params:
     # retracement reaches 112% of its running peak — no fraction can be safe
     # there. Armed at a HIGH peak the same object is a different one: once a
     # design-window trade had proven >=8R, the deepest retracement any of them
-    # ever survived was 40% of the running peak (>=6R: 55%), so a 50% floor sits
-    # outside the runners' breathing envelope by construction. <=0 inherits
-    # hold_conf_min_r (back-compat: base/whale byte-identical when unset).
+    # ever survived was 40% of the running peak (>=6R: 55%). <=0 inherits
+    # hold_conf_min_r (back-compat: base byte-identical when unset — whale
+    # arms it, see the profile block below for the owner-override rationale).
     hold_giveback_arm: float = 0.0
     # W-MINR (review, off by default): enforce the documented min_r contract on
     # the conviction-collapse leg too. As shipped, only the giveback leg reads
-    # hold_conf_min_r; with giveback disabled (whale: 1.0) the ONLY live
-    # SignalFade path exits any barely-green position (+0.05R) on a 2-bar
-    # conviction dip — min_r is a dead parameter there and the "only banks a
-    # winner that has RUN" contract in the comment above does not hold. When
+    # hold_conf_min_r; on a profile where giveback never reaches its own arming
+    # peak (e.g. base's disarmed hold system, or any config with giveback_arm
+    # set far above hold_conf_min_r) the ONLY live SignalFade path exits any
+    # barely-green position (+0.05R) on a 2-bar conviction dip — min_r is a
+    # dead parameter there and the "only banks a winner that has RUN" contract
+    # in the comment above does not hold. When
     # armed, conviction-collapse also requires peak_r >= hold_conf_min_r, so an
     # unripe position is held (to its stop/trail) until it has proven a run.
     hold_minr_strict: bool = False
@@ -449,16 +451,43 @@ def profile(name: str = "base") -> Params:
             aggression_syms=(),
             # re-score the single held position every bar and bank a winner
             # when its conviction collapses (regime/alignment/momentum turned),
-            # freeing the seat for the next coin. The GIVEBACK leg is disabled
-            # (1.0 = never): E16 re-measured E9's finding at whale scale — the
-            # 50%-of-peak giveback exit was cutting the compounding trend
-            # winners this profile lives on (design window +318% -> +5,434%,
-            # MDD -64% -> -48% with the leg off; trail + conviction-collapse
-            # + LossFade remain the only exits).
+            # freeing the seat for the next coin.
             hold_conf_exit=0.50,
             hold_conf_bars=2,
             hold_conf_min_r=1.0,
-            hold_giveback=1.0,
+            # --- V7 Z-A (owner override, GIVEBACK_REDESIGN.md §10c/§11) -----
+            # The GIVEBACK leg itself: E16 rejected it armed at hold_conf_min_r
+            # (1R) — a 50%-of-peak floor there cuts the compounding winners this
+            # profile lives on, because a trade can retrace 112% of its running
+            # peak at 1-2R and still go on to be a runner (no fraction is safe
+            # that low). Z-A re-arms the SAME leg only far higher, on its own
+            # threshold (hold_giveback_arm, split from hold_conf_min_r the way
+            # DEC-A split entry from exit): once a design-window trade had
+            # proven 8R, the deepest retracement any of them ever survived was
+            # 40% of the running peak. giveback=0.4 exits at exactly that 40%
+            # line — ZERO margin over the sample's own maximum, not a safe
+            # buffer (0.5 would be the 25%-margin cell; see the design doc).
+            # Design window: ret 26.27x -> 33.76x, MDD -57.3%->-53.0%, both
+            # halves up (H1 3.70->4.17x, H2 4.28->5.12x), 9/10 leave-one-
+            # asset-out universes improve. NOT G5-clean: this cell is the
+            # grid's argmax (4 firings out of 310 trades) and its threshold
+            # sitting exactly on the sample max is the SAME overfit shape that
+            # sank SEL-A out-of-sample (TAIL_REDESIGN.md). The exhausted 2026
+            # holdout never exercises it either way (1/57 trades even reached
+            # 8R) — zero out-of-sample evidence, for or against. Armed anyway
+            # on OWNER OVERRIDE (2026-07-26, same class of call as X-R): the
+            # trail already lets 92% of trades run untouched (§2a), so the
+            # only money this leg can ever take off the table is a proven
+            # >=8R runner's giveback beyond 40% — a floor, not a cap. trail +
+            # conviction-collapse + LossFade remain the other exits.
+            # REVERT RULE (fixed in advance, GIVEBACK_REDESIGN.md §10d/§11):
+            # once 10 forward trades have shown peak_r>=8, if the worst
+            # forward retracement fraction any of them survived exceeds 0.40,
+            # widen to giveback=0.6 (the 45%-margin cell); if it exceeds 0.55,
+            # drop giveback_arm to 0 (Z-A off) — this floor no longer bounds
+            # live runners at any measured cell.
+            hold_giveback=0.4,
+            hold_giveback_arm=8.0,
             # and cut a LOSING single position early when its live conviction
             # stays below this (adverse regime/momentum) for hold_conf_bars,
             # protecting the concentrated account before a full leveraged stop.
