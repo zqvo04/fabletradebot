@@ -16,10 +16,12 @@ def test_whale_profile_wiring():
     assert p.whale_mode is True
     assert p.max_positions == 1 and p.max_positions_corr == 1
     assert p.pyramid_max == 0 and p.aggression_syms == ()
-    # E16: the giveback leg of SignalFade is disabled (1.0 = never fires) —
-    # it was cutting the compounding trend winners (E9 re-confirmed at whale
-    # scale). Conviction-collapse (0.50) and LossFade stay armed.
-    assert p.hold_giveback == 1.0
+    # V7 Z-A (owner override, GIVEBACK_REDESIGN.md §10c/§11): the giveback leg
+    # of SignalFade is re-armed, but only far above hold_conf_min_r — E16's
+    # rejection (giveback=0.5 armed at 1R) was a rejection of the ARMING
+    # LEVEL, not the leg; no design-window trade ever retraced past 40% of
+    # its running peak once it had proven 8R.
+    assert p.hold_giveback == 0.4 and p.hold_giveback_arm == 8.0
     assert p.hold_conf_exit == 0.50 and p.hold_loss_exit == 0.50
     # E17: whale keeps the LEGACY entry conf (CV-A off) — its conf->leverage
     # tier map is load-bearing, so the c_base-only clean conf must not apply.
