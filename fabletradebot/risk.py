@@ -15,10 +15,14 @@ LIQ_MMR = 0.01  # maintenance-margin fraction used for the liq-price estimate;
                 # config.mmr_buffer (0.015) used in the CAP is stricter on purpose.
 
 
-def conf_tier(conf: float, p: Params) -> tuple[float, float]:
-    """(leverage tier, risk fraction) for a confidence level; (0,0) if below entry."""
+def conf_tier(conf: float, p: Params, tiers: tuple | None = None) -> tuple[float, float]:
+    """(leverage tier, risk fraction) for a confidence level; (0,0) if below entry.
+
+    `tiers` overrides p.conf_tiers — CF-A passes the leverage-tier ladder so the
+    SIZING score can be read on its own scale, independent of the entry/seat one.
+    """
     lev, risk = 0.0, 0.0
-    for lo, tier_lev, tier_risk in p.conf_tiers:
+    for lo, tier_lev, tier_risk in (tiers or p.conf_tiers):
         if conf >= lo:
             lev, risk = tier_lev, tier_risk
     return lev, risk
@@ -39,9 +43,10 @@ def floor_tier(lev: float) -> float:
 
 
 def final_leverage(conf: float, stop_frac: float, regime_state: str,
-                   asset_cap: float, p: Params) -> tuple[float, float]:
+                   asset_cap: float, p: Params,
+                   tiers: tuple | None = None) -> tuple[float, float]:
     """(leverage, risk_frac). leverage==0 means the trade is not allowed."""
-    lev_c, risk = conf_tier(conf, p)
+    lev_c, risk = conf_tier(conf, p, tiers)
     if lev_c == 0.0 or stop_frac <= 0:
         return 0.0, 0.0
     lev = min(lev_c, p.regime_lev_cap.get(regime_state, 0.0),

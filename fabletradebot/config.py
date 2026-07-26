@@ -357,6 +357,20 @@ class Params:
     conf_fund_veto: bool = False
     # seat_rank_cbase (SEL-A): see whale_mode block above.
     # hold_minr_strict (W-MINR): see the hold_conf block above.
+    # --- V7 CF-A (CONF_REDESIGN.md §6): split the SIZING score from the
+    # entry/seat score. In whale, conf = 0.55*c_base + 0.25*c_fit + 0.20*c_align
+    # picks the leverage tier, but c_fit and c_align average 0.93/0.86 with small
+    # spread, so they act as a near-constant +0.40 PEDESTAL under the 0.62/0.70/
+    # 0.80 tier boundaries while the only live term (0.55*c_base) has effective
+    # std 0.070. That pedestal is why CV-A collapsed in whale (54x->13x): dropping
+    # it without re-anchoring the boundaries dumps the book into the low tiers —
+    # a calibration artifact that was read as "conf is load-bearing". When
+    # lev_tiers is non-empty the leverage tier is read from c_base_pct (the
+    # causal rolling percentile — the only cross-slot-comparable component, and
+    # the only one with a positive correlation to BOTH R and peak_r) on its own
+    # ladder, while conf keeps gating entry and ranking the seat unchanged.
+    # Empty = off (default); base never sizes off conf at all, so it is inert there.
+    lev_tiers: tuple = ()
 
 P = Params()
 

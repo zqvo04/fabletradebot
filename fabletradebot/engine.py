@@ -332,8 +332,13 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             stop_frac = pend.direction * (fill - pend.sl) / fill
             if stop_frac <= 0:
                 continue
-            lev, risk_frac = final_leverage(pend.conf, stop_frac, pend.regime,
-                                            spec(pend.sym).lev_cap, p)
+            # CF-A: the leverage tier may read its own score (c_base_pct) on its
+            # own ladder; entry gating and seat ranking keep the composite conf.
+            lev_conf = (pend.meta.get("c_base_pct", pend.conf) if p.lev_tiers
+                        else pend.conf)
+            lev, risk_frac = final_leverage(lev_conf, stop_frac, pend.regime,
+                                            spec(pend.sym).lev_cap, p,
+                                            tiers=p.lev_tiers or None)
             if lev == 0.0:
                 continue
             # unproven playbook slots run at reduced size until the forward
