@@ -251,6 +251,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             "regime": pos.regime, "entry": avg_e, "sl0": pos.sl0,
             "exit": px, "opened": pos.opened_ts, "closed": ts,
             "bars": pos.bars, "r": r, "pnl": pnl, "adds": pos.adds,
+            # attribution-only (read by NO logic): the best unrealized R this
+            # trade ever showed. `peak_r - r` is the give-back, the quantity the
+            # exit-axis campaign (GIVEBACK_REDESIGN.md) is judged on — without it
+            # in the record the forward ledger cannot measure the problem at all.
+            "peak_r": pos.peak_r,
             "pnl_pct_price": price_pct, "pnl_pct_lev": price_pct * pos.leverage,
             "reason": reason, "risk_amt": pos.risk_amt,
             "notional": pos.total_notional(),

@@ -42,8 +42,16 @@ def fmt_entry(pos: dict) -> str:
 def fmt_exit(tr: dict) -> str:
     icon = "✅" if tr["pnl"] > 0 else "❌"
     d = "LONG" if tr["dir"] > 0 else "SHORT"
+    # `levered %` is the return on the position's MARGIN, and an experimental
+    # slot deploys only risk_scale of the account as margin — so it overstates
+    # the account impact several-fold. Report the account line first and label
+    # the levered one, so a "+25%" peak is not read as a quarter of the account.
+    eq0 = tr["equity_after"] - tr["pnl"]
+    acct = tr["pnl"] / eq0 * 100 if eq0 else 0.0
     return (f"{icon} V1 EXIT {tr['sym']} {d} {tr['leverage']:.0f}x — {tr['reason']}\n"
-            f"{tr['r']:+.2f}R | price {tr['pnl_pct_price']:+.2f}% | "
-            f"levered {tr['pnl_pct_lev']:+.2f}%\n"
+            f"{tr['r']:+.2f}R (peak {tr.get('peak_r', 0.0):+.2f}R) | "
+            f"account {acct:+.2f}%\n"
+            f"price {tr['pnl_pct_price']:+.2f}% | "
+            f"levered {tr['pnl_pct_lev']:+.2f}% (on margin)\n"
             f"entry {tr['entry']:.6g} → exit {tr['exit']:.6g} | held {tr['bars']}h\n"
             f"equity {tr['equity_after']:.2f}")
