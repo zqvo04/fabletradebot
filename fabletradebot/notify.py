@@ -43,7 +43,8 @@ def fmt_exit(tr: dict) -> str:
     icon = "✅" if tr["pnl"] > 0 else "❌"
     d = "LONG" if tr["dir"] > 0 else "SHORT"
     return (f"{icon} V1 EXIT {tr['sym']} {d} {tr['leverage']:.0f}x — {tr['reason']}\n"
-            f"{tr['r']:+.2f}R | price {tr['pnl_pct_price']:+.2f}% | "
+            f"{tr['r']:+.2f}R (peak {tr.get('peak_r', 0.0):+.2f}R) | "
+            f"price {tr['pnl_pct_price']:+.2f}% | "
             f"levered {tr['pnl_pct_lev']:+.2f}%\n"
             f"entry {tr['entry']:.6g} → exit {tr['exit']:.6g} | held {tr['bars']}h\n"
             f"equity {tr['equity_after']:.2f}")

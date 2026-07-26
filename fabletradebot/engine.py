@@ -251,6 +251,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             "regime": pos.regime, "entry": avg_e, "sl0": pos.sl0,
             "exit": px, "opened": pos.opened_ts, "closed": ts,
             "bars": pos.bars, "r": r, "pnl": pnl, "adds": pos.adds,
+            # attribution-only (read by NO logic): the best unrealized R this
+            # trade ever showed. `peak_r - r` is the give-back, the quantity the
+            # exit-axis campaign (GIVEBACK_REDESIGN.md) is judged on — without it
+            # in the record the forward ledger cannot measure the problem at all.
+            "peak_r": pos.peak_r,
             "pnl_pct_price": price_pct, "pnl_pct_lev": price_pct * pos.leverage,
             "reason": reason, "risk_amt": pos.risk_amt,
             "notional": pos.total_notional(),
@@ -481,7 +486,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # profit-protecting momentum exit: only ever bank a WINNER that has
             # run to hold_conf_min_r, when either its run stalls (gave back
             # hold_giveback of peak R) or its conviction collapsed
-            stalled = (pos.peak_r >= p.hold_conf_min_r
+            gb_arm = p.hold_giveback_arm if p.hold_giveback_arm > 0 \
+                else p.hold_conf_min_r            # Z-A: giveback arms on its own peak
+            stalled = (pos.peak_r >= gb_arm
                        and unreal_r <= pos.peak_r * (1 - p.hold_giveback))
             conviction_lost = (hold_at is not None
                                and pos.fade_streak >= p.hold_conf_bars

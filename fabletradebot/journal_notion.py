@@ -96,7 +96,8 @@ def update_open(page_id: str | None, mtm: dict) -> bool:
         "Hold Hours": {"number": int(mtm["bars"])},
         "SL": {"number": round(float(mtm["sl"]), 8)},
         "Note": {"rich_text": [{"text": {"content":
-                 f"OPEN mtm @ {mtm['price']:.6g} | {mtm['r']:+.2f}R | "
+                 f"OPEN mtm @ {mtm['price']:.6g} | {mtm['r']:+.2f}R "
+                 f"(peak {mtm.get('peak_r', 0.0):+.2f}R) | "
                  f"setup {mtm['setup']} | regime {mtm['regime']} | "
                  f"hold_conf {mtm.get('hold_conf', 0.0):.2f}"}}]},
     }
@@ -118,7 +119,9 @@ def post_close(tr: dict, page_id: str | None) -> str | None:
         "Equity": {"number": round(float(tr["equity_after"]), 2)},
         "Closed": {"date": {"start": str(tr["closed"])}},
         "Note": {"rich_text": [{"text": {"content":
-                 f"setup {tr['setup']} | regime {tr['regime']} | exit {tr['reason']}"}}]},
+                 f"setup {tr['setup']} | regime {tr['regime']} | exit {tr['reason']} | "
+                 f"peak {tr.get('peak_r', 0.0):+.2f}R "
+                 f"(gave back {tr.get('peak_r', 0.0) - tr['r']:+.2f}R)"}}]},
     }
     if page_id:
         resp = _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH")

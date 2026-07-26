@@ -28,7 +28,11 @@ import os
 import pandas as pd
 
 LEDGER_PATH = "journal/forward_ledger.csv"
-LEDGER_COLS = ["closed", "sym", "setup", "dir", "r", "pnl", "reason", "regime", "conf"]
+LEDGER_COLS = ["closed", "sym", "setup", "dir", "r", "pnl", "reason", "regime", "conf",
+               # attribution-only, appended last so older rows stay readable:
+               # peak_r - r is the give-back, the forward judge for the exit axis
+               # (GIVEBACK_REDESIGN.md). No promotion logic reads it.
+               "peak_r"]
 
 # promotion gates (inherited from G2, not fitted)
 PROMOTE_N1, PROMOTE_N2 = 30, 60      # trade-count floors for 0.50 / 1.0

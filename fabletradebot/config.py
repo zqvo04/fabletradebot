@@ -227,6 +227,16 @@ class Params:
     hold_conf_bars: int = 2
     hold_conf_min_r: float = 1.0
     hold_giveback: float = 0.5
+    # Z-A (V7, GIVEBACK_REDESIGN.md §10): arming peak for the GIVEBACK leg only,
+    # split off from hold_conf_min_r the way DEC-A split entry from exit. E16
+    # rejected the giveback leg armed at 1R, where a trade's worst SURVIVED
+    # retracement reaches 112% of its running peak — no fraction can be safe
+    # there. Armed at a HIGH peak the same object is a different one: once a
+    # design-window trade had proven >=8R, the deepest retracement any of them
+    # ever survived was 40% of the running peak (>=6R: 55%), so a 50% floor sits
+    # outside the runners' breathing envelope by construction. <=0 inherits
+    # hold_conf_min_r (back-compat: base/whale byte-identical when unset).
+    hold_giveback_arm: float = 0.0
     # W-MINR (review, off by default): enforce the documented min_r contract on
     # the conviction-collapse leg too. As shipped, only the giveback leg reads
     # hold_conf_min_r; with giveback disabled (whale: 1.0) the ONLY live
