@@ -486,7 +486,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # profit-protecting momentum exit: only ever bank a WINNER that has
             # run to hold_conf_min_r, when either its run stalls (gave back
             # hold_giveback of peak R) or its conviction collapsed
-            stalled = (pos.peak_r >= p.hold_conf_min_r
+            gb_arm = p.hold_giveback_arm if p.hold_giveback_arm > 0 \
+                else p.hold_conf_min_r            # Z-A: giveback arms on its own peak
+            stalled = (pos.peak_r >= gb_arm
                        and unreal_r <= pos.peak_r * (1 - p.hold_giveback))
             conviction_lost = (hold_at is not None
                                and pos.fade_streak >= p.hold_conf_bars
