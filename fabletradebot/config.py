@@ -295,6 +295,15 @@ class Params:
     # risk_scale stays the primary key (proven outranks experimental); this only
     # reorders same-risk_scale contenders for an empty seat.
     seat_rank_cbase: bool = False
+    # Shadow book (learning-only): when > 0, position SIZING reads this fixed
+    # equity instead of the live mark-to-market equity. 0 (default) keeps every
+    # live/backtest path on the real equity, so this field is inert unless a
+    # caller sets it. The shadow replay needs it because it holds up to one
+    # full-margin position per symbol at once: the shared mtm equity would then
+    # couple the positions' sizes to each other and can go negative, flipping
+    # the sign of risk_amt (and therefore of R) — which would corrupt exactly
+    # the record the shadow book exists to produce.
+    size_equity: float = 0.0
     # --- portfolio risk ---
     max_positions: int = 4
     max_positions_corr: int = 2

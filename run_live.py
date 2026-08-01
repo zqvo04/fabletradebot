@@ -25,7 +25,7 @@ import os
 
 import pandas as pd
 
-from fabletradebot import journal_notion, notify, promotion
+from fabletradebot import journal_notion, notify, promotion, shadow
 from fabletradebot.backtest import load_universe, prepare
 from fabletradebot.config import UNIVERSE, profile
 from fabletradebot.data_okx import update_cache
@@ -165,8 +165,26 @@ def main() -> None:
             print(f"  SCORE {key} {mtm['r']:+.2f}R held {mtm['bars']}h "
                   f"hold_conf {mtm['hold_conf']:.2f}")
 
+    # ---- shadow book (learning-only, fabletradebot/shadow.py) --------------
+    # Same bars, same rules, always a free seat. It never notifies, never
+    # touches equity/the SR-D ledger, and any failure in it is swallowed here:
+    # the live loop must not be stoppable by a data-collection side channel.
+    # A reset clears the shadow book with the live one; otherwise its keys are
+    # carried forward unchanged, so a failed run resumes instead of restarting.
+    shadow_prev = {} if reset else state
+    shadow_state = {k: v for k, v in shadow_prev.items() if k.startswith("shadow_")}
+    if os.environ.get("SHADOW_BOOK", "1") == "1":
+        try:
+            shadow_state = shadow.step(
+                (frames, features, candidates, funding, regime_h, corr), p,
+                start=start, latest_bar=latest_bar, state=shadow_prev,
+                live_keys=closed_keys | set(pages), trade_key=trade_key)
+        except Exception as exc:
+            print(f"  shadow book FAILED ({exc}) — live loop unaffected")
+
     # ---- persist: roll the anchor past the newest processed bar ----
     save_state({
+        **shadow_state,
         "schema": SCHEMA,
         "anchor": str(latest_bar + pd.Timedelta(hours=1)),
         "last_bar": str(latest_bar),

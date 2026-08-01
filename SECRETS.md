@@ -25,6 +25,8 @@ TRADE_MODE=paper python3 run_live.py
 |---|---|---|
 | `NOTION_TOKEN` | Notion 통합 토큰 | 저널 기록 |
 | `NOTION_SIGNAL_DB_ID` | `FableTradeBot — Signal Log` DB id | 저널 기록 |
+| `NOTION_SHADOW_DB_ID` | `FableTradeBot — Shadow Log` DB id | 섀도북 기록(학습용) |
+| `SHADOW_BOOK` | `0`이면 섀도북 리플레이 자체를 끔 (기본 `1`) | 선택 |
 | `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | 진입/청산 알림 | 알림 |
 | `OKX_API_KEY` / `OKX_API_SECRET` / `OKX_PASSPHRASE` | OKX 3종 키 | 실계정 읽기·(향후) 주문 |
 | `LIVE_CONFIRM` | `I-UNDERSTAND-LIQUIDATION-RISK` 문구 | 라이브 전환 시에만 |
@@ -39,6 +41,18 @@ TRADE_MODE=paper python3 run_live.py
 BNB/SUI/WLD/DOGE/LINK/AVAX, 숫자 속성 `Confidence`·`Lev PnL %`·`Hold Hours`.
 Notion API는 DB에 없는 속성/옵션이 하나라도 있으면 요청 전체를 400 거부하므로,
 새 속성을 코드에 추가할 땐 **반드시 DB에 먼저 만들 것**.
+
+## 섀도북 DB (학습 전용, 2026-08-01 신설)
+
+`FableTradeBot — Shadow Log` — id `4c9529f01d71418ca41f5e41325eae87`.
+좌석이 항상 비어 있다고 가정한 가상 트레이드만 들어간다. 알림 없음, 자산 계산
+미포함, SR-D 승급 원장과도 분리(`journal/shadow_ledger.csv`). Signal Log의 속성을
+미러링하고 학습용으로 `Seat State`(Live-Taken/Live-Blocked) · `Setup` · `Regime` ·
+`Exit Reason` · `Peak R` · `Giveback R` · `Hold Entry` · `Hold Conf`를 더 갖는다.
+
+> **수동 1회 작업:** 새 DB는 Notion 통합(`NOTION_TOKEN`)에 자동 공유되지 않는다.
+> DB 페이지 → `...` → Connections → 해당 통합 추가. 공유 전에는 모든 쓰기가
+> 404로 실패하고(루프는 그대로 진행) `shadow_ledger.csv`만 쌓인다.
 
 ## 라이브 4중 잠금 (V1은 스켈레톤)
 

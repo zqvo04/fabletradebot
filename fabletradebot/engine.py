@@ -349,7 +349,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # risk_scale (E15: it used to vanish here, letting rejected/unproven
             # slots deploy the whole account) — must ride in as margin_frac to
             # keep staged rollout and dd/corr de-risking alive in whale mode too
-            sz = size_position(eq, risk_frac * mult, fill, pend.sl, pend.direction, lev,
+            sz = size_position(p.size_equity or eq, risk_frac * mult, fill, pend.sl,
+                               pend.direction, lev,
                                full_margin=p.whale_mode, margin_frac=mult * scale)
             open_risk = sum(pos.open_risk(p) for pos in positions.values())
             open_margin = sum(pos.margin for pos in positions.values())

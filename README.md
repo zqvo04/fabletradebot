@@ -496,7 +496,23 @@ G6 비용2배(pf 1.74) · G7 MC(파산확률>50%DD 0.73→**0.48**, final_p5 0.8
 상태 파일(journal/v1_state.json)이 담는 것: schema, anchor(다음 처리 시작봉),
   equity(마크투마켓), carry(오픈포지션·현금·peak·DD동결·서킷·쿨다운·펜딩 — 전부
   엔진이 직렬화), pages(Notion 페이지ID 맵, 실패 시 다음 실행에서 재시도),
-  closed_keys(최근 500건 중복방지 가드).
+  closed_keys(최근 500건 중복방지 가드), 그리고 섀도북 키 4종(shadow_carry/
+  shadow_pages/shadow_seats/shadow_closed_keys — 아래).
+섀도북(fabletradebot/shadow.py, 학습 전용): 5번 직전에 **같은 봉·같은 엔진**을 한 번
+  더 돌린다. 바뀌는 건 좌석과 계좌 거버너뿐(max_positions 1→전 유니버스,
+  max_open_risk/max_margin_frac/dd/서킷 해제, size_equity 고정) — 쿨다운·conf 티어·
+  CRISIS·risk_scale·**모든 출구 파라미터는 그대로**라서 각 가상 트레이드가 실제와
+  동일한 청산 다리(SL/Trail/TP/SignalFade/LossFade/BiasFlip/Timeout/Regime)로
+  관리되고 R·PnL·give-back을 각자 낸다. whale 단일 좌석이 월 ~12건밖에 못 내는
+  전방 표본을 4~5배로 늘리는 것이 유일한 목적(E19b: 폐기 후보 : 체결 ≈ 5:1).
+  격리 3중: 알림 없음 / 전용 Notion DB(`Shadow Log`)와 전용 원장
+  (journal/shadow_ledger.csv — SR-D 승급 원장은 실제 사이징을 움직이므로 절대 오염
+  금지) / 자산 계산에 미포함이며 run_live가 try-except로 감싸 섀도 실패가 라이브
+  루프를 멈출 수 없다. 각 행의 `Seat State`는 실제 좌석이 그 트레이드를 잡았는지
+  (Live-Taken) 좌석 만석으로 버렸는지(Live-Blocked)를 갈라 E19b 반사실 측정을
+  전방으로 재현한다. **주의**: 섀도 R은 E19b가 실측한 +0.10R 낙관 편향을 가지므로
+  절대수준이 아니라 상대 비교로만 읽고, 셀당 n≥30 + 반쪽 부호 일치(G-게이트)를
+  통과한 것만 결론으로 쓴다. SHADOW_BOOK=0으로 끌 수 있다.
 라이브 전환: TRADE_MODE=live + OKX 3키 + LIVE_CONFIRM + OKX_DEMO 검증 (4중 잠금),
         단 V1 okx_exec는 스켈레톤 — 실주문은 페이퍼 전방 게이트(G8) 통과 후.
 채점: 전방 트랙이 setup별·청산사유별 기대값 + Phase 0 진단(좌석시간/R, conf 단조성,

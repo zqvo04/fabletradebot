@@ -18,9 +18,9 @@ _BASE = "https://api.notion.com/v1/pages"
 SYSTEM = "V1"
 
 
-def _enabled() -> bool:
+def _enabled(db_env: str = "NOTION_SIGNAL_DB_ID") -> bool:
     token = os.environ.get("NOTION_TOKEN")
-    db = os.environ.get("NOTION_SIGNAL_DB_ID")
+    db = os.environ.get(db_env)
     if token and db:
         return True
     # loud, not silent: a workflow log showing NOTION_TOKEN: *** only proves the
@@ -28,7 +28,7 @@ def _enabled() -> bool:
     # an empty/missing repo secret renders the same masked "***" in the log,
     # so without this line a misconfigured secret looks identical to a working
     # one (entries print "OPEN" regardless; Notion gets nothing, silently)
-    missing = [n for n, v in (("NOTION_TOKEN", token), ("NOTION_SIGNAL_DB_ID", db)) if not v]
+    missing = [n for n, v in (("NOTION_TOKEN", token), (db_env, db)) if not v]
     print(f"[journal] Notion disabled — missing/empty env var(s): {', '.join(missing)}")
     return False
 
@@ -102,6 +102,81 @@ def update_open(page_id: str | None, mtm: dict) -> bool:
                  f"hold_conf {mtm.get('hold_conf', 0.0):.2f}"}}]},
     }
     return _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH") is not None
+
+
+SHADOW_DB = "NOTION_SHADOW_DB_ID"
+SHADOW_SYSTEM = "V1-shadow"
+
+
+def _shadow_ident(row: dict, seat_state: str) -> dict:
+    """Properties shared by a shadow row's create and its resolution."""
+    d = "LONG" if row["dir"] > 0 else "SHORT"
+    return {
+        "Name": {"title": [{"text": {"content":
+                 f"{row['sym']} shadow {d} {row['leverage']:.0f}x "
+                 f"@ {row['entry']:.6g}"}}]},
+        "System": {"select": {"name": SHADOW_SYSTEM}},
+        "Asset": {"select": {"name": row["sym"]}},
+        "Direction": {"select": {"name": d}},
+        "Seat State": {"select": {"name": seat_state}},
+        "Setup": {"select": {"name": row["setup"]}},
+        "Regime": {"select": {"name": row["regime"]}},
+        "Entry": {"number": round(float(row["entry"]), 8)},
+        "Leverage": {"number": round(float(row["leverage"]), 1)},
+        "Confidence": {"number": round(float(row["conf"]), 3)},
+        "Hold Entry": {"number": round(float(row.get("hold_entry", 1.0)), 4)},
+        "Bar Time": {"date": {"start": str(row["opened"])}},
+    }
+
+
+def post_shadow_open(pos: dict, seat_state: str) -> str | None:
+    """Create an Open row in the shadow DB; returns the page id for the close.
+
+    No hourly mark-to-market follows (unlike the live journal): nobody watches
+    this DB in real time and the learning signal is the RESOLVED trade, so the
+    row is written exactly twice — once here, once at its exit.
+    """
+    if not _enabled(SHADOW_DB):
+        return None
+    props = {
+        **_shadow_ident(pos, seat_state),
+        "Status": {"select": {"name": "Open"}},
+        "SL": {"number": round(float(pos["sl"]), 8)},
+        "TP": {"number": round(float(pos["tp1"]), 8)},
+    }
+    resp = _request(_BASE, {"parent": {"database_id": os.environ[SHADOW_DB]},
+                            "properties": props}, "POST")
+    return resp.get("id") if resp else None
+
+
+def post_shadow_close(tr: dict, page_id: str | None, seat_state: str) -> str | None:
+    """Resolve a shadow row (or create it resolved if the open write failed)."""
+    if not _enabled(SHADOW_DB):
+        return None
+    peak = float(tr.get("peak_r", 0.0))
+    props = {
+        "Status": {"select": {"name": _status(tr["reason"], tr["pnl"])}},
+        "Exit Reason": {"select": {"name": tr["reason"]}},
+        "Exit": {"number": round(float(tr["exit"]), 8)},
+        "Result R": {"number": round(float(tr["r"]), 4)},
+        "Peak R": {"number": round(peak, 4)},
+        "Giveback R": {"number": round(peak - float(tr["r"]), 4)},
+        "PnL %": {"number": round(float(tr["pnl_pct_price"]), 3)},
+        "Lev PnL %": {"number": round(float(tr["pnl_pct_lev"]), 3)},
+        "Hold Hours": {"number": int(tr["bars"])},
+        "Closed": {"date": {"start": str(tr["closed"])}},
+        "Note": {"rich_text": [{"text": {"content":
+                 f"shadow ({seat_state}) | setup {tr['setup']} | "
+                 f"regime {tr['regime']} | exit {tr['reason']} | "
+                 f"peak {peak:+.2f}R (gave back {peak - tr['r']:+.2f}R)"}}]},
+    }
+    if page_id:
+        resp = _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH")
+        return page_id if resp else None
+    props.update(_shadow_ident(tr, seat_state))
+    resp = _request(_BASE, {"parent": {"database_id": os.environ[SHADOW_DB]},
+                            "properties": props}, "POST")
+    return resp.get("id") if resp else None
 
 
 def post_close(tr: dict, page_id: str | None) -> str | None:

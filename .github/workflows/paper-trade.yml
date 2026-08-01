@@ -46,6 +46,10 @@ jobs:
           # LIVE_RESET=1 here once to force a clean restart from now.
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_SIGNAL_DB_ID: ${{ secrets.NOTION_SIGNAL_DB_ID }}
+          # learning-only shadow book (fabletradebot/shadow.py) — its own DB,
+          # no Telegram. Unset => the shadow replay still runs and still writes
+          # journal/shadow_ledger.csv, it just journals nothing to Notion.
+          NOTION_SHADOW_DB_ID: ${{ secrets.NOTION_SHADOW_DB_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python run_live.py
