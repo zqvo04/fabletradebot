@@ -53,6 +53,7 @@ class Position:
     peak_r: float = 0.0            # best unrealized R reached (give-back exit)
     stall_count: int = 0           # consecutive bars with no new best_close (X-A)
     trail_tightened: bool = False  # X-A width ratchet, one-way once armed
+    h_action: float = 0.0          # accumulated uncertainty action (E21, H axis)
 
     def __post_init__(self):
         if not self.tranches:
@@ -189,6 +190,14 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                    -1: features[s]["mom_S"].reindex(grid)} for s in frames}
               if use_hold and all("mom_L" in features[s].columns for s in frames)
               else None)
+    # E21 H axis: chart ambiguity series, read only while the axis is armed
+    use_h = (p.h_exit > 0 or p.h_entry_max > 0 or p.h_size_k > 0
+             or p.h_rel_bars > 0) \
+        and all("amb" in features[s].columns for s in frames)
+    amb_at = {s: features[s]["amb"].reindex(grid) for s in frames} if use_h else None
+    ambq_at = ({s: features[s]["amb_q"].reindex(grid) for s in frames}
+               if p.h_rel_bars > 0 and all("amb_q" in features[s].columns
+                                           for s in frames) else None)
     cand_at = {s: {ts: row for ts, row in candidates[s].iterrows()} for s in candidates}
     fund_at = {s: dict(zip(funding[s].index, funding[s].values))
                for s in funding if funding[s] is not None}
@@ -341,6 +350,12 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             scale = p.playbooks.get(pend.setup, {}).get("risk_scale", 1.0)
             risk_frac *= scale
             mult = (0.5 if dd >= p.dd_half else 1.0) * (0.5 if corr_on else 1.0)
+            # E21 H-Size: the uncertainty tax, paid in size. An ambiguous chart
+            # is taken smaller instead of refused (H-D) or released later (H-A).
+            if p.h_size_k > 0:
+                a_amb = pend.meta.get("h_amb")
+                if a_amb is not None:
+                    mult *= max(0.1, 1.0 - p.h_size_k * float(a_amb))
             if (dd <= p.eq_boost_dd and not corr_on
                     and pend.sym in p.aggression_syms):
                 mult *= p.eq_boost_mult   # anti-martingale: press at equity highs
@@ -421,9 +436,10 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # updated below) — immaterial for a 0.5R gate over a multi-bar
             # stall. Inert where the slot has no trail (min keeps trail_w at 0),
             # so it only ever tightens an existing chandelier, never adds one.
-            if p.stall_bars > 0:
+            if p.stall_bars > 0 or amb_at is not None:
                 pos.stall_count = 0 if pos.best_close != prev_best \
                     else pos.stall_count + 1
+            if p.stall_bars > 0:
                 if (not pos.trail_tightened and pos.peak_r >= p.stall_peak_r
                         and pos.stall_count >= p.stall_bars):
                     pos.trail_tightened = True
@@ -465,6 +481,17 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                                 else min(pos.liq_price, liq_add)
             unreal_r = pos.gross_at(close_px) / pos.risk_amt
             pos.peak_r = max(pos.peak_r, unreal_r)
+            # E21: accumulate the uncertainty action of this bar. "action" adds
+            # the bar's ambiguity to a leaky integral (so dT is the number of
+            # ambiguous bars, not calendar bars); "product" reads the literal
+            # dP * dT with dT = bars since the last new best_close.
+            if p.h_exit > 0 and amb_at is not None:
+                dp = amb_at[sym].iloc[i]
+                if not np.isnan(dp):
+                    if p.h_form == "product":
+                        pos.h_action = float(dp) * pos.stall_count / p.h_time_ref
+                    elif unreal_r < p.h_immune_r:
+                        pos.h_action = pos.h_action * (1 - p.h_decay) + float(dp)
             b4 = bias4h[sym].iloc[i]
             pos.bias_flip_streak = pos.bias_flip_streak + 1 if b4 == -d else 0
             # hourly re-score of this held position (the live conviction the
@@ -503,12 +530,26 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             loss_fade = (p.hold_loss_exit > 0 and hold_at is not None
                          and trend_managed and unreal_r < 0
                          and pos.loss_fade_streak >= p.hold_conf_bars)
+            # E21 Heisenberg release: the position has been ambiguous for long
+            # enough that no timescale resolves its direction. Ranks below the
+            # conviction exits (they are better-informed reads) and above the
+            # lagging bias flip. Profit-immune by construction.
+            heisen = (p.h_exit > 0 and pos.h_action >= p.h_exit
+                      and unreal_r < p.h_immune_r)
+            # H-G: proven winner, long held, chart now ambiguous -> release the
+            # seat. Targets the one negative cell the forward study found.
+            if ambq_at is not None and not heisen:
+                aq = ambq_at[sym].iloc[i]
+                heisen = (pos.bars >= p.h_rel_bars and pos.peak_r >= p.h_rel_peak
+                          and not np.isnan(aq) and aq >= p.h_rel_amb)
             if state_at[sym].iloc[i] == "CRISIS":
                 finalize(pos, exit_px, t, "Regime")
             elif signal_fade:
                 finalize(pos, exit_px, t, "SignalFade")
             elif loss_fade:
                 finalize(pos, exit_px, t, "LossFade")
+            elif heisen:
+                finalize(pos, exit_px, t, "Heisen")
             elif trend_managed and pos.bias_flip_streak >= 2:
                 finalize(pos, exit_px, t, "BiasFlip")
             elif (time_stop > 0 and pos.bars >= time_stop
@@ -545,6 +586,13 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                     hold_dec = float(hv)
             if entry_gate > 0 and hold_dec < entry_gate:
                 continue
+            # E21 H-Entry: refuse to open into a chart whose direction is
+            # already unresolvable (ambiguity above h_entry_max at the decision
+            # bar) — the seat is spent before the thesis ever gets to play out.
+            if p.h_entry_max > 0 and amb_at is not None:
+                av = amb_at[sym].iloc[i]
+                if not np.isnan(av) and av > p.h_entry_max:
+                    continue
             meta = {k: float(row[k]) for k in
                     ("c_base", "c_fit", "c_align", "c_fund", "c_base_pct")
                     if k in row.index}
@@ -553,6 +601,10 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # forward judge for WF-A — corr(hold_entry, R) and the hold_entry
             # distribution — and 1.0 on disarmed profiles (constant, inert).
             meta["hold_entry"] = round(hold_dec, 4)
+            if amb_at is not None:
+                a_v = amb_at[sym].iloc[i]
+                if not np.isnan(a_v):
+                    meta["h_amb"] = round(float(a_v), 4)
             pendings.append(Pending(sym=sym, direction=d_i,
                                     conf=float(row["conf"]), sl=float(row["sl"]),
                                     setup=str(row["setup"]),
