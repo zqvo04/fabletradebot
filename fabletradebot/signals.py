@@ -36,6 +36,11 @@ def build_features(df1h: pd.DataFrame, funding: pd.Series | None, p: Params) -> 
     # ratio. Read by the H axis only; inert (attribution-only) while it is off.
     f["amb"] = 1.0 - efficiency_ratio(df1h["close"], p.h_amb_win)
     f["amb_q"] = pct_rank(f["amb"], p.h_rank_win) / 100.0
+    # 4차 H axis: continuous (position-free) leaky integral of raw ΔP, then its
+    # own trailing percentile — "how stuck is THIS SYMBOL right now, relative to
+    # its own history" as a symbol-relative quantile threshold input.
+    f["h_act"] = f["amb"].ewm(alpha=p.h_decay, adjust=False).mean() if p.h_decay > 0 else np.nan
+    f["h_act_q"] = pct_rank(f["h_act"], p.h_rank_win) / 100.0
     f["rsi1h"] = rsi(df1h["close"], 14)
     f["vol_med"] = df1h["volume"].rolling(48).median()
     f["bbw_pct"] = pct_rank(bollinger_width(df1h["close"], 20, 2.0), p.bbw_lookback)

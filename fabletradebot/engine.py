@@ -196,8 +196,25 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
         and all("amb" in features[s].columns for s in frames)
     amb_at = {s: features[s]["amb"].reindex(grid) for s in frames} if use_h else None
     ambq_at = ({s: features[s]["amb_q"].reindex(grid) for s in frames}
-               if p.h_rel_bars > 0 and all("amb_q" in features[s].columns
-                                           for s in frames) else None)
+               if p.h_rel_bars > 0 and use_h
+               and all("amb_q" in features[s].columns for s in frames) else None)
+    dp_at = amb_at
+    # 4차: h_form="rank_action" reads a POSITION-FREE continuous indicator —
+    # h_act_q(t) is a leaky integral of raw amb (decay=h_decay) put through its
+    # OWN trailing percentile (h_rank_win). It answers "how stuck is this
+    # symbol right now, relative to its own history" and is stateless (no
+    # per-position accumulator, no immunity toggling).
+    hactq_at = ({s: features[s]["h_act_q"].reindex(grid) for s in frames}
+                if p.h_form == "rank_action" and p.h_exit > 0
+                and all("h_act_q" in features[s].columns for s in frames)
+                else None)
+    # 위약 대조 전용: 상태·경로 정보가 전혀 없는 순수 재현가능 노이즈 발화율.
+    # h_form="noise"는 h_act_q와 동일 통계(값 자체는 무의미)로 매 바 균등난수를
+    # h_exit와 비교한다 — "언제 놓아도 상관없다면" 부가 얼마나 오르는지 측정.
+    noise_at = ({s: pd.Series(np.random.default_rng([p.h_noise_seed, i_sym])
+                              .uniform(size=len(grid)), index=grid)
+                 for i_sym, s in enumerate(sorted(frames))}
+                if p.h_form == "noise" and p.h_exit > 0 else None)
     cand_at = {s: {ts: row for ts, row in candidates[s].iterrows()} for s in candidates}
     fund_at = {s: dict(zip(funding[s].index, funding[s].values))
                for s in funding if funding[s] is not None}
@@ -485,8 +502,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # the bar's ambiguity to a leaky integral (so dT is the number of
             # ambiguous bars, not calendar bars); "product" reads the literal
             # dP * dT with dT = bars since the last new best_close.
-            if p.h_exit > 0 and amb_at is not None:
-                dp = amb_at[sym].iloc[i]
+            if p.h_exit > 0 and p.h_form != "rank_action" and dp_at is not None:
+                dp = dp_at[sym].iloc[i]
                 if not np.isnan(dp):
                     if p.h_form == "product":
                         pos.h_action = float(dp) * pos.stall_count / p.h_time_ref
@@ -534,8 +551,16 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # enough that no timescale resolves its direction. Ranks below the
             # conviction exits (they are better-informed reads) and above the
             # lagging bias flip. Profit-immune by construction.
-            heisen = (p.h_exit > 0 and pos.h_action >= p.h_exit
-                      and unreal_r < p.h_immune_r)
+            if p.h_form == "rank_action" and hactq_at is not None:
+                aq = hactq_at[sym].iloc[i]
+                heisen = (not np.isnan(aq) and aq >= p.h_exit
+                          and unreal_r < p.h_immune_r)
+            elif p.h_form == "noise" and noise_at is not None:
+                nv = noise_at[sym].iloc[i]
+                heisen = (nv >= p.h_exit and unreal_r < p.h_immune_r)
+            else:
+                heisen = (p.h_exit > 0 and pos.h_action >= p.h_exit
+                          and unreal_r < p.h_immune_r)
             # H-G: proven winner, long held, chart now ambiguous -> release the
             # seat. Targets the one negative cell the forward study found.
             if ambq_at is not None and not heisen:
