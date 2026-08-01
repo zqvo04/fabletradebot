@@ -44,15 +44,6 @@ def donchian(df: pd.DataFrame, period: int) -> tuple[pd.Series, pd.Series]:
     return hi, lo
 
 
-def efficiency_ratio(close: pd.Series, window: int) -> pd.Series:
-    """Kaufman efficiency ratio over `window` bars: |net travel| / gross travel.
-    1 = a straight line (direction resolved), ~0 = pure churn (direction
-    unresolvable at this scale). Uses bars <= t only."""
-    net = (close - close.shift(window)).abs()
-    gross = close.diff().abs().rolling(window).sum()
-    return (net / gross.replace(0, np.nan)).clip(0, 1)
-
-
 def realized_vol(close: pd.Series, window: int) -> pd.Series:
     return close.pct_change().rolling(window).std(ddof=0)
 

@@ -193,32 +193,6 @@ class Params:
     stall_bars: int = 0
     stall_trail_atr: float = 3.0
     stall_peak_r: float = 0.5
-    # --- H axis: uncertainty-action exit / entry (E21, HEISENBERG_REDESIGN.md)-
-    # dP = directional ambiguity of the chart (1 - Kaufman efficiency ratio over
-    # h_amb_win bars: 0 = a clean directional move, 1 = pure churn). dT = time
-    # spent in that state. The axis never reads the SL and never moves it, so it
-    # cannot reproduce the X-A/X-G failure mode (narrowing the effective stop);
-    # it either releases the whole seat or blocks the entry.
-    #   h_form "action"  : leaky integral S <- S*(1-h_decay) + dP  (dT implicit
-    #                      in the accumulation; ambiguity compounds over time)
-    #   h_form "product" : literal dP * dT with dT = bars since the last new
-    #                      best_close, scaled by h_time_ref
-    # Exit fires at S >= h_exit, and ONLY while unreal_r < h_immune_r (profit
-    # immunity — a runner in profit is the trail's business, per E9/E16/X-A).
-    # h_entry_max blocks a NEW entry whose chart ambiguity at the decision bar
-    # exceeds it. All 0 = off (default); pre-registered, must pass G5 to arm.
-    h_exit: float = 0.0
-    h_form: str = "action"
-    h_decay: float = 0.02
-    h_immune_r: float = 0.0
-    h_time_ref: float = 24.0
-    h_entry_max: float = 0.0
-    h_amb_win: int = 24
-    # H-Size: pay the uncertainty tax in SIZE instead of in a binary decision —
-    # a fill's risk/margin is scaled by (1 - h_size_k * dP) at the decision bar,
-    # so an ambiguous chart is taken smaller rather than refused or released.
-    # 0 = off (default).
-    h_size_k: float = 0.0
     # --- position health / momentum-fade management (V4) ---
     # The hourly scoring loop re-scores every OPEN position (hold_confidence:
     # MTF alignment + regime fit + 4H momentum). When that live conviction
