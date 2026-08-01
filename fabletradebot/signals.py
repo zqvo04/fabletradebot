@@ -22,7 +22,8 @@ import pandas as pd
 
 from .config import Params
 from .data_okx import closed_asof_1h, resample
-from .indicators import atr, bollinger_width, ema, pct_rank, rsi, zscore
+from .indicators import (atr, bollinger_width, efficiency_ratio, ema, pct_rank,
+                         rsi, zscore)
 
 CAND_COLS = ["dir", "conf", "sl", "setup", "c_base", "c_fit", "c_align", "c_fund"]
 
@@ -31,6 +32,9 @@ def build_features(df1h: pd.DataFrame, funding: pd.Series | None, p: Params) -> 
     f = pd.DataFrame(index=df1h.index)
     f[["open", "high", "low", "close", "volume"]] = df1h[["open", "high", "low", "close", "volume"]]
     f["atr1h"] = atr(df1h, 14)
+    # directional ambiguity (E21 / HEISENBERG_REDESIGN.md): 1 - efficiency
+    # ratio. Read by the H axis only; inert (attribution-only) while it is off.
+    f["amb"] = 1.0 - efficiency_ratio(df1h["close"], p.h_amb_win)
     f["rsi1h"] = rsi(df1h["close"], 14)
     f["vol_med"] = df1h["volume"].rolling(48).median()
     f["bbw_pct"] = pct_rank(bollinger_width(df1h["close"], 20, 2.0), p.bbw_lookback)
