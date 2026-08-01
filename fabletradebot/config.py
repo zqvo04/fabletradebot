@@ -193,6 +193,53 @@ class Params:
     stall_bars: int = 0
     stall_trail_atr: float = 3.0
     stall_peak_r: float = 0.5
+    # --- H axis: uncertainty-action exit / entry (E21, HEISENBERG_REDESIGN.md)-
+    # dP = directional ambiguity of the chart (1 - Kaufman efficiency ratio over
+    # h_amb_win bars: 0 = a clean directional move, 1 = pure churn). dT = time
+    # spent in that state. The axis never reads the SL and never moves it, so it
+    # cannot reproduce the X-A/X-G failure mode (narrowing the effective stop);
+    # it either releases the whole seat or blocks the entry.
+    #   h_form "action"  : leaky integral S <- S*(1-h_decay) + dP  (dT implicit
+    #                      in the accumulation; ambiguity compounds over time)
+    #   h_form "product" : literal dP * dT with dT = bars since the last new
+    #                      best_close, scaled by h_time_ref
+    # Exit fires at S >= h_exit, and ONLY while unreal_r < h_immune_r (profit
+    # immunity — a runner in profit is the trail's business, per E9/E16/X-A).
+    # h_entry_max blocks a NEW entry whose chart ambiguity at the decision bar
+    # exceeds it. All 0 = off (default); pre-registered, must pass G5 to arm.
+    h_exit: float = 0.0
+    h_form: str = "action"
+    h_decay: float = 0.02
+    h_immune_r: float = 0.0
+    h_time_ref: float = 24.0
+    h_entry_max: float = 0.0
+    h_amb_win: int = 24
+    # 4차 재검토 (오너 지시): "임계를 심볼 자기 이력 분위수로" — 입력 ΔP가 아니라
+    # 문턱 자체를 심볼 상대로 만든다. h_form="rank_action"은 (position-무관)
+    # 연속 시장 지표 h_act_q를 읽는다: 원 ΔP(amb)의 leaky 적분(decay=h_decay)을
+    # 전 구간에 걸쳐 계산한 뒤 h_rank_win 트레일링 창에서 그 적분값 자체의
+    # percentile을 취한 것 — "이 심볼 자기 역사 기준으로 지금이 얼마나 이례적으로
+    # 정체돼 있는가"를 0~1로 답한다. 발화 조건: h_act_q >= h_exit(0~1 분위수로
+    # 해석) AND unreal_r < h_immune_r. position 상태(진입 시점, 이익 면역 온오프
+    # 전환)에 의존하지 않는 만큼 시장 자체의 성질만 반영한다.
+    # (참고, 폐기: 적분 "입력"을 분위수로 바꾸는 것은 시도했으나 입력 평균이 항상
+    # ~0.5로 고정돼 시장 상태와 무관하게 상시 발화 — 재시도 금지.)
+    # H-G (E21 재검토): 조건부 전방 스터디가 짚은 유일한 음수 구간을 직접 겨냥.
+    # >8일 보유 x 최고 애매도 사분위의 전방 R은 -0.16R(n=543)이고 애매도에 대해
+    # 단조 감소(+1.52/+1.27/+0.27/-0.16). 1차의 H-A/H-B는 unreal_r>=0을 전부
+    # 면제해 이 구간을 구조적으로 볼 수 없었다. 여기서는 반대로 PROVEN WINNER
+    # (peak_r>=h_rel_peak)가 h_rel_bars 이상 보유되었고 지금 차트 애매도가
+    # h_rel_amb 이상이면 좌석을 놓는다. SL은 건드리지 않는다. 0 = off.
+    h_rel_bars: int = 0
+    h_rel_amb: float = 0.75
+    h_rel_peak: float = 1.0
+    h_rank_win: int = 720
+    h_noise_seed: int = 0   # placebo control only (h_form="noise"): RNG seed
+    # H-Size: pay the uncertainty tax in SIZE instead of in a binary decision —
+    # a fill's risk/margin is scaled by (1 - h_size_k * dP) at the decision bar,
+    # so an ambiguous chart is taken smaller rather than refused or released.
+    # 0 = off (default).
+    h_size_k: float = 0.0
     # --- position health / momentum-fade management (V4) ---
     # The hourly scoring loop re-scores every OPEN position (hold_confidence:
     # MTF alignment + regime fit + 4H momentum). When that live conviction
