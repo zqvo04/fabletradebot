@@ -15,25 +15,30 @@
    ]
   ],
   "cooldown": {
-   "SUI": {
-    "bars": 1,
-    "exp": true
-   },
    "SOL": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    }
   },
-  "positions": {},
-  "pendings": [
-   {
+  "positions": {
+   "DOGE": {
     "sym": "DOGE",
     "direction": -1,
     "conf": 0.879882918699241,
-    "sl": 0.07079253022037979,
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
-    "decided_ts": "2026-08-02 08:00:00+00:00",
+    "entry": 0.06995200800000001,
+    "sl": 0.07079253022037979,
+    "sl0": 0.07079253022037979,
+    "tp1": 0.0,
+    "notional": 10000.0,
+    "margin": 2000.0,
+    "risk_amt": 120.15698253862563,
+    "leverage": 5.0,
+    "liq_price": 0.08324288952,
+    "opened_ts": "2026-08-02 09:00:00+00:00",
+    "risk_frac": 0.002,
+    "init_stop_frac": 0.012015698253862563,
     "meta": {
      "c_base": 0.7816053067258927,
      "c_fit": 1.0,
@@ -42,20 +47,42 @@
      "c_base_pct": 0.9583333333333335,
      "hold_entry": 0.8025
     },
-    "hold_dec": 0.8024501337405645
+    "tranches": [
+     [
+      0.06995200800000001,
+      10000.0
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 0.06995200800000001,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7909250575340812,
+    "peak_r": 0.0,
+    "stall_count": 0,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
- "shadow_pages": {},
- "shadow_seats": {},
+ "shadow_pages": {
+  "DOGE|2026-08-02 09:00:00+00:00": "3b08b798-76e3-8119-9fa0-eeae4115c9e1"
+ },
+ "shadow_seats": {
+  "DOGE|2026-08-02 09:00:00+00:00": "Live-Taken"
+ },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
   "SOL|2026-08-01 18:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-02 09:00:00+00:00",
- "last_bar": "2026-08-02 08:00:00+00:00",
- "equity": 10084.889656234724,
+ "anchor": "2026-08-02 10:00:00+00:00",
+ "last_bar": "2026-08-02 09:00:00+00:00",
+ "equity": 10056.34540811511,
  "carry": {
   "cash": 10084.889656234724,
   "peak": 10510.645628955712,
@@ -64,20 +91,29 @@
   "loss_log": [],
   "cooldown": {
    "XRP": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    }
   },
-  "positions": {},
-  "pendings": [
-   {
+  "positions": {
+   "DOGE": {
     "sym": "DOGE",
     "direction": -1,
     "conf": 0.879882918699241,
-    "sl": 0.07079253022037979,
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
-    "decided_ts": "2026-08-02 08:00:00+00:00",
+    "entry": 0.06995200800000001,
+    "sl": 0.07079253022037979,
+    "sl0": 0.07079253022037979,
+    "tp1": 0.0,
+    "notional": 10084.889656234724,
+    "margin": 2016.9779312469448,
+    "risk_amt": 121.17699103281619,
+    "leverage": 5.0,
+    "liq_price": 0.08324288952,
+    "opened_ts": "2026-08-02 09:00:00+00:00",
+    "risk_frac": 0.002,
+    "init_stop_frac": 0.012015698253862563,
     "meta": {
      "c_base": 0.7816053067258927,
      "c_fit": 1.0,
@@ -86,16 +122,36 @@
      "c_base_pct": 0.9583333333333335,
      "hold_entry": 0.8025
     },
-    "hold_dec": 0.8024501337405645
+    "tranches": [
+     [
+      0.06995200800000001,
+      10084.889656234724
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 0.06995200800000001,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7909250575340812,
+    "peak_r": 0.0,
+    "stall_count": 0,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
- "pages": {},
+ "pages": {
+  "DOGE|2026-08-02 09:00:00+00:00": "3b08b798-76e3-817d-b980-cf53e7742369"
+ },
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
   "XRP|2026-07-26 13:00:00+00:00",
   "DOGE|2026-07-26 19:00:00+00:00",
   "XRP|2026-07-27 12:00:00+00:00"
  ],
- "last_run": "2026-08-02 09:03:50.142175+00:00"
+ "last_run": "2026-08-02 10:03:48.574245+00:00"
 }
