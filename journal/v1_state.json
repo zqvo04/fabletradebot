@@ -16,7 +16,7 @@
   ],
   "cooldown": {
    "SOL": {
-    "bars": 2,
+    "bars": 1,
     "exp": true
    }
   },
@@ -54,20 +54,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
-    "best_close": 0.06995200800000001,
+    "best_close": 0.06994,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7992487236832084,
-    "peak_r": 0.0,
+    "hold_conf": 0.8135052528850991,
+    "peak_r": 0.014286356397076708,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "SUI",
+    "direction": -1,
+    "conf": 0.8226667851893266,
+    "sl": 0.6962529872180261,
+    "setup": "PBK_S",
+    "regime": "TREND_DOWN",
+    "decided_ts": "2026-08-02 11:00:00+00:00",
+    "meta": {
+     "c_base": 0.6775759730715029,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 0.8583333333333333,
+     "hold_entry": 0.8935
+    },
+    "hold_dec": 0.893456168621025
+   }
+  ]
  },
  "shadow_pages": {
   "DOGE|2026-08-02 09:00:00+00:00": "3b08b798-76e3-8119-9fa0-eeae4115c9e1"
@@ -80,9 +99,9 @@
   "SOL|2026-08-01 18:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-02 11:00:00+00:00",
- "last_bar": "2026-08-02 10:00:00+00:00",
- "equity": 10075.087338372647,
+ "anchor": "2026-08-02 12:00:00+00:00",
+ "last_bar": "2026-08-02 11:00:00+00:00",
+ "equity": 10086.620833915744,
  "carry": {
   "cash": 10084.889656234724,
   "peak": 10510.645628955712,
@@ -91,7 +110,7 @@
   "loss_log": [],
   "cooldown": {
    "XRP": {
-    "bars": 6,
+    "bars": 5,
     "exp": true
    }
   },
@@ -129,20 +148,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
-    "best_close": 0.06995200800000001,
+    "best_close": 0.06994,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7992487236832084,
-    "peak_r": 0.0,
+    "hold_conf": 0.8135052528850991,
+    "peak_r": 0.014286356397076708,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "SUI",
+    "direction": -1,
+    "conf": 0.8226667851893266,
+    "sl": 0.6962529872180261,
+    "setup": "PBK_S",
+    "regime": "TREND_DOWN",
+    "decided_ts": "2026-08-02 11:00:00+00:00",
+    "meta": {
+     "c_base": 0.6775759730715029,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 0.8583333333333333,
+     "hold_entry": 0.8935
+    },
+    "hold_dec": 0.893456168621025
+   }
+  ]
  },
  "pages": {
   "DOGE|2026-08-02 09:00:00+00:00": "3b08b798-76e3-817d-b980-cf53e7742369"
@@ -153,5 +191,5 @@
   "DOGE|2026-07-26 19:00:00+00:00",
   "XRP|2026-07-27 12:00:00+00:00"
  ],
- "last_run": "2026-08-02 11:03:53.831169+00:00"
+ "last_run": "2026-08-02 12:03:46.786229+00:00"
 }
