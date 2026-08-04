@@ -14,12 +14,7 @@
     187.18952539168512
    ]
   ],
-  "cooldown": {
-   "HYPE": {
-    "bars": 1,
-    "exp": true
-   }
-  },
+  "cooldown": {},
   "positions": {
    "DOGE": {
     "sym": "DOGE",
@@ -54,14 +49,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 38,
+    "bars": 39,
     "tp1_done": false,
     "best_close": 0.06925,
     "realized": 2.8941917268140003,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7390184270237582,
+    "hold_conf": 0.7441489015905857,
     "peak_r": 0.0520119872776021,
     "stall_count": 0,
     "trail_tightened": false
@@ -99,14 +94,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 22,
+    "bars": 23,
     "tp1_done": false,
     "best_close": 1.07,
     "realized": 2.277219029158,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7420045749657551,
+    "hold_conf": 0.7504562635145114,
     "peak_r": 0.33004611760514946,
     "stall_count": 0,
     "trail_tightened": false
@@ -144,14 +139,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 14,
+    "bars": 15,
     "tp1_done": false,
     "best_close": 0.6904854599999999,
     "realized": 1.2,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7228015679030082,
+    "hold_conf": 0.7418233227015234,
     "peak_r": 0.0,
     "stall_count": 0,
     "trail_tightened": false
@@ -178,9 +173,9 @@
   "HYPE|2026-08-04 01:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-04 21:00:00+00:00",
- "last_bar": "2026-08-04 20:00:00+00:00",
- "equity": 9841.437634634942,
+ "anchor": "2026-08-04 22:00:00+00:00",
+ "last_bar": "2026-08-04 21:00:00+00:00",
+ "equity": 9855.198233158953,
  "carry": {
   "cash": 9861.485595775572,
   "peak": 10510.645628955712,
@@ -227,14 +222,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 22,
+    "bars": 23,
     "tp1_done": false,
     "best_close": 1.07,
     "realized": 2.2456762654467646,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7420045749657551,
+    "hold_conf": 0.7504562635145114,
     "peak_r": 0.3300461176051495,
     "stall_count": 0,
     "trail_tightened": false
@@ -253,5 +248,5 @@
   "DOGE|2026-08-02 09:00:00+00:00",
   "SUI|2026-08-02 23:00:00+00:00"
  ],
- "last_run": "2026-08-04 21:04:01.562855+00:00"
+ "last_run": "2026-08-04 22:03:45.847243+00:00"
 }
