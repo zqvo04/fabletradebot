@@ -49,14 +49,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 58,
+    "bars": 59,
     "tp1_done": false,
     "best_close": 0.06925,
     "realized": 5.192650283268,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7800740767146634,
+    "hold_conf": 0.7674810965211714,
     "peak_r": 0.0520119872776021,
     "stall_count": 0,
     "trail_tightened": false
@@ -94,14 +94,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 42,
+    "bars": 43,
     "tp1_done": false,
     "best_close": 1.0601,
     "realized": 2.2500970898130004,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8495008712748822,
+    "hold_conf": 0.8309580975757777,
     "peak_r": 0.9875032116546528,
     "stall_count": 0,
     "trail_tightened": false
@@ -139,14 +139,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 34,
+    "bars": 35,
     "tp1_done": false,
     "best_close": 0.6868,
     "realized": 2.8501228419785996,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.788196781016969,
+    "hold_conf": 0.7749407987566994,
     "peak_r": 0.3410776250040415,
     "stall_count": 0,
     "trail_tightened": false
@@ -174,9 +174,9 @@
   "HYPE|2026-08-05 01:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-05 17:00:00+00:00",
- "last_bar": "2026-08-05 16:00:00+00:00",
- "equity": 9941.404570981356,
+ "anchor": "2026-08-05 18:00:00+00:00",
+ "last_bar": "2026-08-05 17:00:00+00:00",
+ "equity": 9912.048627463459,
  "carry": {
   "cash": 9861.485595775572,
   "peak": 10510.645628955712,
@@ -218,14 +218,14 @@
      ]
     ],
     "adds": 0,
-    "bars": 42,
+    "bars": 43,
     "tp1_done": false,
     "best_close": 1.0601,
     "realized": 2.218930004028743,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8495008712748822,
+    "hold_conf": 0.8309580975757777,
     "peak_r": 0.9875032116546528,
     "stall_count": 0,
     "trail_tightened": false
@@ -244,5 +244,5 @@
   "DOGE|2026-08-02 09:00:00+00:00",
   "SUI|2026-08-02 23:00:00+00:00"
  ],
- "last_run": "2026-08-05 17:03:47.100205+00:00"
+ "last_run": "2026-08-05 18:03:56.697397+00:00"
 }
