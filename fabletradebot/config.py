@@ -40,7 +40,39 @@ def inst_id(symbol: str) -> str:
 
 @dataclass(frozen=True)
 class Params:
+    """Strategy parameters, each tagged with WHO IS ALLOWED TO CHANGE IT.
+
+    Tags below are [M], [A] or [D]. The point of the split is that most of this
+    file was tuned on the whale backtest, and that backtest cannot support the
+    conclusions drawn from it: one compounding full-margin seat makes terminal
+    return path-dominated (reshuffling the same 451 design-window trades spans
+    p5 1.81x to p95 206.84x), and its 451-trade expectancy carries a 95% CI of
+    [-0.042, +0.295]. Numbers quoted as evidence in this file -- "ret 10.5x ->
+    26.3x", "ret 26.27x -> 33.76x" -- sit inside that noise band.
+
+      [M] MEASURED -- decided by the seat-free record (run_seatfree.py), judged
+          on week-block CIs. Adoption needs: CI excludes 0, both chronological
+          halves share the sign, n >= 150. Never decided on a whale backtest.
+
+      [A] A-PRIORI -- fixed by a stated reason, never tuned to an outcome. These
+          are the knobs the seat-free record CANNOT see (anything on the seat
+          axis) plus unit/consistency choices. Do NOT cite performance numbers
+          for these; if a performance number is the only argument, the knob is
+          misclassified.
+
+      [D] DEPLOYMENT -- affects the equity path only, not per-trade R (R is
+          leverage-independent: notional cancels in pnl/risk_amt). Judged by a
+          Monte-Carlo survival gate against a ruin threshold fixed IN ADVANCE.
+          Pass/fail only -- never ranked by return or Sharpe.
+
+    See REGIME_REDESIGN.md for the measurement basis and the staged plan.
+    """
     # --- confidence -> entry / leverage tier / risk fraction ---
+    # [A] conf_entry: conf does not rank R (E9 corr 0.005; design-window whale
+    #     corr(conf,R) = -0.026), so this is a floor kept for a stated reason --
+    #     it bounds how marginal a setup may be -- not an edge claim.
+    # [D] conf_tiers: the leverage column is a deployment knob. The risk column
+    #     is unused under whale full margin.
     # Design measurement (EXPERIMENTS E9): confidence does NOT rank R for the
     # surviving BRK signal (corr 0.005), so V1 sizes uniformly at 1% and keeps
     # a single tier. The tier plumbing stays; forward scoring keeps measuring
@@ -59,10 +91,20 @@ class Params:
     pyramid_trigger_r: float = 2.0   # add every +2R (in initial-stop units)
     eq_boost_mult: float = 1.5       # risk multiplier near equity highs
     eq_boost_dd: float = 0.02        # "near high" = drawdown below this
-    # --- liquidation safety (hard, not swept) ---
+    # --- liquidation safety (hard, not swept) --- [A]
+    # Structural invariant, not a tunable: the stop must be hit before the
+    # liquidation price. Never decided by a backtest.
     liq_stop_mult: float = 3.0       # liq distance must be >= 3x stop distance
     mmr_buffer: float = 0.015        # maintenance-margin + fee buffer
-    # --- regime ---
+    # --- regime --- [M] thresholds / [D] regime_lev_cap
+    # NOTE (REGIME_REDESIGN §1e): the crash thresholds below are ABSOLUTE
+    # percentages while vol_pct in the same classifier is an asset-relative
+    # percentile. That mixes units, and the cost is measurable: CRISIS covers
+    # 3.7% of BTC bars but 32.0% of ONDO bars -- volatile alts are blocked from
+    # entry a third of the time for being volatile. Normalising is a units fix,
+    # NOT a free win: the CRISIS force-exit is a profit source (whale n=29,
+    # +3.02R avg), so relaxing entry also removes those exits. Held pending the
+    # pre-registered two-sided experiment in REGIME_REDESIGN §4.
     regime_lev_cap: dict = field(default_factory=lambda: {
         "TREND_UP": 10.0, "TREND_DOWN": 10.0, "RANGE": 5.0,
         "HIGH_VOL": 3.0, "CRISIS": 0.0})
@@ -73,7 +115,7 @@ class Params:
     hysteresis_bars: int = 2         # 1D bars to confirm a regime switch
     corr_window_h: int = 720         # 30d of 1H returns
     corr_alert: float = 0.80
-    # --- stops (all setups) ---
+    # --- stops (all setups) --- [M]
     # 1H noise sweeps stops placed inside ~2 ATR (EXPERIMENTS E5)
     sl_floor_atr: float = 2.0
     sl_swing_atr: float = 0.6        # buffer beyond the structural level
@@ -166,7 +208,7 @@ class Params:
     funding_bonus: float = 0.05
     funding_penalty: float = 0.10
     funding_z_window: int = 270      # 90d of 8h fundings
-    # --- exits ---
+    # --- exits --- [M] (judge on run_seatfree.py, never on a whale backtest)
     # Exit structure chosen by measurement (E9): partial-TP and time stops CUT
     # the trend winners this signal lives on. 0 disables either mechanism.
     tp1_r: float = 0.0               # 0 = no partial take-profit
@@ -193,7 +235,7 @@ class Params:
     stall_bars: int = 0
     stall_trail_atr: float = 3.0
     stall_peak_r: float = 0.5
-    # --- position health / momentum-fade management (V4) ---
+    # --- position health / momentum-fade management (V4) --- [M]
     # The hourly scoring loop re-scores every OPEN position (hold_confidence:
     # MTF alignment + regime fit + 4H momentum). When that live conviction
     # decays below hold_conf_exit for hold_conf_bars consecutive bars, the
@@ -248,7 +290,7 @@ class Params:
     # armed, conviction-collapse also requires peak_r >= hold_conf_min_r, so an
     # unripe position is held (to its stop/trail) until it has proven a run.
     hold_minr_strict: bool = False
-    # --- losing-position early cut (V5) --------------------------------------
+    # --- losing-position early cut (V5) ------------------------------- [M] --
     # Symmetric counterpart to the winner-only SignalFade above, for the side
     # the profit-protecting exit deliberately ignores: a LOSING trend position.
     # The same live hold_confidence (regime fit + MTF alignment + 4H momentum)
@@ -304,7 +346,8 @@ class Params:
     # the sign of risk_amt (and therefore of R) — which would corrupt exactly
     # the record the shadow book exists to produce.
     size_equity: float = 0.0
-    # --- portfolio risk ---
+    # --- portfolio risk --- [A] seat axis: invisible to the seat-free record,
+    # so it can never be measured. Fix by stated reason, not by performance.
     max_positions: int = 4
     max_positions_corr: int = 2
     max_open_risk: float = 0.018
@@ -322,7 +365,7 @@ class Params:
     # a G5 sign-flip = path noise, avg_r rising the whole time = the E9 mirage);
     # SR-B (dead-seat rotation) never fired (rot=0, the losing-armed-holder +
     # pending-cross-candidate coincidence does not occur). Neither is in the code.
-    # --- costs ---
+    # --- costs --- (measured facts, not knobs)
     taker_fee: float = 0.0005        # one way
     # OKX only serves ~3 months of funding history; before that the engine
     # charges this flat per-8h drag on any open position (conservative).

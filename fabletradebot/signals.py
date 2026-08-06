@@ -216,7 +216,15 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
         rsi_d = f["rsi1h"] if d == 1 else 100 - f["rsi1h"]
         reclaim = (f["close"] > f["prev_high"]) if d == 1 else (f["close"] < f["prev_low"])
         in_value = pull.between(-p.pbk_deep_atr, p.pbk_shallow_atr) & (deep > -p.pbk_deep_atr)
-        mask = ((state == trend) & (f["bias1d"] == d) & (f["bias4h"] == d)
+        # bias1d dropped (REGIME_REDESIGN §1b): `state == trend` already implies
+        # it. regime.raw_regime_1d builds TREND_UP from (e20>e50)&(c>e100) on the
+        # daily bars and build_features builds bias1d==1 from the same two
+        # conditions, so inside a TREND state 99.6% (UP) / 98.3% (DOWN) of bars
+        # already satisfy the gate -- it filtered 0.4-1.7% and cost a whole
+        # timeframe's worth of apparent justification. bias4h stays: it is the
+        # one directional gate with evidence (against-4H entries measure
+        # -0.0737, week-block CI [-0.092,-0.056], same sign in both halves).
+        mask = ((state == trend) & (f["bias4h"] == d)
                 & in_value & rsi_d.between(p.pbk_rsi_lo, p.pbk_rsi_hi)
                 & reclaim & (body > 0.25) & (vol_ratio >= 1.0))
         swing = f["low"].rolling(8).min() if d == 1 else f["high"].rolling(8).max()
@@ -274,7 +282,9 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
             armed = f["rcl_up"] if d == 1 else f["rcl_dn"]
             depth = f["rcl_depth_l"] if d == 1 else f["rcl_depth_s"]
             ext = f["swing3_lo4"] if d == 1 else f["swing3_hi4"]
-            allowed = (state == trend) & (f["bias1d"] == d)
+            # bias1d dropped for the same reason as PBK above (REGIME_REDESIGN
+            # §1b): `state == trend` already implies it on 98-99.6% of bars.
+            allowed = state == trend
             fit = (state == trend).astype(float)
         # mean-reversion slots must not fight a confirmed 1D trend
         guard = (f["bias1d"] != -d) if family in ("OSC", "BND") else True

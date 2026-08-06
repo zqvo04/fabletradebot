@@ -13,6 +13,33 @@ from .backtest import run_backtest
 from .config import Params
 
 
+def week_block_ci(trades: pd.DataFrame, col: str = "r", n_boot: int = 8000,
+                  seed: int = 0) -> tuple[float, float, int]:
+    """95% CI for mean `col`, resampling whole CALENDAR WEEKS with replacement.
+
+    The seat-free record (stage 1) runs up to `n` positions at once, so 60% of
+    its trades open before the previous one closed. Those are not independent
+    draws: a plain per-trade bootstrap treats correlated simultaneous positions
+    as separate evidence and returns an interval that is too narrow. Resampling
+    weeks keeps everything that overlapped inside one block, so the correlation
+    stays intact and the interval widens to what the record can actually support.
+
+    Returns (lo, hi, n_weeks). n_weeks is the real sample size for this statistic
+    -- read it, not len(trades), when judging whether a result is worth anything.
+    """
+    if len(trades) == 0:
+        return float("nan"), float("nan"), 0
+    wk = pd.to_datetime(trades["opened"]).dt.tz_localize(None).dt.to_period("W")
+    blocks = [g[col].to_numpy() for _, g in trades.groupby(wk)]
+    k = len(blocks)
+    if k < 10:
+        return float("nan"), float("nan"), k
+    rng = np.random.default_rng(seed)
+    means = [np.concatenate([blocks[i] for i in rng.integers(0, k, k)]).mean()
+             for _ in range(n_boot)]
+    return float(np.percentile(means, 2.5)), float(np.percentile(means, 97.5)), k
+
+
 def walk_forward(data_dir: str, p: Params, start: str, end: str,
                  test_months: int = 2) -> pd.DataFrame:
     """Rolling out-of-sample slices (parameters are FIXED — this checks stability
