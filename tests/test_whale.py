@@ -65,11 +65,36 @@ def test_full_margin_de_risks_with_margin_frac():
     assert half.liq_price == pytest.approx(full.liq_price)  # liq distance untouched
 
 
-def test_whale_liq_safety_caps_leverage_on_wide_stop():
-    # confidence wants 10x but an 8% stop would liquidate first -> capped to 3x
-    p = profile("whale")
+def test_liq_safety_caps_leverage_on_wide_stop():
+    # conf-tier sizing (stop_loss_target off): confidence wants 10x but an 8%
+    # stop would liquidate first -> capped to 3x by lev_liq_cap.
+    p = replace(profile("whale"), stop_loss_target=0.0)
     lev, _ = final_leverage(0.85, 0.08, "TREND_UP", 10.0, p)
     assert lev == 3.0
+
+
+def test_whale_target_fixes_account_loss_per_stop():
+    # V8: leverage comes from the stop, so `leverage * stop_frac` lands on the
+    # target for every stop width instead of swinging with conf.
+    p = profile("whale")
+    assert p.stop_loss_target > 0
+    for stop_frac in (0.012, 0.025, 0.04):
+        for conf in (0.56, 0.85):          # conf must no longer move the answer
+            lev, _ = final_leverage(conf, stop_frac, "TREND_UP", 10.0, p)
+            assert lev > 0
+            assert lev * stop_frac <= p.stop_loss_target + 1e-9
+    # conf-independence, stated directly
+    assert (final_leverage(0.56, 0.025, "TREND_UP", 10.0, p)
+            == final_leverage(0.95, 0.025, "TREND_UP", 10.0, p))
+
+
+def test_whale_target_rejects_a_stop_too_wide_to_size_down_to():
+    # An 8% stop needs 1.5x to keep the loss at 12%, but 2x is the smallest
+    # tradeable tier and would risk 16%. Refusing is what keeps the invariant;
+    # taking it at 2x would break the very thing the target exists to hold.
+    p = profile("whale")
+    lev, _ = final_leverage(0.85, 0.08, "TREND_UP", 10.0, p)
+    assert lev == 0.0
 
 
 def test_whale_drawdown_governor_halves_deployed_margin():

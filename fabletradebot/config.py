@@ -576,6 +576,33 @@ def profile(name: str = "base") -> Params:
             # the only config with pf>1 out-of-sample (holdout exp -0.048/pf
             # 1.006 vs baseline -0.064/0.960) — best in BOTH samples.
             trail_atr=10.0,
+            # --- V8 risk-derived leverage (REGIME_REDESIGN §5d) --------------
+            # Selected by a rule fixed BEFORE the sweep: the largest target
+            # whose Monte-Carlo ruin profile is no worse than the shipped
+            # conf-tier config on all three of P(mdd>50%), p95 MDD and 5th-
+            # percentile final equity. Return and Sharpe were printed for
+            # context and did not enter the choice -- this is a [D] knob.
+            #
+            #          per-stop%   spread   lev med  P(mdd>50)  p95mdd  f_p5
+            #  shipped    11.7      25.4x     5.0      0.490    -0.720  1.41
+            #  L=0.10      7.9       3.2x     3.0      0.101    -0.546  1.42
+            #  L=0.12      9.0       3.9x     3.0      0.137    -0.574  1.59  <-
+            #  L=0.16     11.4       5.2x     5.0      0.468    -0.710  1.35
+            #  L=0.20     13.1       6.4x     5.0      0.632    -0.763  1.35
+            #
+            # 0.10 and 0.12 pass; 0.12 is the larger. Bet-size spread collapses
+            # 25.4x -> 3.9x (not to 1x: floor_tier quantises to 2/3/5/10 and the
+            # per-asset lev_cap binds on 7 of 9 symbols), and ruin risk falls
+            # hard -- P(mdd>50%) 0.490 -> 0.137 -- at the same trade count.
+            #
+            # NOTE this is LESS aggressive than shipped by leverage median
+            # (3.0 vs 5.0, 10x on 3.2% vs 8.4% of trades). That is the honest
+            # price: the shipped config's aggression IS its inconsistency, and
+            # at matched ruin risk consistency costs median leverage. Raising
+            # the target buys aggression by explicitly buying ruin probability
+            # (L=0.20 -> P(mdd>50%) 0.632); that is an owner decision, not a
+            # measurement, and must not be made by looking at `ret`.
+            stop_loss_target=0.12,
             # X-A stall-tightened chandelier (EXIT_REDESIGN.md §2), armed:
             # covers the 0R-8R band the Z-A giveback leg (hold_giveback_arm=8)
             # cannot reach (forward whale trades so far peak at 4.32R, so Z-A
