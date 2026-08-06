@@ -514,6 +514,18 @@ def profile(name: str = "base") -> Params:
             # the only config with pf>1 out-of-sample (holdout exp -0.048/pf
             # 1.006 vs baseline -0.064/0.960) — best in BOTH samples.
             trail_atr=10.0,
+            # X-A stall-tightened chandelier (EXIT_REDESIGN.md §2), armed:
+            # covers the 0R-8R band the Z-A giveback leg (hold_giveback_arm=8)
+            # cannot reach (forward whale trades so far peak at 4.32R, so Z-A
+            # has never once been live). A proven winner (peak_r>=0.5) that
+            # goes 24 bars (1 day) without a new best_close ratchets its
+            # chandelier from 10 ATR to 3 ATR, one-way; a still-running trend
+            # keeps printing new best_closes so never trips this, same
+            # structural-immunity argument E9/E16 relied on. Not G5-clean
+            # (pre-registered candidate, not yet forward-judged) — armed
+            # because the alternative in that band is measured to be no
+            # protection at all, not a safer default.
+            stall_bars=24,
             # min_r contract enforced on the conviction-collapse exit too
             # (design-window byte-identical; near-zero live impact — correctness).
             hold_minr_strict=True,

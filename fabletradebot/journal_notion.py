@@ -154,13 +154,14 @@ def post_shadow_close(tr: dict, page_id: str | None, seat_state: str) -> str | N
     if not _enabled(SHADOW_DB):
         return None
     peak = float(tr.get("peak_r", 0.0))
+    giveback = max(0.0, peak - float(tr["r"]))
     props = {
         "Status": {"select": {"name": _status(tr["reason"], tr["pnl"])}},
         "Exit Reason": {"select": {"name": tr["reason"]}},
         "Exit": {"number": round(float(tr["exit"]), 8)},
         "Result R": {"number": round(float(tr["r"]), 4)},
         "Peak R": {"number": round(peak, 4)},
-        "Giveback R": {"number": round(peak - float(tr["r"]), 4)},
+        "Giveback R": {"number": round(giveback, 4)},
         "PnL %": {"number": round(float(tr["pnl_pct_price"]), 3)},
         "Lev PnL %": {"number": round(float(tr["pnl_pct_lev"]), 3)},
         "Hold Hours": {"number": int(tr["bars"])},
@@ -168,7 +169,7 @@ def post_shadow_close(tr: dict, page_id: str | None, seat_state: str) -> str | N
         "Note": {"rich_text": [{"text": {"content":
                  f"shadow ({seat_state}) | setup {tr['setup']} | "
                  f"regime {tr['regime']} | exit {tr['reason']} | "
-                 f"peak {peak:+.2f}R (gave back {peak - tr['r']:+.2f}R)"}}]},
+                 f"peak {peak:+.2f}R (gave back {giveback:+.2f}R)"}}]},
     }
     if page_id:
         resp = _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH")
@@ -196,7 +197,7 @@ def post_close(tr: dict, page_id: str | None) -> str | None:
         "Note": {"rich_text": [{"text": {"content":
                  f"setup {tr['setup']} | regime {tr['regime']} | exit {tr['reason']} | "
                  f"peak {tr.get('peak_r', 0.0):+.2f}R "
-                 f"(gave back {tr.get('peak_r', 0.0) - tr['r']:+.2f}R)"}}]},
+                 f"(gave back {max(0.0, tr.get('peak_r', 0.0) - tr['r']):+.2f}R)"}}]},
     }
     if page_id:
         resp = _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH")
