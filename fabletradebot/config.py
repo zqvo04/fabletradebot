@@ -164,18 +164,34 @@ class Params:
         # OSC: oscillator re-cross (the user-anchor trigger) — RSI(14,4H)
         # crosses back up through 30 -> long / back down through 70 -> short.
         # Mean-reversion style: fixed target + time stop. RANGE + HIGH_VOL.
-        "OSC_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20,
+        # RETIRED 2026-08-06 — never produced a single trade. Not "rare": 101
+        # candidate bars survive the mask on the design window and 66% of them
+        # clear conf_entry, but OSC is structurally dominated by BND. Both fire
+        # at the same extremes, so they collide on the same bar, and BND's conf
+        # runs higher (p50 0.689 vs 0.588), so BND wins scan's one-per-bar
+        # dedup every time. Even with every other slot disabled and risk_scale
+        # at 1.0, OSC_L and OSC_S produce zero trades.
+        "OSC_L":   {"enabled": False, "dir": 1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
-        "OSC_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
+        "OSC_S":   {"enabled": False, "dir": -1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
         # BND: Bollinger band re-entry — close crosses back INSIDE the 2-sigma
         # band after closing outside it; fade toward value. RANGE only.
-        "BND_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20,
+        # RETIRED 2026-08-06 — measured standalone (every other slot disabled,
+        # risk_scale 1.0, seat-free): 46 trades over 2.7 years, mean -0.064,
+        # week-block CI [-0.347,+0.220], and the halves flip (+0.042 -> -0.170).
+        # That is the same signature E11 used to reject FADE_L/FADE_S/RANGE_L/
+        # RANGE_S. It also closes the mean-reversion question from both sides:
+        # guarded by `bias1d != -d` these slots barely fire (an RSI-oversold
+        # long needs the daily NOT to be down, which is a rare intersection),
+        # and unguarded the family measures negative (E7/E8 CAPREV -0.29R over
+        # 275 trades, E11 RANGE_L/RANGE_S). Six attempts at RANGE, six failures.
+        "BND_L":   {"enabled": False, "dir": 1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
-        "BND_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
+        "BND_S":   {"enabled": False, "dir": -1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
         # swing trend-following, short: backtest-rejected (12/12 against, E6)
