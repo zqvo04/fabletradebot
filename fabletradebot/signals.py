@@ -224,7 +224,14 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
         # timeframe's worth of apparent justification. bias4h stays: it is the
         # one directional gate with evidence (against-4H entries measure
         # -0.0737, week-block CI [-0.092,-0.056], same sign in both halves).
-        mask = ((state == trend) & (f["bias4h"] == d)
+        # RANGE admitted alongside the trend state (REGIME_REDESIGN §3, stage 3),
+        # matching what BRK already allowed. Contrasts inside a gate-free
+        # superset put RANGE entries at +0.018 against trend-with at -0.034 --
+        # neither decided, i.e. the trend requirement never had evidence behind
+        # it, and keeping it costs 27% of the record. HIGH_VOL and CRISIS stay
+        # excluded: HIGH_VOL is the one state measured negative (-0.114,
+        # week-block CI [-0.190,-0.028], same sign in both halves).
+        mask = (state.isin([trend, "RANGE"]) & (f["bias4h"] == d)
                 & in_value & rsi_d.between(p.pbk_rsi_lo, p.pbk_rsi_hi)
                 & reclaim & (body > 0.25) & (vol_ratio >= 1.0))
         swing = f["low"].rolling(8).min() if d == 1 else f["high"].rolling(8).max()
@@ -283,8 +290,8 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
             depth = f["rcl_depth_l"] if d == 1 else f["rcl_depth_s"]
             ext = f["swing3_lo4"] if d == 1 else f["swing3_hi4"]
             # bias1d dropped for the same reason as PBK above (REGIME_REDESIGN
-            # §1b): `state == trend` already implies it on 98-99.6% of bars.
-            allowed = state == trend
+            # §1b); RANGE admitted for the same reason as PBK (§3, stage 3).
+            allowed = state.isin([trend, "RANGE"])
             fit = (state == trend).astype(float)
         # mean-reversion slots must not fight a confirmed 1D trend
         guard = (f["bias1d"] != -d) if family in ("OSC", "BND") else True
