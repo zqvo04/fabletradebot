@@ -357,11 +357,26 @@ def scan(f: pd.DataFrame, regime: pd.DataFrame, p: Params) -> pd.DataFrame:
             "c_base_pct": base_pct.loc[idx]}, index=idx))
     if not rows:
         return pd.DataFrame(columns=CAND_COLS)
-    # stable sort: on an exact conf tie the earlier playbook in config order
-    # wins deterministically — the default quicksort is unstable, so a tie's
-    # winner could flip with unrelated changes elsewhere in the array (a
-    # live-vs-backtest reproducibility hazard, found in E20).
-    cand = pd.concat(rows).sort_values("conf", ascending=False, kind="stable")
+    # One candidate per bar, and validation status picks it — the SAME rule the
+    # seat uses (engine.py, "conf does not rank R (E9), so conf alone must never
+    # let an unproven signal take the seat from the validated one"). That rule
+    # was enforced one layer too low: scan runs first and, ranking on conf
+    # alone, deleted the proven slot's candidate before the engine could ever
+    # apply it. A bar where an experimental slot out-confs BRK_L never became a
+    # BRK_L pending at all, so the seat rule had nothing to protect.
+    #
+    # risk_scale is the governance signal (promotion.py moves it from the
+    # forward ledger), so ranking on it means proven outranks unproven here too.
+    # conf stays as the secondary key only to keep the ordering total; the
+    # stable sort then breaks exact ties by config order, deterministically —
+    # the default quicksort is unstable, so a tie's winner could otherwise flip
+    # with unrelated changes elsewhere in the array (E20 reproducibility hazard).
+    cand = pd.concat(rows)
+    rank = cand["setup"].map(
+        lambda n: p.playbooks.get(n, {}).get("risk_scale", 1.0))
+    cand = (cand.assign(_rank=rank)
+                .sort_values(["_rank", "conf"], ascending=False, kind="stable")
+                .drop(columns="_rank"))
     cand = cand[~cand.index.duplicated(keep="first")].sort_index()
     # volatility floor: never place a stop inside sl_floor_atr * ATR of price
     close_c = f["close"].reindex(cand.index)
