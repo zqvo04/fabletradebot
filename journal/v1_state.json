@@ -49,15 +49,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 78,
+    "bars": 79,
     "tp1_done": false,
-    "best_close": 0.06883,
+    "best_close": 0.06876,
     "realized": 6.673380046886,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8671338927207353,
-    "peak_r": 0.2172093212607389,
+    "peak_r": 0.24474221025792842,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -94,7 +94,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 62,
+    "bars": 63,
     "tp1_done": false,
     "best_close": 1.0427,
     "realized": 0.8570663774980005,
@@ -103,7 +103,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9166759632386821,
     "peak_r": 2.143033861802268,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    },
    "SUI": {
@@ -139,7 +139,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 54,
+    "bars": 55,
     "tp1_done": false,
     "best_close": 0.6736,
     "realized": 3.5575516932611992,
@@ -148,7 +148,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.8936289666098349,
     "peak_r": 1.562695726965111,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    }
   },
@@ -174,9 +174,9 @@
   "HYPE|2026-08-05 01:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-06 13:00:00+00:00",
- "last_bar": "2026-08-06 12:00:00+00:00",
- "equity": 10127.174975677548,
+ "anchor": "2026-08-06 14:00:00+00:00",
+ "last_bar": "2026-08-06 13:00:00+00:00",
+ "equity": 10136.348708026891,
  "carry": {
   "cash": 9861.485595775572,
   "peak": 10510.645628955712,
@@ -218,7 +218,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 62,
+    "bars": 63,
     "tp1_done": false,
     "best_close": 1.0427,
     "realized": 0.8451947736320075,
@@ -227,7 +227,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9166759632386821,
     "peak_r": 2.1430338618022677,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    }
   },
@@ -244,5 +244,5 @@
   "DOGE|2026-08-02 09:00:00+00:00",
   "SUI|2026-08-02 23:00:00+00:00"
  ],
- "last_run": "2026-08-06 13:03:45.899953+00:00"
+ "last_run": "2026-08-06 14:03:48.189929+00:00"
 }
