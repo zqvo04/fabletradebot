@@ -238,6 +238,15 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
         sl = swing - d * p.sl_swing_atr * f["atr1h"]
         shallowness = (1 - (pull.clip(-p.pbk_deep_atr, 0).abs() / p.pbk_deep_atr)).clip(0, 1)
         base = (shallowness + body.fillna(0) + (vol_ratio / 3).clip(0, 1)) / 3
+        # fit stays 0 in RANGE even though stage 3 admits RANGE, and that is
+        # deliberate -- do not "fix" it to BRK's 1.0/0.4 scale. With w_regime
+        # 0.25 against a conf_entry of 0.55, a zero fit means a RANGE candidate
+        # only trades when `base` (body, volume, shallowness) is good enough to
+        # cover the missing regime score. It is a quality-graded admission, not
+        # an oversight. Raising it to 0.4 was measured: trades 1490 -> 1648 but
+        # expectancy +0.0419 -> +0.0322, CI lower -0.0771 -> -0.0796, and both
+        # PBK slots lost half-sign stability (SAME -> FLIP). The cheaper
+        # admission lets in exactly the weaker RANGE bars the gap was screening.
         fit = (state == trend).astype(float)
         align = _tf_align(f, btc_dir, d)
 
@@ -292,6 +301,8 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
             # bias1d dropped for the same reason as PBK above (REGIME_REDESIGN
             # §1b); RANGE admitted for the same reason as PBK (§3, stage 3).
             allowed = state.isin([trend, "RANGE"])
+            # zero fit in RANGE is deliberate here too -- see the PBK note above
+            # for the measurement that rejected raising it.
             fit = (state == trend).astype(float)
         # mean-reversion slots must not fight a confirmed 1D trend
         guard = (f["bias1d"] != -d) if family in ("OSC", "BND") else True
