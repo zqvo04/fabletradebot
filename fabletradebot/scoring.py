@@ -95,6 +95,22 @@ def conf_monotonicity(trades: pd.DataFrame, q: int = 5) -> str:
     return (f"== conf quantile-R (corr={corr:.4f}) ==\n" + tab.to_string())
 
 
+def fade_fire_report(trades: pd.DataFrame) -> str:
+    """Explicit SignalFade/LossFade fire counts, including zero.
+
+    breakdown(t, "reason") only lists reasons that occur, so a fade exit that
+    never fires (e.g. its floor sits below hold_confidence's structural
+    minimum) is silently absent rather than visibly 0 -- exactly the gap that
+    let both fade legs sit dead through several redesigns undetected.
+    """
+    n = len(trades)
+    if n == 0 or "reason" not in trades:
+        return "== fade exits == (no trades)"
+    counts = trades["reason"].value_counts()
+    sf, lf = int(counts.get("SignalFade", 0)), int(counts.get("LossFade", 0))
+    return f"== fade exits == SignalFade {sf}/{n}   LossFade {lf}/{n}"
+
+
 def hold_entry_report(trades: pd.DataFrame) -> str:
     """V5.1 Phase 0 — hold_confidence AT ENTRY vs realized R (WF-A forward
     judge). Armed profiles gate hold_entry >= hold_conf_exit, so the surviving
@@ -127,6 +143,8 @@ def score_report(trades: pd.DataFrame, equity: pd.Series, equity0: float) -> str
         lines.append("")
     # V5.1 Phase 0 forward-judge diagnostics
     lines.append(seat_report(t))
+    lines.append("")
+    lines.append(fade_fire_report(t))
     lines.append("")
     lines.append(conf_monotonicity(t))
     lines.append("")
