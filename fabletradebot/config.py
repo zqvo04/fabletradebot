@@ -590,19 +590,32 @@ def profile(name: str = "base") -> Params:
             #  L=0.16     11.4       5.2x     5.0      0.468    -0.710  1.35
             #  L=0.20     13.1       6.4x     5.0      0.632    -0.763  1.35
             #
-            # 0.10 and 0.12 pass; 0.12 is the larger. Bet-size spread collapses
-            # 25.4x -> 3.9x (not to 1x: floor_tier quantises to 2/3/5/10 and the
-            # per-asset lev_cap binds on 7 of 9 symbols), and ruin risk falls
-            # hard -- P(mdd>50%) 0.490 -> 0.137 -- at the same trade count.
+            # The rule selected 0.12 (0.10 and 0.12 pass; 0.12 is larger).
             #
-            # NOTE this is LESS aggressive than shipped by leverage median
-            # (3.0 vs 5.0, 10x on 3.2% vs 8.4% of trades). That is the honest
-            # price: the shipped config's aggression IS its inconsistency, and
-            # at matched ruin risk consistency costs median leverage. Raising
-            # the target buys aggression by explicitly buying ruin probability
-            # (L=0.20 -> P(mdd>50%) 0.632); that is an owner decision, not a
-            # measurement, and must not be made by looking at `ret`.
-            stop_loss_target=0.12,
+            # SHIPPED VALUE IS 0.16 — OWNER OVERRIDE (2026-08-06), not a rule
+            # pass. 0.16 fails the rule on exactly one metric: final_p5 1.35
+            # against the shipped config's 1.41 (-4%, inside MC noise). Its
+            # other two ruin metrics match shipped almost exactly — P(mdd>50%)
+            # 0.468 vs 0.490, p95 MDD -0.710 vs -0.720.
+            #
+            # The override buys back the aggression 0.12 gives up: leverage
+            # median 5.0 (not 3.0) and 10x on 7.4% of trades (not 3.2%), i.e.
+            # the same risk appetite the conf tiers had, now applied coherently
+            # instead of swinging 25.4x with an uninformative variable. The
+            # owner is choosing "keep my current risk, make it consistent"
+            # rather than "cut risk". Bet-size spread still collapses 25.4x ->
+            # 5.2x; it does not reach 1x because floor_tier quantises to
+            # 2/3/5/10 and the per-asset lev_cap binds on 7 of 9 symbols.
+            #
+            # Sequence cost of the override, stated plainly: at 16% per stop,
+            # the 11 consecutive losses already observed in the design window
+            # leave 14.5% of the account (at 12% it would leave 24.7%).
+            #
+            # `ret` played no part in either the rule or the override, and must
+            # not: across the sweep it ranges 1.13x to 31.97x, which is
+            # sequence noise. Whoever revisits this changes it on ruin metrics
+            # and stated risk appetite, never on return.
+            stop_loss_target=0.16,
             # X-A stall-tightened chandelier (EXIT_REDESIGN.md §2), armed:
             # covers the 0R-8R band the Z-A giveback leg (hold_giveback_arm=8)
             # cannot reach (forward whale trades so far peak at 4.32R, so Z-A
