@@ -91,6 +91,25 @@ class Params:
     pyramid_trigger_r: float = 2.0   # add every +2R (in initial-stop units)
     eq_boost_mult: float = 1.5       # risk multiplier near equity highs
     eq_boost_dd: float = 0.02        # "near high" = drawdown below this
+    # --- risk-derived leverage (V8, REGIME_REDESIGN §5d) --- [D]
+    # Target account loss when a position stops out, as a fraction of equity.
+    # When > 0 it REPLACES conf as the source of leverage: lev = target /
+    # stop_frac, then the existing liq / asset / regime caps and floor_tier
+    # apply unchanged. 0 = off (conf tiers, the shipped behaviour).
+    #
+    # Why: under whale full margin a stop costs `leverage * stop_frac` of the
+    # account, and leverage comes from conf. Measured on the design window that
+    # product ranges 2.2% to 31.4% -- a 14.3x spread in how much of the account
+    # each trade risks -- while corr(conf, R) = -0.026 and corr(leverage, R) =
+    # -0.001. The bet size swings by 14x on a variable that carries no
+    # information about the outcome. Deriving leverage from the stop instead
+    # makes every stop-out cost the same fraction, and a tighter stop earns
+    # more leverage systematically rather than by accident.
+    #
+    # This is [D]: R is leverage-independent (notional cancels in
+    # pnl/risk_amt), so it cannot be judged on the seat-free record. Set it
+    # from a ruin threshold fixed in advance, never from return or Sharpe.
+    stop_loss_target: float = 0.0
     # --- liquidation safety (hard, not swept) --- [A]
     # Structural invariant, not a tunable: the stop must be hit before the
     # liquidation price. Never decided by a backtest.

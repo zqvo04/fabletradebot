@@ -44,6 +44,11 @@ def final_leverage(conf: float, stop_frac: float, regime_state: str,
     lev_c, risk = conf_tier(conf, p)
     if lev_c == 0.0 or stop_frac <= 0:
         return 0.0, 0.0
+    if p.stop_loss_target > 0:
+        # V8: leverage from the stop, not from conf (see Params.stop_loss_target).
+        # conf_tier still runs above -- its zero return is the conf_entry gate --
+        # but only its risk fraction survives; the tier's leverage is discarded.
+        lev_c = p.stop_loss_target / stop_frac
     lev = min(lev_c, p.regime_lev_cap.get(regime_state, 0.0),
               lev_liq_cap(stop_frac, p), asset_cap)
     return floor_tier(lev), risk
