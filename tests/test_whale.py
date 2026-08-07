@@ -10,6 +10,8 @@ from fabletradebot.engine import Position, run
 from fabletradebot.risk import conf_tier, final_leverage, size_position
 from fabletradebot.signals import hold_confidence
 
+TGT = profile("whale").stop_loss_target
+
 
 def test_whale_profile_wiring():
     p = profile("whale")
@@ -78,11 +80,20 @@ def test_whale_target_fixes_account_loss_per_stop():
     # target for every stop width instead of swinging with conf.
     p = profile("whale")
     assert p.stop_loss_target > 0
-    for stop_frac in (0.012, 0.025, 0.04):
+    def realised(conf, stop_frac, asset_cap=10.0):
+        lev, _ = final_leverage(conf, stop_frac, "TREND_UP", asset_cap, p)
+        assert lev > 0
+        return lev * stop_frac * min(1.0, p.stop_loss_target / (lev * stop_frac))
+
+    # away from the caps the tier rounds UP and margin lands it exactly
+    for stop_frac in (0.025, 0.04, 0.06):
         for conf in (0.56, 0.85):          # conf must no longer move the answer
-            lev, _ = final_leverage(conf, stop_frac, "TREND_UP", 10.0, p)
-            assert lev > 0
-            assert lev * stop_frac <= p.stop_loss_target + 1e-9
+            assert realised(conf, stop_frac) == pytest.approx(p.stop_loss_target)
+    # a cap can still leave it SHORT of target, never over: at a 1.2% stop the
+    # target wants 13.3x and the tier grid stops at 10x, and a 3x asset cap
+    # (HYPE/SUI/ONDO) binds far sooner. Under-deploying is the honest outcome.
+    assert realised(0.85, 0.012) == pytest.approx(0.12)
+    assert realised(0.85, 0.025, asset_cap=3.0) == pytest.approx(0.075)
     # conf-independence, stated directly
     assert (final_leverage(0.56, 0.025, "TREND_UP", 10.0, p)
             == final_leverage(0.95, 0.025, "TREND_UP", 10.0, p))
@@ -130,8 +141,8 @@ def test_whale_drawdown_governor_halves_deployed_margin():
     res = run({"BTC": df}, {"BTC": f}, cands, {"BTC": None}, regime, corr,
               profile("whale"), start=idx[0], carry=carry)
     pos = res["open_positions"]["BTC"]
-    # dd = 15% >= dd_half(10%) -> mult 0.5 -> margin is HALF of equity (~8500)
-    assert pos.margin == pytest.approx(8_500.0 * 0.5, rel=1e-6)
+    # dd = 15% >= dd_half(10%) -> mult 0.5 -> HALF the usual per-stop risk
+    assert pos.risk_amt == pytest.approx(8_500.0 * 0.5 * TGT, rel=1e-6)
     assert pos.notional == pytest.approx(pos.margin * pos.leverage, rel=1e-6)
 
 
@@ -163,8 +174,10 @@ def test_whale_picks_highest_confidence_coin_single_position():
     open_pos = res["open_positions"]
     assert list(open_pos) == ["ETH"]
     pos = open_pos["ETH"]
-    # full-margin: whole account is the margin
-    assert pos.margin == pytest.approx(10_000.0, rel=1e-6)
+    # the contract is the RISK, not the margin split: a stop costs the target
+    # fraction of the account. How that divides into tier vs margin_frac is an
+    # implementation detail of the quantised tier grid.
+    assert pos.risk_amt == pytest.approx(10_000.0 * TGT, rel=1e-6)
     assert pos.notional == pytest.approx(pos.margin * pos.leverage, rel=1e-6)
 
 
@@ -179,7 +192,7 @@ def test_whale_experimental_slot_deploys_scaled_margin():
               profile("whale"), equity0=10_000.0)
     pos = res["open_positions"]["BTC"]
     scale = profile("whale").playbooks["PBK_L"]["risk_scale"]
-    assert pos.margin == pytest.approx(10_000.0 * scale, rel=1e-6)
+    assert pos.risk_amt == pytest.approx(10_000.0 * scale * TGT, rel=1e-6)
     assert pos.notional == pytest.approx(pos.margin * pos.leverage, rel=1e-6)
 
 
@@ -215,7 +228,7 @@ def test_dd_freeze_flat_book_may_reenter():
     res = run({"BTC": df}, {"BTC": f}, cands, {"BTC": None}, regime, corr,
               profile("whale"), start=idx[0], carry=carry)
     pos = res["open_positions"]["BTC"]
-    assert pos.margin == pytest.approx(7_500.0 * 0.5, rel=1e-6)  # dd-half sizing
+    assert pos.risk_amt == pytest.approx(7_500.0 * 0.5 * TGT, rel=1e-6)  # dd-half
 
 
 def test_dd_freeze_still_blocks_while_positions_open():

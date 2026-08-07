@@ -651,6 +651,16 @@ def profile(name: str = "base") -> Params:
             # the 11 consecutive losses already observed in the design window
             # leave 14.5% of the account (at 12% it would leave 24.7%).
             #
+            # NOTE the sweep that chose this ran while floor_tier rounded the
+            # tier DOWN, so 0.16 was really deploying ~0.115 and the ruin
+            # numbers quoted above were for that. Tier rounding now goes UP with
+            # the remainder taken out of margin, so 0.16 means 0.16 and the true
+            # price shows: P(mdd>50%) 0.588 rather than the 0.468 measured under
+            # the rounding loss. That is the cost of the aggression the override
+            # was chosen for, no longer hidden by a quantisation artefact.
+            # Wanting the OLD realised risk back means setting ~0.12, not
+            # restoring the rounding.
+            #
             # `ret` played no part in either the rule or the override, and must
             # not: across the sweep it ranges 1.13x to 31.97x, which is
             # sequence noise. Whoever revisits this changes it on ruin metrics

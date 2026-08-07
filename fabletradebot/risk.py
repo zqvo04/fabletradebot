@@ -38,6 +38,14 @@ def floor_tier(lev: float) -> float:
     return out
 
 
+def ceil_tier(lev: float) -> float:
+    """Smallest standard tier >= lev (capped at the top tier)."""
+    for t in TIERS:
+        if lev <= t:
+            return t
+    return TIERS[-1]
+
+
 def final_leverage(conf: float, stop_frac: float, regime_state: str,
                    asset_cap: float, p: Params,
                    target: float | None = None) -> tuple[float, float]:
@@ -60,16 +68,19 @@ def final_leverage(conf: float, stop_frac: float, regime_state: str,
         lev_c = p.stop_loss_target / stop_frac
     caps = min(p.regime_lev_cap.get(regime_state, 0.0),
                lev_liq_cap(stop_frac, p), asset_cap)
-    tiered = floor_tier(min(lev_c, caps))
-    if tiered == 0.0 and p.stop_loss_target > 0 and caps >= TIERS[0]:
-        # The target wants under 2x, but 2x is the smallest tier there is, so
-        # the old behaviour refused the trade outright. Leverage is quantised;
-        # margin_frac is not, so take the floor tier and let the caller cut
-        # margin by `target / (lev * stop_frac)` instead. The per-stop loss
-        # still lands on the target -- only the refusal disappears.
-        # Callers MUST apply that correction; engine.py does at both entries.
-        tiered = TIERS[0]
-    return tiered, risk
+    if p.stop_loss_target <= 0:
+        return floor_tier(min(lev_c, caps)), risk
+    # Target path: round the tier UP, never down, and let the caller cut margin
+    # by `target / (lev * stop_frac)` to land exactly on the target. Leverage is
+    # quantised (2/3/5/10) but margin_frac is not, so rounding down was pure
+    # under-deployment -- measured 28% below the chosen risk on BRK_L -- and
+    # rounding down past the smallest tier refused the trade outright, which
+    # dropped 24% of short candidates. Rounding up removes both.
+    # Callers MUST apply that correction; engine.py does at both entries.
+    lev = ceil_tier(lev_c)
+    if lev > caps:              # safety caps win, and may still refuse
+        lev = floor_tier(caps)
+    return lev, risk
 
 
 def slot_target(p: Params, setup: str) -> float:
