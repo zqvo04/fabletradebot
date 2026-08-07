@@ -88,20 +88,25 @@ def test_whale_target_fixes_account_loss_per_stop():
             == final_leverage(0.95, 0.025, "TREND_UP", 10.0, p))
 
 
-def test_whale_target_rejects_a_stop_too_wide_to_size_down_to():
-    # A stop wide enough that holding the target would need less than 2x is
-    # refused: 2x is the smallest tradeable tier, so taking it would risk more
-    # than the target and break the very invariant the target exists to hold.
-    # Derived from the profile so it keeps testing the behaviour if the target
-    # is retuned, rather than pinning one hand-computed stop width.
+def test_wide_stop_takes_the_floor_tier_and_pays_for_it_in_margin():
+    # Leverage is quantised (2/3/5/10) but margin_frac is not. When the target
+    # wants less than 2x the trade is NOT refused -- it takes 2x and the caller
+    # cuts margin by target/(lev*stop_frac), so the per-stop loss still lands on
+    # the target. Refusing instead used to drop 24% of short candidates, which
+    # is not a risk decision, it is a quantisation artefact.
     p = profile("whale")
-    too_wide = p.stop_loss_target / 2.0 * 1.5      # needs 1.33x -> below 2x
-    lev, _ = final_leverage(0.85, too_wide, "TREND_UP", 10.0, p)
-    assert lev == 0.0
-    # and just inside the boundary the trade is allowed at exactly 2x
-    borderline = p.stop_loss_target / 2.0
-    lev, _ = final_leverage(0.85, borderline, "TREND_UP", 10.0, p)
-    assert lev == 2.0
+    # kept under ~16%, where lev_liq_cap still permits 2x -- beyond that the
+    # liquidation invariant refuses first and should, which the last case pins.
+    for stop_frac in (p.stop_loss_target / 2.0,          # exactly 2x
+                      p.stop_loss_target / 2.0 * 1.5,    # wants 1.33x
+                      p.stop_loss_target / 2.0 * 1.9):   # wants 1.05x
+        lev, _ = final_leverage(0.85, stop_frac, "TREND_UP", 10.0, p)
+        assert lev >= 2.0
+        tier_fix = min(1.0, p.stop_loss_target / (lev * stop_frac))
+        assert lev * stop_frac * tier_fix == pytest.approx(p.stop_loss_target)
+    # liquidation safety still refuses outright -- the floor must not override it
+    tight = replace(p, liq_stop_mult=50.0)
+    assert final_leverage(0.85, 0.05, "TREND_UP", 10.0, tight)[0] == 0.0
 
 
 def test_whale_drawdown_governor_halves_deployed_margin():

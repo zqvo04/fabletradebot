@@ -58,9 +58,18 @@ def final_leverage(conf: float, stop_frac: float, regime_state: str,
         # conf_tier still runs above -- its zero return is the conf_entry gate --
         # but only its risk fraction survives; the tier's leverage is discarded.
         lev_c = p.stop_loss_target / stop_frac
-    lev = min(lev_c, p.regime_lev_cap.get(regime_state, 0.0),
-              lev_liq_cap(stop_frac, p), asset_cap)
-    return floor_tier(lev), risk
+    caps = min(p.regime_lev_cap.get(regime_state, 0.0),
+               lev_liq_cap(stop_frac, p), asset_cap)
+    tiered = floor_tier(min(lev_c, caps))
+    if tiered == 0.0 and p.stop_loss_target > 0 and caps >= TIERS[0]:
+        # The target wants under 2x, but 2x is the smallest tier there is, so
+        # the old behaviour refused the trade outright. Leverage is quantised;
+        # margin_frac is not, so take the floor tier and let the caller cut
+        # margin by `target / (lev * stop_frac)` instead. The per-stop loss
+        # still lands on the target -- only the refusal disappears.
+        # Callers MUST apply that correction; engine.py does at both entries.
+        tiered = TIERS[0]
+    return tiered, risk
 
 
 def slot_target(p: Params, setup: str) -> float:
