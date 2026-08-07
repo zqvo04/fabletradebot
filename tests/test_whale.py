@@ -447,3 +447,18 @@ def test_lossfade_disabled_by_default():
     res = _run_fade(path, [0.2] * 5, Params(aggression_syms=()))
     assert "LossFade" not in list(res["trades"].get("reason", []))
     assert list(res["open_positions"]) == ["BTC"]
+
+
+def test_short_slots_risk_half_of_long_slots():
+    # V9: the long/short asymmetry lives on stop_loss_target only. It must not
+    # leak into base (which sizes off conf tiers), and it stacks on top of
+    # risk_scale rather than replacing it -- the account risk a stop actually
+    # costs is target * risk_scale, so read both when judging the real size.
+    from fabletradebot.risk import slot_target
+    w = profile("whale")
+    for s in ("PBK_S", "RCL_S", "BRK_S"):
+        assert slot_target(w, s) == pytest.approx(w.stop_loss_target / 2)
+    for s in ("PBK_L", "RCL_L", "BRK_L"):
+        assert slot_target(w, s) == w.stop_loss_target
+    # a slot override must not arm risk-derived leverage where the profile is off
+    assert slot_target(Params(), "PBK_S") == 0.0
