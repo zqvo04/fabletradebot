@@ -6,7 +6,7 @@ liquidation price sits, and acts as a notional cap. It does NOT multiply PnL.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .config import Params
 
@@ -39,11 +39,20 @@ def floor_tier(lev: float) -> float:
 
 
 def final_leverage(conf: float, stop_frac: float, regime_state: str,
-                   asset_cap: float, p: Params) -> tuple[float, float]:
-    """(leverage, risk_frac). leverage==0 means the trade is not allowed."""
+                   asset_cap: float, p: Params,
+                   target: float | None = None) -> tuple[float, float]:
+    """(leverage, risk_frac). leverage==0 means the trade is not allowed.
+
+    `target` overrides Params.stop_loss_target for one slot — the asymmetry
+    hook. It carries the per-trade account risk, so a slot whose thesis has
+    weaker evidence behind it can bet less without changing anything about how
+    the trade is entered, managed or exited (R is leverage-independent, so this
+    moves only the equity path).
+    """
     lev_c, risk = conf_tier(conf, p)
     if lev_c == 0.0 or stop_frac <= 0:
         return 0.0, 0.0
+    p = p if target is None else replace(p, stop_loss_target=target)
     if p.stop_loss_target > 0:
         # V8: leverage from the stop, not from conf (see Params.stop_loss_target).
         # conf_tier still runs above -- its zero return is the conf_entry gate --
@@ -52,6 +61,21 @@ def final_leverage(conf: float, stop_frac: float, regime_state: str,
     lev = min(lev_c, p.regime_lev_cap.get(regime_state, 0.0),
               lev_liq_cap(stop_frac, p), asset_cap)
     return floor_tier(lev), risk
+
+
+def slot_target(p: Params, setup: str) -> float:
+    """Per-slot account-risk target, or 0 when this profile does not use one.
+
+    A playbook override must never ARM risk-derived leverage in a profile whose
+    Params.stop_loss_target is 0 (i.e. one still sizing off conf tiers) -- that
+    would silently switch base/turbo/max onto a different sizing rule for the
+    handful of slots carrying an override. The profile decides whether the
+    feature is on; the slot only decides how much, once it is.
+    """
+    if p.stop_loss_target <= 0:
+        return 0.0
+    return float(p.playbooks.get(setup, {}).get("stop_loss_target",
+                                                p.stop_loss_target))
 
 
 @dataclass(frozen=True)

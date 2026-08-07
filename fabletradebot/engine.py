@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 from .config import Params, spec
-from .risk import final_leverage, size_position
+from .risk import final_leverage, size_position, slot_target
 
 
 @dataclass
@@ -332,8 +332,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             stop_frac = pend.direction * (fill - pend.sl) / fill
             if stop_frac <= 0:
                 continue
-            lev, risk_frac = final_leverage(pend.conf, stop_frac, pend.regime,
-                                            spec(pend.sym).lev_cap, p)
+            # per-slot account risk (asymmetry hook): a slot whose thesis has
+            # weaker evidence bets less, without any change to how it trades.
+            lev, risk_frac = final_leverage(
+                pend.conf, stop_frac, pend.regime, spec(pend.sym).lev_cap, p,
+                slot_target(p, pend.setup))
             if lev == 0.0:
                 continue
             # unproven playbook slots run at reduced size until the forward
@@ -444,8 +447,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                                        * pos.init_stop_frac)
                 dist = d * (close_px - pos.sl) / close_px
                 if d * (close_px - trigger) >= 0 and dist > 0:
-                    lev_add, _ = final_leverage(pos.conf, dist, pos.regime,
-                                                spec(sym).lev_cap, p)
+                    lev_add, _ = final_leverage(
+                        pos.conf, dist, pos.regime, spec(sym).lev_cap, p,
+                        slot_target(p, pos.setup))
                     if lev_add > 0:
                         eq = mtm({s: bars[s]["close"].iloc[i] for s in positions})
                         fill_add = close_px * (1 + d * spec(sym).slippage * p.cost_mult)

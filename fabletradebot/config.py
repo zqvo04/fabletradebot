@@ -156,11 +156,34 @@ class Params:
         # the current chart every bar instead of waiting for a crossing event.
         # Swing style (trail). Long + short, paper-scaled until forward-proven.
         "PBK_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20},
-        "PBK_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20},
+        # V9 ASYMMETRY (REGIME_REDESIGN §8/§9): every SHORT slot risks half what
+        # a long risks. The asymmetry is in conviction, not in mechanics -- the
+        # short slots keep the same entry conditions, the same trail_atr=10 and
+        # no time stop, so a real downswing is still ridden to the end.
+        #
+        # Why size and not mechanics: the long thesis rests on a state that
+        # measures +2.24%/168h with its interval excluding zero, the short
+        # thesis on one that measures -0.01/-0.04/-0.01/+0.62 across horizons
+        # and never excludes zero. Two mechanical asymmetries were measured
+        # and BOTH failed -- a short-side time stop does nothing at 48-96h
+        # (15-39 firings, inside noise) and is badly harmful at 24h (194
+        # firings, -53.53R), and tightening the short trail cuts short winners
+        # exactly as E9/E16 predicted (win rate 31.4% -> 29.0%, winner mean
+        # +1.93 -> +1.66 at 3 ATR). Bet size is the only axis left that the
+        # evidence actually supports.
+        #
+        # 0.08 is half of 0.16, chosen as a round unfitted fraction the way
+        # liq_stop_mult=3.0 is. It must NOT be tuned on return: this is a [D]
+        # knob, R is leverage-independent, so return differences across values
+        # are pure path noise. Revisit only if the short side's evidence
+        # changes -- e.g. a state with measured downward drift is found.
+        "PBK_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
+                    "stop_loss_target": 0.08},
         # RCL: trend-pullback reclaim — closed 4H bar crosses BACK ABOVE the
         # 4H EMA20 while the 1D trend agrees (mirror short). 1H bar triggers.
         "RCL_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20},
-        "RCL_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20},
+        "RCL_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
+                    "stop_loss_target": 0.08},   # V9 asymmetry, see PBK_S
         # OSC: oscillator re-cross (the user-anchor trigger) — RSI(14,4H)
         # crosses back up through 30 -> long / back down through 70 -> short.
         # Mean-reversion style: fixed target + time stop. RANGE + HIGH_VOL.
@@ -197,7 +220,8 @@ class Params:
         # swing trend-following, short: backtest-rejected (12/12 against, E6)
         # but part of the complete matrix — paper-only at reduced risk, must
         # earn size from the forward track (V2 decision, E12)
-        "BRK_S":   {"enabled": True, "dir": -1, "risk_scale": 0.20},
+        "BRK_S":   {"enabled": True, "dir": -1, "risk_scale": 0.20,
+                    "stop_loss_target": 0.08},   # V9 asymmetry, see PBK_S
         # day-trade pullback fade at the 4H EMA20, long (TREND_UP):
         # REJECTED — sign flip across halves (+0.20% -> -0.24%/24h, E11)
         "FADE_L":  {"enabled": False, "dir": 1,
