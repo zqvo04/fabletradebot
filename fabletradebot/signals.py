@@ -216,13 +216,37 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
         rsi_d = f["rsi1h"] if d == 1 else 100 - f["rsi1h"]
         reclaim = (f["close"] > f["prev_high"]) if d == 1 else (f["close"] < f["prev_low"])
         in_value = pull.between(-p.pbk_deep_atr, p.pbk_shallow_atr) & (deep > -p.pbk_deep_atr)
-        mask = ((state == trend) & (f["bias1d"] == d) & (f["bias4h"] == d)
+        # bias1d dropped (REGIME_REDESIGN §1b): `state == trend` already implies
+        # it. regime.raw_regime_1d builds TREND_UP from (e20>e50)&(c>e100) on the
+        # daily bars and build_features builds bias1d==1 from the same two
+        # conditions, so inside a TREND state 99.6% (UP) / 98.3% (DOWN) of bars
+        # already satisfy the gate -- it filtered 0.4-1.7% and cost a whole
+        # timeframe's worth of apparent justification. bias4h stays: it is the
+        # one directional gate with evidence (against-4H entries measure
+        # -0.0737, week-block CI [-0.092,-0.056], same sign in both halves).
+        # RANGE admitted alongside the trend state (REGIME_REDESIGN §3, stage 3),
+        # matching what BRK already allowed. Contrasts inside a gate-free
+        # superset put RANGE entries at +0.018 against trend-with at -0.034 --
+        # neither decided, i.e. the trend requirement never had evidence behind
+        # it, and keeping it costs 27% of the record. HIGH_VOL and CRISIS stay
+        # excluded: HIGH_VOL is the one state measured negative (-0.114,
+        # week-block CI [-0.190,-0.028], same sign in both halves).
+        mask = (state.isin([trend, "RANGE"]) & (f["bias4h"] == d)
                 & in_value & rsi_d.between(p.pbk_rsi_lo, p.pbk_rsi_hi)
                 & reclaim & (body > 0.25) & (vol_ratio >= 1.0))
         swing = f["low"].rolling(8).min() if d == 1 else f["high"].rolling(8).max()
         sl = swing - d * p.sl_swing_atr * f["atr1h"]
         shallowness = (1 - (pull.clip(-p.pbk_deep_atr, 0).abs() / p.pbk_deep_atr)).clip(0, 1)
         base = (shallowness + body.fillna(0) + (vol_ratio / 3).clip(0, 1)) / 3
+        # fit stays 0 in RANGE even though stage 3 admits RANGE, and that is
+        # deliberate -- do not "fix" it to BRK's 1.0/0.4 scale. With w_regime
+        # 0.25 against a conf_entry of 0.55, a zero fit means a RANGE candidate
+        # only trades when `base` (body, volume, shallowness) is good enough to
+        # cover the missing regime score. It is a quality-graded admission, not
+        # an oversight. Raising it to 0.4 was measured: trades 1490 -> 1648 but
+        # expectancy +0.0419 -> +0.0322, CI lower -0.0771 -> -0.0796, and both
+        # PBK slots lost half-sign stability (SAME -> FLIP). The cheaper
+        # admission lets in exactly the weaker RANGE bars the gap was screening.
         fit = (state == trend).astype(float)
         align = _tf_align(f, btc_dir, d)
 
@@ -274,7 +298,11 @@ def _playbook(name: str, d: int, f: pd.DataFrame, state: pd.Series,
             armed = f["rcl_up"] if d == 1 else f["rcl_dn"]
             depth = f["rcl_depth_l"] if d == 1 else f["rcl_depth_s"]
             ext = f["swing3_lo4"] if d == 1 else f["swing3_hi4"]
-            allowed = (state == trend) & (f["bias1d"] == d)
+            # bias1d dropped for the same reason as PBK above (REGIME_REDESIGN
+            # §1b); RANGE admitted for the same reason as PBK (§3, stage 3).
+            allowed = state.isin([trend, "RANGE"])
+            # zero fit in RANGE is deliberate here too -- see the PBK note above
+            # for the measurement that rejected raising it.
             fit = (state == trend).astype(float)
         # mean-reversion slots must not fight a confirmed 1D trend
         guard = (f["bias1d"] != -d) if family in ("OSC", "BND") else True
@@ -340,11 +368,26 @@ def scan(f: pd.DataFrame, regime: pd.DataFrame, p: Params) -> pd.DataFrame:
             "c_base_pct": base_pct.loc[idx]}, index=idx))
     if not rows:
         return pd.DataFrame(columns=CAND_COLS)
-    # stable sort: on an exact conf tie the earlier playbook in config order
-    # wins deterministically — the default quicksort is unstable, so a tie's
-    # winner could flip with unrelated changes elsewhere in the array (a
-    # live-vs-backtest reproducibility hazard, found in E20).
-    cand = pd.concat(rows).sort_values("conf", ascending=False, kind="stable")
+    # One candidate per bar, and validation status picks it — the SAME rule the
+    # seat uses (engine.py, "conf does not rank R (E9), so conf alone must never
+    # let an unproven signal take the seat from the validated one"). That rule
+    # was enforced one layer too low: scan runs first and, ranking on conf
+    # alone, deleted the proven slot's candidate before the engine could ever
+    # apply it. A bar where an experimental slot out-confs BRK_L never became a
+    # BRK_L pending at all, so the seat rule had nothing to protect.
+    #
+    # risk_scale is the governance signal (promotion.py moves it from the
+    # forward ledger), so ranking on it means proven outranks unproven here too.
+    # conf stays as the secondary key only to keep the ordering total; the
+    # stable sort then breaks exact ties by config order, deterministically —
+    # the default quicksort is unstable, so a tie's winner could otherwise flip
+    # with unrelated changes elsewhere in the array (E20 reproducibility hazard).
+    cand = pd.concat(rows)
+    rank = cand["setup"].map(
+        lambda n: p.playbooks.get(n, {}).get("risk_scale", 1.0))
+    cand = (cand.assign(_rank=rank)
+                .sort_values(["_rank", "conf"], ascending=False, kind="stable")
+                .drop(columns="_rank"))
     cand = cand[~cand.index.duplicated(keep="first")].sort_index()
     # volatility floor: never place a stop inside sl_floor_atr * ATR of price
     close_c = f["close"].reindex(cand.index)

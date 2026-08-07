@@ -6,7 +6,7 @@ liquidation price sits, and acts as a notional cap. It does NOT multiply PnL.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .config import Params
 
@@ -38,15 +38,64 @@ def floor_tier(lev: float) -> float:
     return out
 
 
+def ceil_tier(lev: float) -> float:
+    """Smallest standard tier >= lev (capped at the top tier)."""
+    for t in TIERS:
+        if lev <= t:
+            return t
+    return TIERS[-1]
+
+
 def final_leverage(conf: float, stop_frac: float, regime_state: str,
-                   asset_cap: float, p: Params) -> tuple[float, float]:
-    """(leverage, risk_frac). leverage==0 means the trade is not allowed."""
+                   asset_cap: float, p: Params,
+                   target: float | None = None) -> tuple[float, float]:
+    """(leverage, risk_frac). leverage==0 means the trade is not allowed.
+
+    `target` overrides Params.stop_loss_target for one slot — the asymmetry
+    hook. It carries the per-trade account risk, so a slot whose thesis has
+    weaker evidence behind it can bet less without changing anything about how
+    the trade is entered, managed or exited (R is leverage-independent, so this
+    moves only the equity path).
+    """
     lev_c, risk = conf_tier(conf, p)
     if lev_c == 0.0 or stop_frac <= 0:
         return 0.0, 0.0
-    lev = min(lev_c, p.regime_lev_cap.get(regime_state, 0.0),
-              lev_liq_cap(stop_frac, p), asset_cap)
-    return floor_tier(lev), risk
+    p = p if target is None else replace(p, stop_loss_target=target)
+    if p.stop_loss_target > 0:
+        # V8: leverage from the stop, not from conf (see Params.stop_loss_target).
+        # conf_tier still runs above -- its zero return is the conf_entry gate --
+        # but only its risk fraction survives; the tier's leverage is discarded.
+        lev_c = p.stop_loss_target / stop_frac
+    caps = min(p.regime_lev_cap.get(regime_state, 0.0),
+               lev_liq_cap(stop_frac, p), asset_cap)
+    if p.stop_loss_target <= 0:
+        return floor_tier(min(lev_c, caps)), risk
+    # Target path: round the tier UP, never down, and let the caller cut margin
+    # by `target / (lev * stop_frac)` to land exactly on the target. Leverage is
+    # quantised (2/3/5/10) but margin_frac is not, so rounding down was pure
+    # under-deployment -- measured 28% below the chosen risk on BRK_L -- and
+    # rounding down past the smallest tier refused the trade outright, which
+    # dropped 24% of short candidates. Rounding up removes both.
+    # Callers MUST apply that correction; engine.py does at both entries.
+    lev = ceil_tier(lev_c)
+    if lev > caps:              # safety caps win, and may still refuse
+        lev = floor_tier(caps)
+    return lev, risk
+
+
+def slot_target(p: Params, setup: str) -> float:
+    """Per-slot account-risk target, or 0 when this profile does not use one.
+
+    A playbook override must never ARM risk-derived leverage in a profile whose
+    Params.stop_loss_target is 0 (i.e. one still sizing off conf tiers) -- that
+    would silently switch base/turbo/max onto a different sizing rule for the
+    handful of slots carrying an override. The profile decides whether the
+    feature is on; the slot only decides how much, once it is.
+    """
+    if p.stop_loss_target <= 0:
+        return 0.0
+    return float(p.playbooks.get(setup, {}).get("stop_loss_target",
+                                                p.stop_loss_target))
 
 
 @dataclass(frozen=True)

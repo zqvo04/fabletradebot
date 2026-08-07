@@ -40,7 +40,39 @@ def inst_id(symbol: str) -> str:
 
 @dataclass(frozen=True)
 class Params:
+    """Strategy parameters, each tagged with WHO IS ALLOWED TO CHANGE IT.
+
+    Tags below are [M], [A] or [D]. The point of the split is that most of this
+    file was tuned on the whale backtest, and that backtest cannot support the
+    conclusions drawn from it: one compounding full-margin seat makes terminal
+    return path-dominated (reshuffling the same 451 design-window trades spans
+    p5 1.81x to p95 206.84x), and its 451-trade expectancy carries a 95% CI of
+    [-0.042, +0.295]. Numbers quoted as evidence in this file -- "ret 10.5x ->
+    26.3x", "ret 26.27x -> 33.76x" -- sit inside that noise band.
+
+      [M] MEASURED -- decided by the seat-free record (run_seatfree.py), judged
+          on week-block CIs. Adoption needs: CI excludes 0, both chronological
+          halves share the sign, n >= 150. Never decided on a whale backtest.
+
+      [A] A-PRIORI -- fixed by a stated reason, never tuned to an outcome. These
+          are the knobs the seat-free record CANNOT see (anything on the seat
+          axis) plus unit/consistency choices. Do NOT cite performance numbers
+          for these; if a performance number is the only argument, the knob is
+          misclassified.
+
+      [D] DEPLOYMENT -- affects the equity path only, not per-trade R (R is
+          leverage-independent: notional cancels in pnl/risk_amt). Judged by a
+          Monte-Carlo survival gate against a ruin threshold fixed IN ADVANCE.
+          Pass/fail only -- never ranked by return or Sharpe.
+
+    See REGIME_REDESIGN.md for the measurement basis and the staged plan.
+    """
     # --- confidence -> entry / leverage tier / risk fraction ---
+    # [A] conf_entry: conf does not rank R (E9 corr 0.005; design-window whale
+    #     corr(conf,R) = -0.026), so this is a floor kept for a stated reason --
+    #     it bounds how marginal a setup may be -- not an edge claim.
+    # [D] conf_tiers: the leverage column is a deployment knob. The risk column
+    #     is unused under whale full margin.
     # Design measurement (EXPERIMENTS E9): confidence does NOT rank R for the
     # surviving BRK signal (corr 0.005), so V1 sizes uniformly at 1% and keeps
     # a single tier. The tier plumbing stays; forward scoring keeps measuring
@@ -59,10 +91,39 @@ class Params:
     pyramid_trigger_r: float = 2.0   # add every +2R (in initial-stop units)
     eq_boost_mult: float = 1.5       # risk multiplier near equity highs
     eq_boost_dd: float = 0.02        # "near high" = drawdown below this
-    # --- liquidation safety (hard, not swept) ---
+    # --- risk-derived leverage (V8, REGIME_REDESIGN §5d) --- [D]
+    # Target account loss when a position stops out, as a fraction of equity.
+    # When > 0 it REPLACES conf as the source of leverage: lev = target /
+    # stop_frac, then the existing liq / asset / regime caps and floor_tier
+    # apply unchanged. 0 = off (conf tiers, the shipped behaviour).
+    #
+    # Why: under whale full margin a stop costs `leverage * stop_frac` of the
+    # account, and leverage comes from conf. Measured on the design window that
+    # product ranges 2.2% to 31.4% -- a 14.3x spread in how much of the account
+    # each trade risks -- while corr(conf, R) = -0.026 and corr(leverage, R) =
+    # -0.001. The bet size swings by 14x on a variable that carries no
+    # information about the outcome. Deriving leverage from the stop instead
+    # makes every stop-out cost the same fraction, and a tighter stop earns
+    # more leverage systematically rather than by accident.
+    #
+    # This is [D]: R is leverage-independent (notional cancels in
+    # pnl/risk_amt), so it cannot be judged on the seat-free record. Set it
+    # from a ruin threshold fixed in advance, never from return or Sharpe.
+    stop_loss_target: float = 0.0
+    # --- liquidation safety (hard, not swept) --- [A]
+    # Structural invariant, not a tunable: the stop must be hit before the
+    # liquidation price. Never decided by a backtest.
     liq_stop_mult: float = 3.0       # liq distance must be >= 3x stop distance
     mmr_buffer: float = 0.015        # maintenance-margin + fee buffer
-    # --- regime ---
+    # --- regime --- [M] thresholds / [D] regime_lev_cap
+    # NOTE (REGIME_REDESIGN §1e): the crash thresholds below are ABSOLUTE
+    # percentages while vol_pct in the same classifier is an asset-relative
+    # percentile. That mixes units, and the cost is measurable: CRISIS covers
+    # 3.7% of BTC bars but 32.0% of ONDO bars -- volatile alts are blocked from
+    # entry a third of the time for being volatile. Normalising is a units fix,
+    # NOT a free win: the CRISIS force-exit is a profit source (whale n=29,
+    # +3.02R avg), so relaxing entry also removes those exits. Held pending the
+    # pre-registered two-sided experiment in REGIME_REDESIGN §4.
     regime_lev_cap: dict = field(default_factory=lambda: {
         "TREND_UP": 10.0, "TREND_DOWN": 10.0, "RANGE": 5.0,
         "HIGH_VOL": 3.0, "CRISIS": 0.0})
@@ -73,7 +134,7 @@ class Params:
     hysteresis_bars: int = 2         # 1D bars to confirm a regime switch
     corr_window_h: int = 720         # 30d of 1H returns
     corr_alert: float = 0.80
-    # --- stops (all setups) ---
+    # --- stops (all setups) --- [M]
     # 1H noise sweeps stops placed inside ~2 ATR (EXPERIMENTS E5)
     sl_floor_atr: float = 2.0
     sl_swing_atr: float = 0.6        # buffer beyond the structural level
@@ -95,32 +156,72 @@ class Params:
         # the current chart every bar instead of waiting for a crossing event.
         # Swing style (trail). Long + short, paper-scaled until forward-proven.
         "PBK_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20},
-        "PBK_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20},
+        # V9 ASYMMETRY (REGIME_REDESIGN §8/§9): every SHORT slot risks half what
+        # a long risks. The asymmetry is in conviction, not in mechanics -- the
+        # short slots keep the same entry conditions, the same trail_atr=10 and
+        # no time stop, so a real downswing is still ridden to the end.
+        #
+        # Why size and not mechanics: the long thesis rests on a state that
+        # measures +2.24%/168h with its interval excluding zero, the short
+        # thesis on one that measures -0.01/-0.04/-0.01/+0.62 across horizons
+        # and never excludes zero. Two mechanical asymmetries were measured
+        # and BOTH failed -- a short-side time stop does nothing at 48-96h
+        # (15-39 firings, inside noise) and is badly harmful at 24h (194
+        # firings, -53.53R), and tightening the short trail cuts short winners
+        # exactly as E9/E16 predicted (win rate 31.4% -> 29.0%, winner mean
+        # +1.93 -> +1.66 at 3 ATR). Bet size is the only axis left that the
+        # evidence actually supports.
+        #
+        # 0.08 is half of 0.16, chosen as a round unfitted fraction the way
+        # liq_stop_mult=3.0 is. It must NOT be tuned on return: this is a [D]
+        # knob, R is leverage-independent, so return differences across values
+        # are pure path noise. Revisit only if the short side's evidence
+        # changes -- e.g. a state with measured downward drift is found.
+        "PBK_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
+                    "stop_loss_target": 0.08},
         # RCL: trend-pullback reclaim — closed 4H bar crosses BACK ABOVE the
         # 4H EMA20 while the 1D trend agrees (mirror short). 1H bar triggers.
         "RCL_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20},
-        "RCL_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20},
+        "RCL_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
+                    "stop_loss_target": 0.08},   # V9 asymmetry, see PBK_S
         # OSC: oscillator re-cross (the user-anchor trigger) — RSI(14,4H)
         # crosses back up through 30 -> long / back down through 70 -> short.
         # Mean-reversion style: fixed target + time stop. RANGE + HIGH_VOL.
-        "OSC_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20,
+        # RETIRED 2026-08-06 — never produced a single trade. Not "rare": 101
+        # candidate bars survive the mask on the design window and 66% of them
+        # clear conf_entry, but OSC is structurally dominated by BND. Both fire
+        # at the same extremes, so they collide on the same bar, and BND's conf
+        # runs higher (p50 0.689 vs 0.588), so BND wins scan's one-per-bar
+        # dedup every time. Even with every other slot disabled and risk_scale
+        # at 1.0, OSC_L and OSC_S produce zero trades.
+        "OSC_L":   {"enabled": False, "dir": 1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
-        "OSC_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
+        "OSC_S":   {"enabled": False, "dir": -1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
         # BND: Bollinger band re-entry — close crosses back INSIDE the 2-sigma
         # band after closing outside it; fade toward value. RANGE only.
-        "BND_L":   {"enabled": True,  "dir": 1, "risk_scale": 0.20,
+        # RETIRED 2026-08-06 — measured standalone (every other slot disabled,
+        # risk_scale 1.0, seat-free): 46 trades over 2.7 years, mean -0.064,
+        # week-block CI [-0.347,+0.220], and the halves flip (+0.042 -> -0.170).
+        # That is the same signature E11 used to reject FADE_L/FADE_S/RANGE_L/
+        # RANGE_S. It also closes the mean-reversion question from both sides:
+        # guarded by `bias1d != -d` these slots barely fire (an RSI-oversold
+        # long needs the daily NOT to be down, which is a rare intersection),
+        # and unguarded the family measures negative (E7/E8 CAPREV -0.29R over
+        # 275 trades, E11 RANGE_L/RANGE_S). Six attempts at RANGE, six failures.
+        "BND_L":   {"enabled": False, "dir": 1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
-        "BND_S":   {"enabled": True,  "dir": -1, "risk_scale": 0.20,
+        "BND_S":   {"enabled": False, "dir": -1, "risk_scale": 0.20,
                     "tp_r": 1.5, "tp_frac": 1.0, "time_stop_bars": 48,
                     "trail_atr": 0.0, "biasflip_exit": False},
         # swing trend-following, short: backtest-rejected (12/12 against, E6)
         # but part of the complete matrix — paper-only at reduced risk, must
         # earn size from the forward track (V2 decision, E12)
-        "BRK_S":   {"enabled": True, "dir": -1, "risk_scale": 0.20},
+        "BRK_S":   {"enabled": True, "dir": -1, "risk_scale": 0.20,
+                    "stop_loss_target": 0.08},   # V9 asymmetry, see PBK_S
         # day-trade pullback fade at the 4H EMA20, long (TREND_UP):
         # REJECTED — sign flip across halves (+0.20% -> -0.24%/24h, E11)
         "FADE_L":  {"enabled": False, "dir": 1,
@@ -166,7 +267,7 @@ class Params:
     funding_bonus: float = 0.05
     funding_penalty: float = 0.10
     funding_z_window: int = 270      # 90d of 8h fundings
-    # --- exits ---
+    # --- exits --- [M] (judge on run_seatfree.py, never on a whale backtest)
     # Exit structure chosen by measurement (E9): partial-TP and time stops CUT
     # the trend winners this signal lives on. 0 disables either mechanism.
     tp1_r: float = 0.0               # 0 = no partial take-profit
@@ -193,7 +294,7 @@ class Params:
     stall_bars: int = 0
     stall_trail_atr: float = 3.0
     stall_peak_r: float = 0.5
-    # --- position health / momentum-fade management (V4) ---
+    # --- position health / momentum-fade management (V4) --- [M]
     # The hourly scoring loop re-scores every OPEN position (hold_confidence:
     # MTF alignment + regime fit + 4H momentum). When that live conviction
     # decays below hold_conf_exit for hold_conf_bars consecutive bars, the
@@ -248,7 +349,7 @@ class Params:
     # armed, conviction-collapse also requires peak_r >= hold_conf_min_r, so an
     # unripe position is held (to its stop/trail) until it has proven a run.
     hold_minr_strict: bool = False
-    # --- losing-position early cut (V5) --------------------------------------
+    # --- losing-position early cut (V5) ------------------------------- [M] --
     # Symmetric counterpart to the winner-only SignalFade above, for the side
     # the profit-protecting exit deliberately ignores: a LOSING trend position.
     # The same live hold_confidence (regime fit + MTF alignment + 4H momentum)
@@ -304,7 +405,8 @@ class Params:
     # the sign of risk_amt (and therefore of R) — which would corrupt exactly
     # the record the shadow book exists to produce.
     size_equity: float = 0.0
-    # --- portfolio risk ---
+    # --- portfolio risk --- [A] seat axis: invisible to the seat-free record,
+    # so it can never be measured. Fix by stated reason, not by performance.
     max_positions: int = 4
     max_positions_corr: int = 2
     max_open_risk: float = 0.018
@@ -322,7 +424,7 @@ class Params:
     # a G5 sign-flip = path noise, avg_r rising the whole time = the E9 mirage);
     # SR-B (dead-seat rotation) never fired (rot=0, the losing-armed-holder +
     # pending-cross-candidate coincidence does not occur). Neither is in the code.
-    # --- costs ---
+    # --- costs --- (measured facts, not knobs)
     taker_fee: float = 0.0005        # one way
     # OKX only serves ~3 months of funding history; before that the engine
     # charges this flat per-8h drag on any open position (conservative).
@@ -514,6 +616,56 @@ def profile(name: str = "base") -> Params:
             # the only config with pf>1 out-of-sample (holdout exp -0.048/pf
             # 1.006 vs baseline -0.064/0.960) — best in BOTH samples.
             trail_atr=10.0,
+            # --- V8 risk-derived leverage (REGIME_REDESIGN §5d) --------------
+            # Selected by a rule fixed BEFORE the sweep: the largest target
+            # whose Monte-Carlo ruin profile is no worse than the shipped
+            # conf-tier config on all three of P(mdd>50%), p95 MDD and 5th-
+            # percentile final equity. Return and Sharpe were printed for
+            # context and did not enter the choice -- this is a [D] knob.
+            #
+            #          per-stop%   spread   lev med  P(mdd>50)  p95mdd  f_p5
+            #  shipped    11.7      25.4x     5.0      0.490    -0.720  1.41
+            #  L=0.10      7.9       3.2x     3.0      0.101    -0.546  1.42
+            #  L=0.12      9.0       3.9x     3.0      0.137    -0.574  1.59  <-
+            #  L=0.16     11.4       5.2x     5.0      0.468    -0.710  1.35
+            #  L=0.20     13.1       6.4x     5.0      0.632    -0.763  1.35
+            #
+            # The rule selected 0.12 (0.10 and 0.12 pass; 0.12 is larger).
+            #
+            # SHIPPED VALUE IS 0.16 — OWNER OVERRIDE (2026-08-06), not a rule
+            # pass. 0.16 fails the rule on exactly one metric: final_p5 1.35
+            # against the shipped config's 1.41 (-4%, inside MC noise). Its
+            # other two ruin metrics match shipped almost exactly — P(mdd>50%)
+            # 0.468 vs 0.490, p95 MDD -0.710 vs -0.720.
+            #
+            # The override buys back the aggression 0.12 gives up: leverage
+            # median 5.0 (not 3.0) and 10x on 7.4% of trades (not 3.2%), i.e.
+            # the same risk appetite the conf tiers had, now applied coherently
+            # instead of swinging 25.4x with an uninformative variable. The
+            # owner is choosing "keep my current risk, make it consistent"
+            # rather than "cut risk". Bet-size spread still collapses 25.4x ->
+            # 5.2x; it does not reach 1x because floor_tier quantises to
+            # 2/3/5/10 and the per-asset lev_cap binds on 7 of 9 symbols.
+            #
+            # Sequence cost of the override, stated plainly: at 16% per stop,
+            # the 11 consecutive losses already observed in the design window
+            # leave 14.5% of the account (at 12% it would leave 24.7%).
+            #
+            # NOTE the sweep that chose this ran while floor_tier rounded the
+            # tier DOWN, so 0.16 was really deploying ~0.115 and the ruin
+            # numbers quoted above were for that. Tier rounding now goes UP with
+            # the remainder taken out of margin, so 0.16 means 0.16 and the true
+            # price shows: P(mdd>50%) 0.588 rather than the 0.468 measured under
+            # the rounding loss. That is the cost of the aggression the override
+            # was chosen for, no longer hidden by a quantisation artefact.
+            # Wanting the OLD realised risk back means setting ~0.12, not
+            # restoring the rounding.
+            #
+            # `ret` played no part in either the rule or the override, and must
+            # not: across the sweep it ranges 1.13x to 31.97x, which is
+            # sequence noise. Whoever revisits this changes it on ruin metrics
+            # and stated risk appetite, never on return.
+            stop_loss_target=0.16,
             # X-A stall-tightened chandelier (EXIT_REDESIGN.md §2), armed:
             # covers the 0R-8R band the Z-A giveback leg (hold_giveback_arm=8)
             # cannot reach (forward whale trades so far peak at 4.32R, so Z-A

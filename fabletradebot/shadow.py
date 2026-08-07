@@ -61,6 +61,25 @@ def params(p: Params) -> Params:
     )
 
 
+def params_backtest(p: Params) -> Params:
+    """Seat-free params for a ONE-SHOT backtest — the stage-1 judging basis.
+
+    `params()` above is built for the live incremental replay, which rewrites
+    cash/peak back to EQUITY on every run (see `step`). It therefore leaves
+    whale_mode on, and with it full-margin sizing, even though the lifted seat
+    now allows up to `n` concurrent positions. A one-shot backtest has no such
+    per-run reset: those n concurrent full-margin positions compound one equity
+    series into the ground and the run starves itself of entries (measured on
+    the design window: 1361 trades collapse to 79).
+
+    Portfolio sizing keeps every position fundable. R is leverage-independent
+    (R = price move / stop distance, and both notional terms cancel), so the
+    per-trade record this produces is directly comparable to the live book's —
+    only the equity path differs, and stage 1 never reads the equity path.
+    """
+    return replace(params(p), whale_mode=False)
+
+
 def append_trade(row: dict, seat_state: str, path: str = LEDGER_PATH) -> None:
     rec = {k: row.get(k) for k in LEDGER_COLS}
     rec["seat_state"] = seat_state

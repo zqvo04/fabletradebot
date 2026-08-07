@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 from .config import Params, spec
-from .risk import final_leverage, size_position
+from .risk import final_leverage, size_position, slot_target
 
 
 @dataclass
@@ -332,15 +332,22 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             stop_frac = pend.direction * (fill - pend.sl) / fill
             if stop_frac <= 0:
                 continue
-            lev, risk_frac = final_leverage(pend.conf, stop_frac, pend.regime,
-                                            spec(pend.sym).lev_cap, p)
+            # per-slot account risk (asymmetry hook): a slot whose thesis has
+            # weaker evidence bets less, without any change to how it trades.
+            tgt = slot_target(p, pend.setup)
+            lev, risk_frac = final_leverage(
+                pend.conf, stop_frac, pend.regime, spec(pend.sym).lev_cap, p, tgt)
             if lev == 0.0:
                 continue
+            # quantisation remainder: when the target wanted less than the
+            # smallest tier, final_leverage handed back 2x instead of refusing,
+            # so the overshoot comes off the deployed margin.
+            tier_fix = min(1.0, tgt / (lev * stop_frac)) if tgt > 0 else 1.0
             # unproven playbook slots run at reduced size until the forward
             # track earns them full weight (V2 staged-rollout rule)
             scale = p.playbooks.get(pend.setup, {}).get("risk_scale", 1.0)
             risk_frac *= scale
-            mult = (0.5 if dd >= p.dd_half else 1.0) * (0.5 if corr_on else 1.0)
+            mult = (0.5 if dd >= p.dd_half else 1.0) * (0.5 if corr_on else 1.0) * tier_fix
             if (dd <= p.eq_boost_dd and not corr_on
                     and pend.sym in p.aggression_syms):
                 mult *= p.eq_boost_mult   # anti-martingale: press at equity highs
@@ -444,8 +451,9 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                                        * pos.init_stop_frac)
                 dist = d * (close_px - pos.sl) / close_px
                 if d * (close_px - trigger) >= 0 and dist > 0:
-                    lev_add, _ = final_leverage(pos.conf, dist, pos.regime,
-                                                spec(sym).lev_cap, p)
+                    lev_add, _ = final_leverage(
+                        pos.conf, dist, pos.regime, spec(sym).lev_cap, p,
+                        slot_target(p, pos.setup))
                     if lev_add > 0:
                         eq = mtm({s: bars[s]["close"].iloc[i] for s in positions})
                         fill_add = close_px * (1 + d * spec(sym).slippage * p.cost_mult)
