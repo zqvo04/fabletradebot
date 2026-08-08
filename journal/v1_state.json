@@ -12,7 +12,7 @@
   ],
   "cooldown": {
    "SOL": {
-    "bars": 6,
+    "bars": 5,
     "exp": true
    }
   },
@@ -50,16 +50,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 122,
+    "bars": 123,
     "tp1_done": false,
     "best_close": 0.06868,
     "realized": 10.860678026931,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6957419097053383,
+    "hold_conf": 0.6984012252894216,
     "peak_r": 0.2762083691118577,
-    "stall_count": 38,
+    "stall_count": 39,
     "trail_tightened": false
    },
    "XRP": {
@@ -69,7 +69,7 @@
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
     "entry": 1.07496984,
-    "sl": 1.0681501215882958,
+    "sl": 1.0664893986177033,
     "sl0": 1.0900278568494686,
     "tp1": 0.0,
     "notional": 10000.0,
@@ -95,16 +95,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 106,
+    "bars": 107,
     "tp1_done": false,
     "best_close": 1.0149,
     "realized": -0.2954594900139995,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9277827339429657,
+    "hold_conf": 0.9292188742770799,
     "peak_r": 3.9892265097392565,
-    "stall_count": 16,
+    "stall_count": 17,
     "trail_tightened": false
    },
    "SUI": {
@@ -140,7 +140,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 98,
+    "bars": 99,
     "tp1_done": false,
     "best_close": 0.6673,
     "realized": 5.472409378519199,
@@ -149,7 +149,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7661679343911881,
     "peak_r": 2.145740730173801,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    }
   },
@@ -176,9 +176,9 @@
   "SOL|2026-08-07 15:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-08 09:00:00+00:00",
- "last_bar": "2026-08-08 08:00:00+00:00",
- "equity": 10223.279976856455,
+ "anchor": "2026-08-08 10:00:00+00:00",
+ "last_bar": "2026-08-08 09:00:00+00:00",
+ "equity": 10226.03209656126,
  "carry": {
   "cash": 9861.485595775572,
   "peak": 10510.645628955712,
@@ -194,7 +194,7 @@
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
     "entry": 1.07496984,
-    "sl": 1.0681501215882958,
+    "sl": 1.0664893986177033,
     "sl0": 1.0900278568494686,
     "tp1": 0.0,
     "notional": 9861.485595775572,
@@ -220,16 +220,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 106,
+    "bars": 107,
     "tp1_done": false,
     "best_close": 1.0149,
     "realized": -0.29136695049082584,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9277827339429657,
+    "hold_conf": 0.9292188742770799,
     "peak_r": 3.9892265097392574,
-    "stall_count": 16,
+    "stall_count": 17,
     "trail_tightened": false
    }
   },
@@ -246,5 +246,5 @@
   "DOGE|2026-08-02 09:00:00+00:00",
   "SUI|2026-08-02 23:00:00+00:00"
  ],
- "last_run": "2026-08-08 09:03:42.181999+00:00"
+ "last_run": "2026-08-08 10:03:45.917625+00:00"
 }
