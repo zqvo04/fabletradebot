@@ -20,11 +20,11 @@
   ],
   "cooldown": {
    "DOGE": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    },
    "SUI": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    }
   },
@@ -36,7 +36,7 @@
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
     "entry": 1.07496984,
-    "sl": 1.0635476009348408,
+    "sl": 1.0291804031175629,
     "sl0": 1.0900278568494686,
     "tp1": 0.0,
     "notional": 10000.0,
@@ -62,17 +62,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 113,
+    "bars": 114,
     "tp1_done": false,
     "best_close": 1.0149,
-    "realized": -0.2954594900139995,
+    "realized": 0.07321997686300047,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8602591618944267,
+    "hold_conf": 0.850179075784858,
     "peak_r": 3.9892265097392565,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    }
   },
   "pendings": []
@@ -96,9 +96,9 @@
   "SUI|2026-08-04 07:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-08 16:00:00+00:00",
- "last_bar": "2026-08-08 15:00:00+00:00",
- "equity": 10137.96426600757,
+ "anchor": "2026-08-08 17:00:00+00:00",
+ "last_bar": "2026-08-08 16:00:00+00:00",
+ "equity": 10119.980374034092,
  "carry": {
   "cash": 9861.485595775572,
   "peak": 10510.645628955712,
@@ -114,7 +114,7 @@
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
     "entry": 1.07496984,
-    "sl": 1.0635476009348408,
+    "sl": 1.0291804031175629,
     "sl0": 1.0900278568494686,
     "tp1": 0.0,
     "notional": 9861.485595775572,
@@ -140,17 +140,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 113,
+    "bars": 114,
     "tp1_done": false,
     "best_close": 1.0149,
-    "realized": -0.29136695049082584,
+    "realized": 0.0722057747157494,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8602591618944267,
+    "hold_conf": 0.850179075784858,
     "peak_r": 3.9892265097392574,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    }
   },
   "pendings": []
@@ -166,5 +166,5 @@
   "DOGE|2026-08-02 09:00:00+00:00",
   "SUI|2026-08-02 23:00:00+00:00"
  ],
- "last_run": "2026-08-08 16:03:42.534696+00:00"
+ "last_run": "2026-08-08 17:03:44.572223+00:00"
 }
