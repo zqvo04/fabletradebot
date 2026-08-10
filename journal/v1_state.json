@@ -49,16 +49,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 35,
+    "bars": 36,
     "tp1_done": false,
     "best_close": 53.853,
     "realized": 1.9778116217280002,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7939058150889845,
+    "hold_conf": 0.8051404893306034,
     "peak_r": 1.031023043617308,
-    "stall_count": 15,
+    "stall_count": 16,
     "trail_tightened": false
    },
    "XRP": {
@@ -94,20 +94,57 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
-    "best_close": 1.0256,
+    "best_close": 1.0226,
     "realized": 0.844286075296,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9533010575305032,
-    "peak_r": 0.760049987635269,
-    "stall_count": 1,
+    "hold_conf": 0.9752038181845911,
+    "peak_r": 0.9775094992329115,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "BTC",
+    "direction": -1,
+    "conf": 0.6610687750047626,
+    "sl": 65556.24736264793,
+    "setup": "RCL_S",
+    "regime": "RANGE",
+    "decided_ts": "2026-08-10 15:00:00+00:00",
+    "meta": {
+     "c_base": 0.868609893948053,
+     "c_fit": 0.0,
+     "c_align": 0.6666666666666666,
+     "c_fund": 0.05,
+     "c_base_pct": 0.9875,
+     "hold_entry": 0.5634
+    },
+    "hold_dec": 0.5634410518942349
+   },
+   {
+    "sym": "DOGE",
+    "direction": -1,
+    "conf": 0.8724637681159422,
+    "sl": 0.07036181971522171,
+    "setup": "PBK_S",
+    "regime": "TREND_DOWN",
+    "decided_ts": "2026-08-10 15:00:00+00:00",
+    "meta": {
+     "c_base": 0.7681159420289859,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 0.9541666666666667,
+     "hold_entry": 0.7758
+    },
+    "hold_dec": 0.7758431367343546
+   }
+  ]
  },
  "shadow_pages": {
   "HYPE|2026-08-09 04:00:00+00:00": "3b78b798-76e3-81cc-b914-ef1f695d0466",
@@ -133,9 +170,9 @@
   "DOGE|2026-08-10 00:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-10 15:00:00+00:00",
- "last_bar": "2026-08-10 14:00:00+00:00",
- "equity": 10275.02954866494,
+ "anchor": "2026-08-10 16:00:00+00:00",
+ "last_bar": "2026-08-10 15:00:00+00:00",
+ "equity": 10313.34874363407,
  "carry": {
   "cash": 10179.989345453403,
   "peak": 10510.645628955712,
@@ -182,20 +219,57 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
-    "best_close": 1.0256,
+    "best_close": 1.0226,
     "realized": 0.859482325102795,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9533010575305032,
-    "peak_r": 0.760049987635269,
-    "stall_count": 1,
+    "hold_conf": 0.9752038181845911,
+    "peak_r": 0.9775094992329117,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "BTC",
+    "direction": -1,
+    "conf": 0.6610687750047626,
+    "sl": 65556.24736264793,
+    "setup": "RCL_S",
+    "regime": "RANGE",
+    "decided_ts": "2026-08-10 15:00:00+00:00",
+    "meta": {
+     "c_base": 0.868609893948053,
+     "c_fit": 0.0,
+     "c_align": 0.6666666666666666,
+     "c_fund": 0.05,
+     "c_base_pct": 0.9875,
+     "hold_entry": 0.5634
+    },
+    "hold_dec": 0.5634410518942349
+   },
+   {
+    "sym": "DOGE",
+    "direction": -1,
+    "conf": 0.8724637681159422,
+    "sl": 0.07036181971522171,
+    "setup": "PBK_S",
+    "regime": "TREND_DOWN",
+    "decided_ts": "2026-08-10 15:00:00+00:00",
+    "meta": {
+     "c_base": 0.7681159420289859,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 0.9541666666666667,
+     "hold_entry": 0.7758
+    },
+    "hold_dec": 0.7758431367343546
+   }
+  ]
  },
  "pages": {
   "XRP|2026-08-09 23:00:00+00:00": "3b88b798-76e3-81c3-abc3-c9bb01f0b334"
@@ -210,5 +284,5 @@
   "XRP|2026-08-03 23:00:00+00:00",
   "SUI|2026-08-08 23:00:00+00:00"
  ],
- "last_run": "2026-08-10 15:03:50.352980+00:00"
+ "last_run": "2026-08-10 16:03:50.743757+00:00"
 }
