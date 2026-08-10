@@ -14,12 +14,7 @@
     60.506087972914635
    ]
   ],
-  "cooldown": {
-   "DOGE": {
-    "bars": 1,
-    "exp": true
-   }
-  },
+  "cooldown": {},
   "positions": {
    "HYPE": {
     "sym": "HYPE",
@@ -54,16 +49,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 32,
+    "bars": 33,
     "tp1_done": false,
     "best_close": 53.853,
     "realized": 1.9778116217280002,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7616077493535031,
+    "hold_conf": 0.765607276185233,
     "peak_r": 1.031023043617308,
-    "stall_count": 12,
+    "stall_count": 13,
     "trail_tightened": false
    },
    "XRP": {
@@ -99,16 +94,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 13,
+    "bars": 14,
     "tp1_done": false,
-    "best_close": 1.0294,
+    "best_close": 1.0282,
     "realized": 0.844286075296,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9124197284151677,
-    "peak_r": 0.4846012729449302,
-    "stall_count": 12,
+    "hold_conf": 0.9461884264442006,
+    "peak_r": 0.5715850775839905,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -138,9 +133,9 @@
   "DOGE|2026-08-10 00:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-10 12:00:00+00:00",
- "last_bar": "2026-08-10 11:00:00+00:00",
- "equity": 10199.373702187428,
+ "anchor": "2026-08-10 13:00:00+00:00",
+ "last_bar": "2026-08-10 12:00:00+00:00",
+ "equity": 10258.326309832242,
  "carry": {
   "cash": 10179.989345453403,
   "peak": 10510.645628955712,
@@ -187,16 +182,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 13,
+    "bars": 14,
     "tp1_done": false,
-    "best_close": 1.0294,
+    "best_close": 1.0282,
     "realized": 0.859482325102795,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9124197284151677,
-    "peak_r": 0.48460127294493016,
-    "stall_count": 12,
+    "hold_conf": 0.9461884264442006,
+    "peak_r": 0.5715850775839905,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -215,5 +210,5 @@
   "XRP|2026-08-03 23:00:00+00:00",
   "SUI|2026-08-08 23:00:00+00:00"
  ],
- "last_run": "2026-08-10 12:03:48.525341+00:00"
+ "last_run": "2026-08-10 13:03:46.412386+00:00"
 }
