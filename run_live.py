@@ -75,10 +75,13 @@ def main() -> None:
 
     p = profile(os.environ.get("PROFILE", "whale"))
     # SR-D (E19): let the FORWARD track earn each experimental slot its size.
-    # Reads only journal/forward_ledger.csv (never the design window), so this
-    # is inert until a slot accumulates >=30 forward trades. The seat then flows
-    # to slots with proven forward edge — the only stable entry-quality lever
-    # (E19c: the same-scale conf tiebreak has no cross-half selection skill).
+    # Reads journal/shadow_ledger.csv (never the design window) — same engine,
+    # same live bars, only the seat lifted, so it is forward evidence too, just
+    # ~3x denser than forward_ledger.csv (every seat-blocked candidate closes
+    # out instead of being discarded). Inert until a slot accumulates >=30
+    # trades there. The seat then flows to slots with proven forward edge —
+    # the only stable entry-quality lever (E19c: the same-scale conf tiebreak
+    # has no cross-half selection skill).
     promo = promotion.apply_promotions(p)
     for name, b, s in promo:
         print(f"  SR-D promote {name}: risk_scale {b} -> {s}")

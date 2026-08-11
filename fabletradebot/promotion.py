@@ -8,9 +8,15 @@ hold the single whale seat at full weight. This module is that rule, made
 concrete and FORWARD-ONLY.
 
 Design discipline (why this is governance, not curve-fitting):
-  - It reads ONLY the live forward ledger (journal/forward_ledger.csv), never
-    the design window. Backtests never touch it, so base/whale design-window
-    behaviour is invariant by construction (E19 gate).
+  - It reads ONLY forward records — journal/shadow_ledger.csv by default, never
+    the design window. shadow.py runs the SAME engine over the SAME live bars
+    with only the seat/account governors lifted, so its ledger is forward
+    evidence too, not a backtest (E19 gate holds); it just accumulates ~3x
+    faster than forward_ledger.csv because every seat-blocked candidate closes
+    out as a virtual trade instead of being discarded. forward_ledger.csv (the
+    ledger REAL positions are sized from, see shadow.py) stays untouched by
+    this switch — it is still appended every live close, just no longer the
+    scale-promotion input.
   - Thresholds are INHERITED, not fitted: n>=30 / n>=60 mirror G2's trade-count
     floor, +0.05R mirrors G2's after-cost expectancy floor. No free parameter is
     tuned to any outcome.
@@ -33,6 +39,10 @@ LEDGER_COLS = ["closed", "sym", "setup", "dir", "r", "pnl", "reason", "regime", 
                # peak_r - r is the give-back, the forward judge for the exit axis
                # (GIVEBACK_REDESIGN.md). No promotion logic reads it.
                "peak_r"]
+# promotion's read source (shadow_ledger.csv, see the module docstring). Kept
+# as its own constant, not shadow.LEDGER_PATH, so this module has no import
+# dependency on shadow.py.
+SCALE_SOURCE_PATH = "journal/shadow_ledger.csv"
 
 # promotion gates (inherited from G2, not fitted)
 PROMOTE_N1, PROMOTE_N2 = 30, 60      # trade-count floors for 0.50 / 1.0
@@ -100,7 +110,7 @@ def apply_promotions(p, ledger: pd.DataFrame | None = None) -> list[tuple]:
     the list of slots whose scale changed from base, for the run log. No-op when
     the ledger is empty/short (every slot resolves to its own base scale)."""
     if ledger is None:
-        ledger = load_ledger()
+        ledger = load_ledger(SCALE_SOURCE_PATH)
     changes = []
     for name, scale in promoted_scales(p.playbooks, ledger).items():
         base = float(p.playbooks[name].get("risk_scale", 1.0))
