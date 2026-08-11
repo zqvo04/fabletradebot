@@ -20,7 +20,7 @@
   ],
   "cooldown": {
    "SOL": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    }
   },
@@ -58,16 +58,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 46,
+    "bars": 47,
     "tp1_done": false,
     "best_close": 0.9938,
     "realized": 2.847313377179,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9330978010985416,
+    "hold_conf": 0.8990928349486903,
     "peak_r": 3.0651208105701975,
-    "stall_count": 6,
+    "stall_count": 7,
     "trail_tightened": false
    },
    "HYPE": {
@@ -103,16 +103,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 53.887,
     "realized": 0.3907680439818,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7637643674849859,
+    "hold_conf": 0.7658843163967641,
     "peak_r": 1.178491530833767,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    }
   },
@@ -146,9 +146,9 @@
   "SOL|2026-08-11 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-11 21:00:00+00:00",
- "last_bar": "2026-08-11 20:00:00+00:00",
- "equity": 10369.427713634332,
+ "anchor": "2026-08-11 22:00:00+00:00",
+ "last_bar": "2026-08-11 21:00:00+00:00",
+ "equity": 10302.61475830354,
  "carry": {
   "cash": 10179.989345453403,
   "peak": 10598.668076031685,
@@ -190,16 +190,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 46,
+    "bars": 47,
     "tp1_done": false,
     "best_close": 0.9938,
     "realized": 2.898561984284917,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9330978010985416,
+    "hold_conf": 0.8990928349486903,
     "peak_r": 3.0651208105701975,
-    "stall_count": 6,
+    "stall_count": 7,
     "trail_tightened": false
    }
   },
@@ -218,5 +218,5 @@
   "XRP|2026-08-03 23:00:00+00:00",
   "SUI|2026-08-08 23:00:00+00:00"
  ],
- "last_run": "2026-08-11 21:03:44.344383+00:00"
+ "last_run": "2026-08-11 22:03:47.202170+00:00"
 }
