@@ -214,10 +214,14 @@ CRISIS      → 없음 (관망 + 청산)
 ① close(t) > max(high[t-168 .. t-1])          # 직전 7일 신고가 돌파
 ② 1D bias = up   (EMA20>EMA50 & close>EMA100) # 자산 자체 일봉 추세
 ③ 4H bias = up   (EMA20>EMA50)                # 중간 TF 정렬
-④ BTC 1D 방향 = up                            # 광역 순풍
-⑤ volume(t) ≥ 1.2 × median(volume, 48)        # 참여 확인
-⑥ 국면 ∈ {TREND, RANGE}
+④ volume(t) ≥ 1.2 × median(volume, 48)        # 참여 확인
+⑤ 국면 ∈ {TREND, RANGE}
 ```
+
+> BTC 1D 방향 하드 게이트는 E15 V-B에서 제거됐다(설계구간 +0.059R→**+0.107R**,
+> 채택) — 자산 자신의 1D/4H 정렬이면 충분하고 글로벌 BTC 필터는 잉여 FN
+> 원천이었다. BTC 1D는 지금도 `c_align`(진입 conf 3항 중 1항)·`hold_confidence`
+> MTF정렬(§9)에는 남아 있다 — CRISIS 전역 상속과는 별개다(§2).
 
 **BRK_S가 절반 사이즈인 이유(측정)**: 최근 16개월, 신저가 돌파 숏은 12/12 자산에서
 진입 방향과 반대로 +3.1%/72h(숏스퀴즈 지배). 2026-08 바 단위 검정이 그 원인을
