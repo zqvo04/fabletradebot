@@ -457,6 +457,14 @@ class Params:
     #     the profile): its conf->leverage tier map is measured load-bearing.
     hold_cont: bool = True
     conf_clean: bool = True
+    # --- E21 (EXPERIMENTS.md, pre-registered) --------------------------------
+    # hold_exhaustion: adds a 4th hold_confidence component measuring whether
+    # the 4H EMA20-EMA50 gap that HV-A's `fit` reads is still WIDENING (fresh
+    # trend) or has started to CONTRACT (exhausted) — align/fit/mom all only
+    # measure "still aligned", none measures "alignment now decaying". 0 = off
+    # (default, base/turbo/max byte-identical). See EXPERIMENTS.md E21 for the
+    # measurement and verdict.
+    hold_exhaustion: bool = False
     # --- V6 (E20, TAIL_REDESIGN.md) ------------------------------------------
     # conf_fund_veto (B1): in the LEGACY conf path (conf_clean=False — whale),
     # drop the funding addend (+0.05/-0.10) from the score and apply the same
@@ -681,6 +689,20 @@ def profile(name: str = "base") -> Params:
             # min_r contract enforced on the conviction-collapse exit too
             # (design-window byte-identical; near-zero live impact — correctness).
             hold_minr_strict=True,
+            # --- E21 ADOPTED (EXPERIMENTS.md) --------------------------------
+            # hold_exhaustion: 4th hold_confidence component (weight 0.20,
+            # response-curve-selected — see signals._HOLD_EXH_W) reading
+            # whether the 4H EMA20-EMA50 gap `fit` already grades is still
+            # WIDENING or has started to CONTRACT, so a fully-aligned position
+            # whose trend has stopped extending can score lower instead of
+            # sitting pinned near its max right up to the reversal. 8
+            # pre-registered design-window split points (2024-06/08/09-15/
+            # 10-01/10-15/11-01/11-15/12-01), ruin profile only
+            # (P(mdd>50%)/mdd_p95/final_p5), n>=150 both halves every split:
+            # 15/16 half-comparisons improve on all 3 metrics simultaneously,
+            # the one exception (2024-11-15 H2) noise-level (-0.009/-0.002/
+            # +0.010). base/turbo/max byte-identical (default off).
+            hold_exhaustion=True,
             # NOT adopted: SEL-A (seat_rank_cbase) helped in-sample (+0.045R,
             # both halves) but REVERSED out-of-sample on the G3 holdout
             # (-0.024R) AND compressed the tail (f_p95 359->133) — the overfit
