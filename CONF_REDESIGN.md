@@ -274,3 +274,13 @@ conf는 게이트 통과 후 남는 **연속 증거의 품질**만 잰다. 성�
 `conf_clean=False`로 legacy conf 유지 + HV-A 상속. 기각 4변형(HV-B/HV-C/CV-B/CV-C)은
 근거와 함께 문서화. pytest 54/54(+2: CV-A 점수=c_base·펀딩 거부권, whale 배선).
 홀드아웃 미개봉 유지. 전방 페이퍼 트랙이 최종 심판.
+
+### 후속 — E21 hold_confidence 소진(exhaustion) 축 (채택, 상세 EXPERIMENTS.md)
+
+HV-A/HV-B/HV-C 모두 "정렬 여부"만 재는 항이었다는 진단이 남아 있었다 — 정렬
+극대 순간(추세 소진 직전)에 hold_confidence가 구조적으로 최고치를 찍는 문제는
+당시 미해결. `hold_exhaustion`(whale opt-in, `fit`의 부호있는 4H EMA20-EMA50
+갭이 1일 전보다 벌어지는지/좁혀지는지를 읽는 4번째 항, w=0.20 응답곡선 고원
+선택)이 이를 채운다. whale 설계 구간 8분할점 × 반쪽 교차, 파산 프로필
+(P(mdd>50%)/mdd_p95/final_p5)만으로 판정 — 15/16 반쪽 세 지표 동시 개선.
+base/turbo/max 바이트 불변. 상세 EXPERIMENTS.md E21.

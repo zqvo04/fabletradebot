@@ -26,6 +26,15 @@ from .indicators import atr, bollinger_width, ema, pct_rank, rsi, zscore
 
 CAND_COLS = ["dir", "conf", "sl", "setup", "c_base", "c_fit", "c_align", "c_fund"]
 
+# E21 (EXPERIMENTS.md, ADOPTED): hold_exhaustion component weight. Chosen from
+# a response-curve sweep over {0.10, 0.15, 0.20, 0.25} (taken from `fit`,
+# 0.30-w) on the whale design-window ruin profile -- a WIDE PLATEAU, not a
+# spike: P(mdd>50%) improved monotonically 0.10->0.20 then flattened at 0.25
+# (0.588 -> 0.586 -> 0.454 -> 0.384 -> 0.394), so 0.20 sits mid-plateau, not
+# at either edge. Not a Params field -- only reachable when
+# hold_exhaustion=True (whale opts in via profile()).
+_HOLD_EXH_W = 0.20
+
 
 def build_features(df1h: pd.DataFrame, funding: pd.Series | None, p: Params) -> pd.DataFrame:
     f = pd.DataFrame(index=df1h.index)
@@ -148,6 +157,18 @@ def hold_confidence(f: pd.DataFrame, state: pd.Series, btc_dir: pd.Series,
     else:
         fit = state.map({trend: 1.0, "RANGE": 0.5, "HIGH_VOL": 0.35}).fillna(0.0)
     mom = hold_momentum(f, d, p)
+    if p.hold_exhaustion:
+        # E21: is the trend fit ABOVE still widening (fresh) or contracting
+        # (exhausted)? Reuses fit's own raw gap (pre-clip) as the 1st
+        # difference's input — no new indicator, direction-symmetric via d.
+        # K=24 (1 trading day of 1H bars), S=1.0 ATR/day: both a-priori,
+        # matching the stall_bars=24 "1 day flat" scale already used
+        # elsewhere (EXIT_REDESIGN X-A). See EXPERIMENTS.md E21.
+        gap = (d * (f["ema20_4h"] - f["ema50_4h"]) / f["atr4h"])
+        exhaustion = (gap - gap.shift(24)).clip(-1.0, 1.0) * 0.5 + 0.5
+        exhaustion = exhaustion.fillna(0.5)
+        w = _HOLD_EXH_W
+        return (0.45 * align + (0.30 - w) * fit + 0.25 * mom + w * exhaustion).clip(0, 1)
     return (0.45 * align + 0.30 * fit + 0.25 * mom).clip(0, 1)
 
 

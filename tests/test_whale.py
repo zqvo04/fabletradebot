@@ -30,6 +30,33 @@ def test_whale_profile_wiring():
     # HV-A (continuous hold_conf) is inherited on.
     assert p.conf_clean is False
     assert p.hold_cont is True
+    # E21 (EXPERIMENTS.md): the exhaustion axis is a whale opt-in, base off.
+    assert p.hold_exhaustion is True
+    assert Params().hold_exhaustion is False
+
+
+def test_hold_exhaustion_base_turbo_max_byte_identical():
+    """E21: base/turbo/max never set hold_exhaustion — only whale opts in."""
+    assert profile("base").hold_exhaustion is False
+    assert profile("turbo").hold_exhaustion is False
+    assert profile("max").hold_exhaustion is False
+
+
+def test_hold_confidence_exhaustion_term_only_moves_score_when_armed():
+    """hold_exhaustion=False must reproduce the pre-E21 3-term blend exactly."""
+    idx = pd.date_range("2024-01-01", periods=30, freq="1h", tz="UTC")
+    f = pd.DataFrame({
+        "bias1d": 1.0, "bias4h": 1.0, "atr4h": 1.0,
+        "ema20_4h": np.linspace(100, 110, 30), "ema50_4h": 100.0,
+        "rsi4h": 60.0, "close": np.linspace(100, 110, 30),
+    }, index=idx)
+    state = pd.Series("TREND_UP", index=idx)
+    btc_dir = pd.Series(1, index=idx)
+    p_off = Params(hold_cont=True, hold_exhaustion=False)
+    p_on = Params(hold_cont=True, hold_exhaustion=True)
+    off = hold_confidence(f, state, btc_dir, 1, p_off)
+    on = hold_confidence(f, state, btc_dir, 1, p_on)
+    assert not off.equals(on)  # the armed axis must actually change the score
 
 
 def test_whale_confidence_leverage_tiers():
