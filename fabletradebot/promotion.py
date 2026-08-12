@@ -26,6 +26,14 @@ Design discipline (why this is governance, not curve-fitting):
   - Until the paper track accumulates n>=30 per slot it is INERT (every slot
     stays at its base scale) — applying it live changes nothing today; it only
     lets the forward record, as it grows, move size onto what actually works.
+  - A slot must also be STABLE across its own chronological halves (both
+    mean R > 0) before it earns a rung, mirroring the E15/E19c discipline used
+    everywhere else in this repo. Without this, a slot could clear n>=30 on
+    trades drawn almost entirely from a single regime stretch (shadow_ledger
+    accumulates ~3x faster than forward_ledger, so this was live risk, not a
+    hypothetical — the whale short slots were all TREND_DOWN candidates from
+    one 8-day window when this gate was added) and earn size on a record that
+    was never tested across a regime change.
 """
 from __future__ import annotations
 
@@ -69,15 +77,28 @@ def load_ledger(path: str = LEDGER_PATH) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
-def _slot_scale(base: float, n: int, exp: float, roll: float) -> float:
+def _stable_both_halves(r: pd.Series) -> bool:
+    """Same-sign check across chronological halves (E15/E19c discipline): both
+    the early and late half of the record must average R > 0. `r` must already
+    be in chronological order. n<2 (nothing to split) is unstable by default."""
+    n = len(r)
+    if n < 2:
+        return False
+    mid = n // 2
+    return bool(r.iloc[:mid].mean() > 0 and r.iloc[mid:].mean() > 0)
+
+
+def _slot_scale(base: float, n: int, exp: float, roll: float, stable: bool) -> float:
     """Map one slot's forward record to its earned scale. Monotone ladder;
-    demotion (rolling window negative) steps down one rung, never below base."""
+    demotion (rolling window negative) steps down one rung, never below base.
+    `stable` gates promotion only — demotion never needs it (a rung already
+    earned can still be pulled by the rolling window regardless)."""
     if base >= 1.0:                       # proven anchor — never demoted/altered
         return base
     earned = base
-    if n >= PROMOTE_N1 and exp > PROMOTE_EXPECTANCY:
+    if n >= PROMOTE_N1 and exp > PROMOTE_EXPECTANCY and stable:
         earned = 0.50
-    if n >= PROMOTE_N2 and exp > PROMOTE_EXPECTANCY:
+    if n >= PROMOTE_N2 and exp > PROMOTE_EXPECTANCY and stable:
         earned = 1.0
     # demotion: a sustained negative rolling window drops one rung (floor=base)
     if n >= ROLL_WINDOW and roll < 0.0:
@@ -98,10 +119,13 @@ def promoted_scales(playbooks: dict, ledger: pd.DataFrame) -> dict[str, float]:
         if n == 0:
             out[name] = base
             continue
+        if "closed" in rows.columns:
+            rows = rows.sort_values("closed")
         r = pd.to_numeric(rows["r"], errors="coerce").dropna()
         exp = float(r.mean()) if len(r) else 0.0
         roll = float(r.tail(ROLL_WINDOW).mean()) if len(r) else 0.0
-        out[name] = _slot_scale(base, len(r), exp, roll)
+        stable = _stable_both_halves(r)
+        out[name] = _slot_scale(base, len(r), exp, roll, stable)
     return out
 
 
