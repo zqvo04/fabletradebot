@@ -20,60 +20,19 @@
   ],
   "cooldown": {
    "HYPE": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    },
    "SUI": {
-    "bars": 9,
+    "bars": 8,
+    "exp": true
+   },
+   "XRP": {
+    "bars": 11,
     "exp": true
    }
   },
   "positions": {
-   "XRP": {
-    "sym": "XRP",
-    "direction": -1,
-    "conf": 0.8372707942020916,
-    "setup": "PBK_S",
-    "regime": "TREND_DOWN",
-    "entry": 1.0360854,
-    "sl": 1.0119307613341335,
-    "sl0": 1.049881071561844,
-    "tp1": 0.0,
-    "notional": 10000.0,
-    "margin": 2000.0,
-    "risk_amt": 133.15187688045924,
-    "leverage": 5.0,
-    "liq_price": 1.232941626,
-    "opened_ts": "2026-08-09 23:00:00+00:00",
-    "risk_frac": 0.002,
-    "init_stop_frac": 0.013315187688045925,
-    "meta": {
-     "c_base": 0.7041287167310758,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8916666666666667,
-     "hold_entry": 0.9031
-    },
-    "tranches": [
-     [
-      1.0360854,
-      10000.0
-     ]
-    ],
-    "adds": 0,
-    "bars": 64,
-    "tp1_done": false,
-    "best_close": 0.9938,
-    "realized": 3.7287013622859995,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.8358328612898602,
-    "peak_r": 3.0651208105701975,
-    "stall_count": 24,
-    "trail_tightened": true
-   },
    "ETH": {
     "sym": "ETH",
     "direction": -1,
@@ -107,27 +66,25 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 1887.0,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.5938810939064088,
+    "hold_conf": 0.5901546024358363,
     "peak_r": 0.400267666644079,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
   "pendings": []
  },
  "shadow_pages": {
-  "XRP|2026-08-09 23:00:00+00:00": "3b88b798-76e3-81b0-9daf-dc5fa13e1d83",
   "ETH|2026-08-12 14:00:00+00:00": "3ba8b798-76e3-8133-8ea4-ef50445e6ccc"
  },
  "shadow_seats": {
-  "XRP|2026-08-09 23:00:00+00:00": "Live-Taken",
   "ETH|2026-08-12 14:00:00+00:00": "Live-Blocked"
  },
  "shadow_closed_keys": [
@@ -149,90 +106,29 @@
   "DOGE|2026-08-10 16:00:00+00:00",
   "SOL|2026-08-11 16:00:00+00:00",
   "HYPE|2026-08-11 13:00:00+00:00",
-  "SUI|2026-08-12 07:00:00+00:00"
+  "SUI|2026-08-12 07:00:00+00:00",
+  "XRP|2026-08-09 23:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-12 15:00:00+00:00",
- "last_bar": "2026-08-12 14:00:00+00:00",
- "equity": 10452.858616366831,
+ "anchor": "2026-08-12 16:00:00+00:00",
+ "last_bar": "2026-08-12 15:00:00+00:00",
+ "equity": 10406.9579289914,
  "carry": {
-  "cash": 10179.989345453403,
+  "cash": 10406.9579289914,
   "peak": 10598.668076031685,
   "dd_frozen": false,
   "circuit_until": null,
   "loss_log": [],
-  "cooldown": {},
-  "positions": {
+  "cooldown": {
    "XRP": {
-    "sym": "XRP",
-    "direction": -1,
-    "conf": 0.8372707942020916,
-    "setup": "PBK_S",
-    "regime": "TREND_DOWN",
-    "entry": 1.0360854,
-    "sl": 1.0119307613341335,
-    "sl0": 1.049881071561844,
-    "tp1": 0.0,
-    "notional": 10179.989345453403,
-    "margin": 2035.9978690906805,
-    "risk_amt": 135.54846879701984,
-    "leverage": 5.0,
-    "liq_price": 1.232941626,
-    "opened_ts": "2026-08-09 23:00:00+00:00",
-    "risk_frac": 0.002,
-    "init_stop_frac": 0.013315187688045925,
-    "meta": {
-     "c_base": 0.7041287167310758,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8916666666666667,
-     "hold_entry": 0.9031
-    },
-    "tranches": [
-     [
-      1.0360854,
-      10179.989345453403
-     ]
-    ],
-    "adds": 0,
-    "bars": 64,
-    "tp1_done": false,
-    "best_close": 0.9938,
-    "realized": 3.7958140140449075,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.8358328612898602,
-    "peak_r": 3.0651208105701975,
-    "stall_count": 24,
-    "trail_tightened": true
+    "bars": 11,
+    "exp": true
    }
   },
-  "pendings": [
-   {
-    "sym": "ETH",
-    "direction": -1,
-    "conf": 0.6312301166489933,
-    "sl": 1933.2847364527252,
-    "setup": "PBK_S",
-    "regime": "RANGE",
-    "decided_ts": "2026-08-12 14:00:00+00:00",
-    "meta": {
-     "c_base": 0.9052668787557453,
-     "c_fit": 0.0,
-     "c_align": 0.6666666666666666,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9875,
-     "hold_entry": 0.5939
-    },
-    "hold_dec": 0.5938810939064088
-   }
-  ]
+  "positions": {},
+  "pendings": []
  },
- "pages": {
-  "XRP|2026-08-09 23:00:00+00:00": "3b88b798-76e3-81c3-abc3-c9bb01f0b334"
- },
+ "pages": {},
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
   "XRP|2026-07-26 13:00:00+00:00",
@@ -241,7 +137,8 @@
   "DOGE|2026-08-02 09:00:00+00:00",
   "SUI|2026-08-02 23:00:00+00:00",
   "XRP|2026-08-03 23:00:00+00:00",
-  "SUI|2026-08-08 23:00:00+00:00"
+  "SUI|2026-08-08 23:00:00+00:00",
+  "XRP|2026-08-09 23:00:00+00:00"
  ],
- "last_run": "2026-08-12 15:03:46.186734+00:00"
+ "last_run": "2026-08-12 16:03:55.437618+00:00"
 }
