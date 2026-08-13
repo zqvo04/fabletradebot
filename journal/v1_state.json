@@ -45,16 +45,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 30,
+    "bars": 31,
     "tp1_done": false,
     "best_close": 1874.24,
     "realized": 2.530426879200902,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6029375613366496,
+    "hold_conf": 0.6068706897513814,
     "peak_r": 0.789555346152184,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    },
    "SUI": {
@@ -90,7 +90,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 0.6835,
     "realized": 0.0,
@@ -99,7 +99,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7469071937020604,
     "peak_r": 0.09377019199141963,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    },
    "BTC": {
@@ -135,7 +135,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 63118.8,
     "realized": 0.0,
@@ -144,7 +144,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.856377915525567,
     "peak_r": 0.010933039796823255,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    }
   },
@@ -184,8 +184,8 @@
   "DOGE|2026-08-12 22:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-13 20:00:00+00:00",
- "last_bar": "2026-08-13 19:00:00+00:00",
+ "anchor": "2026-08-13 21:00:00+00:00",
+ "last_bar": "2026-08-13 20:00:00+00:00",
  "equity": 10371.898996742837,
  "carry": {
   "cash": 10383.828930435826,
@@ -233,7 +233,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 0.6835,
     "realized": 0.0,
@@ -242,7 +242,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7469071937020604,
     "peak_r": 0.09377019199141964,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    }
   },
@@ -263,5 +263,5 @@
   "XRP|2026-08-09 23:00:00+00:00",
   "DOGE|2026-08-12 22:00:00+00:00"
  ],
- "last_run": "2026-08-13 20:03:44.820121+00:00"
+ "last_run": "2026-08-13 21:03:45.183888+00:00"
 }
