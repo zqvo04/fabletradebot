@@ -7,15 +7,15 @@
   "loss_log": [],
   "cooldown": {
    "ETH": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    },
    "SUI": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    },
    "BTC": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    }
   },
@@ -53,15 +53,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 12,
+    "bars": 13,
     "tp1_done": false,
-    "best_close": 0.06989,
+    "best_close": 0.06977,
     "realized": 1.922219406428,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7605515762627882,
-    "peak_r": 0.30036155597555547,
+    "hold_conf": 0.7719920700518862,
+    "peak_r": 0.49844567730476774,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -101,8 +101,8 @@
   "BTC|2026-08-13 17:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-15 18:00:00+00:00",
- "last_bar": "2026-08-15 17:00:00+00:00",
+ "anchor": "2026-08-15 19:00:00+00:00",
+ "last_bar": "2026-08-15 18:00:00+00:00",
  "equity": 10406.499779835676,
  "carry": {
   "cash": 10406.499779835676,
@@ -112,7 +112,7 @@
   "loss_log": [],
   "cooldown": {
    "SUI": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    }
   },
@@ -133,5 +133,5 @@
   "DOGE|2026-08-12 22:00:00+00:00",
   "SUI|2026-08-13 16:00:00+00:00"
  ],
- "last_run": "2026-08-15 18:03:42.491823+00:00"
+ "last_run": "2026-08-15 19:03:45.483657+00:00"
 }
