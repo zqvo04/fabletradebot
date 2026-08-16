@@ -40,16 +40,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 38,
+    "bars": 39,
     "tp1_done": false,
     "best_close": 0.06957,
     "realized": 4.31883467335,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7662979078913756,
+    "hold_conf": 0.7732368894406636,
     "peak_r": 0.8285858795201213,
-    "stall_count": 20,
+    "stall_count": 21,
     "trail_tightened": false
    },
    "XRP": {
@@ -85,16 +85,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 20,
+    "bars": 21,
     "tp1_done": false,
     "best_close": 0.9987,
     "realized": 1.0451533689599999,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8402843863995137,
+    "hold_conf": 0.8535770061834107,
     "peak_r": 0.46047322858923434,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false
    }
   },
@@ -135,9 +135,9 @@
   "BTC|2026-08-13 17:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-16 20:00:00+00:00",
- "last_bar": "2026-08-16 19:00:00+00:00",
- "equity": 10420.046967890934,
+ "anchor": "2026-08-16 21:00:00+00:00",
+ "last_bar": "2026-08-16 20:00:00+00:00",
+ "equity": 10435.631794306282,
  "carry": {
   "cash": 10406.499779835676,
   "peak": 10598.668076031685,
@@ -179,20 +179,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 20,
+    "bars": 21,
     "tp1_done": false,
     "best_close": 0.9987,
     "realized": 1.0876388303976756,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8402843863995137,
+    "hold_conf": 0.8535770061834107,
     "peak_r": 0.46047322858923434,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "DOGE",
+    "direction": -1,
+    "conf": 0.7822928947097849,
+    "sl": 0.07026890192446743,
+    "setup": "PBK_S",
+    "regime": "TREND_DOWN",
+    "decided_ts": "2026-08-16 20:00:00+00:00",
+    "meta": {
+     "c_base": 0.6041688994723362,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 0.8333333333333335,
+     "hold_entry": 0.7732
+    },
+    "hold_dec": 0.7732368894406636
+   }
+  ]
  },
  "pages": {
   "XRP|2026-08-16 00:00:00+00:00": "3be8b798-76e3-81d6-a51e-d695c4c4ff2a"
@@ -210,5 +229,5 @@
   "DOGE|2026-08-12 22:00:00+00:00",
   "SUI|2026-08-13 16:00:00+00:00"
  ],
- "last_run": "2026-08-16 20:03:40.553053+00:00"
+ "last_run": "2026-08-16 21:03:42.593778+00:00"
 }
