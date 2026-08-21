@@ -40,16 +40,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
-    "best_close": 0.2082,
+    "best_close": 0.2087,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9788033676915735,
-    "peak_r": 0.5078618035071646,
-    "stall_count": 3,
+    "peak_r": 0.5743658057682827,
+    "stall_count": 0,
     "trail_tightened": false
    },
    "BTC": {
@@ -85,16 +85,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
-    "best_close": 75101.5,
+    "best_close": 75442.7,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9958897933838469,
-    "peak_r": 1.0848275463586945,
-    "stall_count": 3,
+    "peak_r": 1.3465301639519045,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -145,12 +145,12 @@
   "ONDO|2026-08-18 02:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-21 05:00:00+00:00",
- "last_bar": "2026-08-21 04:00:00+00:00",
- "equity": 10997.769332797026,
+ "anchor": "2026-08-21 06:00:00+00:00",
+ "last_bar": "2026-08-21 05:00:00+00:00",
+ "equity": 11149.888537282675,
  "carry": {
   "cash": 10211.4695110737,
-  "peak": 11041.23196265007,
+  "peak": 11149.888537282675,
   "dd_frozen": false,
   "circuit_until": null,
   "loss_log": [],
@@ -189,16 +189,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
-    "best_close": 0.2082,
+    "best_close": 0.2087,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9788033676915735,
-    "peak_r": 0.5078618035071646,
-    "stall_count": 3,
+    "peak_r": 0.5743658057682828,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -222,5 +222,5 @@
   "XRP|2026-08-16 00:00:00+00:00",
   "DOGE|2026-08-18 02:00:00+00:00"
  ],
- "last_run": "2026-08-21 05:03:43.072817+00:00"
+ "last_run": "2026-08-21 06:03:41.078363+00:00"
 }
