@@ -45,16 +45,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 22,
+    "bars": 23,
     "tp1_done": false,
     "best_close": 0.2318,
     "realized": -8.699009516167166,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 1.0,
+    "hold_conf": 0.9949352568410978,
     "peak_r": 3.6468507102319374,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    },
    "BTC": {
@@ -90,16 +90,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 22,
+    "bars": 23,
     "tp1_done": false,
     "best_close": 79275.8,
     "realized": -9.035459450794999,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9636522401115548,
+    "hold_conf": 0.9510329159008566,
     "peak_r": 4.28654277677882,
-    "stall_count": 14,
+    "stall_count": 15,
     "trail_tightened": false
    },
    "HYPE": {
@@ -135,16 +135,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 14,
+    "bars": 15,
     "tp1_done": false,
     "best_close": 77.629,
     "realized": -6.241983749517,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9279611305124569,
+    "hold_conf": 0.9222770362022353,
     "peak_r": 0.5936970732209026,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false
    }
   },
@@ -198,9 +198,9 @@
   "SOL|2026-08-21 09:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-21 23:00:00+00:00",
- "last_bar": "2026-08-21 22:00:00+00:00",
- "equity": 16160.939318263954,
+ "anchor": "2026-08-22 00:00:00+00:00",
+ "last_bar": "2026-08-21 23:00:00+00:00",
+ "equity": 15595.925130174404,
  "carry": {
   "cash": 10211.4695110737,
   "peak": 16160.939318263954,
@@ -242,16 +242,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 22,
+    "bars": 23,
     "tp1_done": false,
     "best_close": 0.2318,
     "realized": -8.882967045088098,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 1.0,
+    "hold_conf": 0.9949352568410978,
     "peak_r": 3.646850710231938,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -275,5 +275,5 @@
   "XRP|2026-08-16 00:00:00+00:00",
   "DOGE|2026-08-18 02:00:00+00:00"
  ],
- "last_run": "2026-08-21 23:03:40.283908+00:00"
+ "last_run": "2026-08-22 00:03:47.044116+00:00"
 }
