@@ -27,7 +27,7 @@
     "setup": "BRK_L",
     "regime": "RANGE",
     "entry": 0.20438172,
-    "sl": 0.19698271984467658,
+    "sl": 0.23702522395982195,
     "sl0": 0.1968633754944043,
     "tp1": 0.0,
     "notional": 43495.047580835824,
@@ -53,17 +53,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 51,
+    "bars": 52,
     "tp1_done": false,
     "best_close": 0.2544,
     "realized": -26.0970285485015,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8204744613769104,
+    "hold_conf": 0.7996064980203246,
     "peak_r": 6.652831612434475,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    }
   },
   "pendings": []
@@ -115,9 +115,9 @@
   "BTC|2026-08-21 01:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-23 04:00:00+00:00",
- "last_bar": "2026-08-23 03:00:00+00:00",
- "equity": 13491.952963138207,
+ "anchor": "2026-08-23 05:00:00+00:00",
+ "last_bar": "2026-08-23 04:00:00+00:00",
+ "equity": 12666.162995930405,
  "carry": {
   "cash": 10211.4695110737,
   "peak": 21067.775008135173,
@@ -133,7 +133,7 @@
     "setup": "BRK_L",
     "regime": "RANGE",
     "entry": 0.20438172,
-    "sl": 0.19698271984467658,
+    "sl": 0.23702522395982195,
     "sl0": 0.1968633754944043,
     "tp1": 0.0,
     "notional": 44414.83522544049,
@@ -159,17 +159,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 51,
+    "bars": 52,
     "tp1_done": false,
     "best_close": 0.2544,
     "realized": -26.64890113526429,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8204744613769104,
+    "hold_conf": 0.7996064980203246,
     "peak_r": 6.652831612434475,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    }
   },
   "pendings": []
@@ -192,5 +192,5 @@
   "XRP|2026-08-16 00:00:00+00:00",
   "DOGE|2026-08-18 02:00:00+00:00"
  ],
- "last_run": "2026-08-23 04:03:37.600900+00:00"
+ "last_run": "2026-08-23 05:03:41.585903+00:00"
 }
