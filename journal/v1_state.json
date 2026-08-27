@@ -45,15 +45,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 17,
+    "bars": 18,
     "tp1_done": false,
-    "best_close": 0.3781,
+    "best_close": 0.3784,
     "realized": -0.3,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7728006402262577,
-    "peak_r": 0.6231788954309164,
+    "hold_conf": 0.7951218732614804,
+    "peak_r": 0.6415448144386839,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -90,16 +90,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 17,
+    "bars": 18,
     "tp1_done": false,
     "best_close": 0.08912,
     "realized": -0.1176103202603474,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7756800634066247,
+    "hold_conf": 0.7812456227681064,
     "peak_r": 0.8909936165966286,
-    "stall_count": 6,
+    "stall_count": 7,
     "trail_tightened": false
    },
    "ADA": {
@@ -135,16 +135,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
     "best_close": 0.2147,
     "realized": -0.6312310382854347,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7254692579256653,
+    "hold_conf": 0.7444720142231733,
     "peak_r": 0.4615048299887737,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    },
    "SOL": {
@@ -180,28 +180,36 @@
      ]
     ],
     "adds": 0,
-    "bars": 6,
+    "bars": 7,
     "tp1_done": false,
-    "best_close": 106.72,
+    "best_close": 107.1,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8891475720325438,
-    "peak_r": 0.6951357562097757,
+    "hold_conf": 0.9025262437212751,
+    "peak_r": 0.8234798179504599,
     "stall_count": 0,
     "trail_tightened": false
-   }
-  },
-  "pendings": [
-   {
+   },
+   "HYPE": {
     "sym": "HYPE",
     "direction": 1,
     "conf": 0.7776278967439245,
-    "sl": 81.55467682328315,
     "setup": "BRK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-08-27 14:00:00+00:00",
+    "entry": 84.2094954,
+    "sl": 81.55467682328315,
+    "sl0": 81.55467682328315,
+    "tp1": 0.0,
+    "notional": 15000.0,
+    "margin": 5000.0,
+    "risk_amt": 472.89534822165365,
+    "leverage": 3.0,
+    "liq_price": 56.981758554,
+    "opened_ts": "2026-08-27 15:00:00+00:00",
+    "risk_frac": 0.005,
+    "init_stop_frac": 0.03152635654811024,
     "meta": {
      "c_base": 0.5956870849889535,
      "c_fit": 1.0,
@@ -210,21 +218,41 @@
      "c_base_pct": 0.9791666666666665,
      "hold_entry": 0.8513
     },
-    "hold_dec": 0.8513122513576694
+    "tranches": [
+     [
+      84.2094954,
+      15000.0
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 84.65,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.8734074414518121,
+    "peak_r": 0.16592644177771754,
+    "stall_count": 0,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
  "shadow_pages": {
   "ONDO|2026-08-26 22:00:00+00:00": "3c88b798-76e3-8148-a12c-e7fd05bc1e56",
   "DOGE|2026-08-26 22:00:00+00:00": "3c88b798-76e3-81b7-9207-ef073c8ec9d2",
   "ADA|2026-08-26 23:00:00+00:00": "3c98b798-76e3-8172-ab81-fb27646bd408",
-  "SOL|2026-08-27 09:00:00+00:00": "3c98b798-76e3-810d-8be3-fdda78e5eccf"
+  "SOL|2026-08-27 09:00:00+00:00": "3c98b798-76e3-810d-8be3-fdda78e5eccf",
+  "HYPE|2026-08-27 15:00:00+00:00": "3c98b798-76e3-8135-8748-c70753a97c88"
  },
  "shadow_seats": {
   "ONDO|2026-08-26 22:00:00+00:00": "Live-Taken",
   "DOGE|2026-08-26 22:00:00+00:00": "Live-Blocked",
   "ADA|2026-08-26 23:00:00+00:00": "Live-Blocked",
-  "SOL|2026-08-27 09:00:00+00:00": "Live-Blocked"
+  "SOL|2026-08-27 09:00:00+00:00": "Live-Blocked",
+  "HYPE|2026-08-27 15:00:00+00:00": "Live-Blocked"
  },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
@@ -270,9 +298,9 @@
   "SOL|2026-08-26 11:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-27 15:00:00+00:00",
- "last_bar": "2026-08-27 14:00:00+00:00",
- "equity": 17061.47456287184,
+ "anchor": "2026-08-27 16:00:00+00:00",
+ "last_bar": "2026-08-27 15:00:00+00:00",
+ "equity": 17063.552741146937,
  "carry": {
   "cash": 16991.21420985188,
   "peak": 21067.775008135173,
@@ -319,75 +347,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 17,
+    "bars": 18,
     "tp1_done": false,
-    "best_close": 0.3781,
+    "best_close": 0.3784,
     "realized": -0.2548682131477783,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7728006402262577,
-    "peak_r": 0.6231788954309164,
+    "hold_conf": 0.7951218732614804,
+    "peak_r": 0.6415448144386839,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "SOL",
-    "direction": 1,
-    "conf": 0.6739928740800702,
-    "sl": 103.49134272017214,
-    "setup": "BRK_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-08-27 14:00:00+00:00",
-    "meta": {
-     "c_base": 0.40725977105467304,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8541666666666665,
-     "hold_entry": 0.8891
-    },
-    "hold_dec": 0.8891475720325438
-   },
-   {
-    "sym": "DOGE",
-    "direction": 1,
-    "conf": 0.5940710482491296,
-    "sl": 0.08487273304810114,
-    "setup": "RCL_L",
-    "regime": "RANGE",
-    "decided_ts": "2026-08-27 14:00:00+00:00",
-    "meta": {
-     "c_base": 0.7164928149984174,
-     "c_fit": 0.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.95,
-     "hold_entry": 0.7757
-    },
-    "hold_dec": 0.7756800634066247
-   },
-   {
-    "sym": "HYPE",
-    "direction": 1,
-    "conf": 0.7776278967439245,
-    "sl": 81.55467682328315,
-    "setup": "BRK_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-08-27 14:00:00+00:00",
-    "meta": {
-     "c_base": 0.5956870849889535,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9791666666666665,
-     "hold_entry": 0.8513
-    },
-    "hold_dec": 0.8513122513576694
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "ONDO|2026-08-26 22:00:00+00:00": "3c88b798-76e3-813b-ab91-e0539d595514"
@@ -410,5 +383,5 @@
   "SUI|2026-08-25 01:00:00+00:00",
   "SOL|2026-08-26 11:00:00+00:00"
  ],
- "last_run": "2026-08-27 15:03:43.499327+00:00"
+ "last_run": "2026-08-27 16:03:41.842235+00:00"
 }
