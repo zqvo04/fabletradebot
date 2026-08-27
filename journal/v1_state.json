@@ -45,16 +45,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 14,
+    "bars": 15,
     "tp1_done": false,
     "best_close": 0.377,
     "realized": -0.3,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7454014593904058,
+    "hold_conf": 0.7478478148221783,
     "peak_r": 0.5558371924024411,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    },
    "DOGE": {
@@ -90,16 +90,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 14,
+    "bars": 15,
     "tp1_done": false,
     "best_close": 0.08912,
     "realized": -0.1176103202603474,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.75905858085946,
+    "hold_conf": 0.7426779893637038,
     "peak_r": 0.8909936165966286,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    },
    "ADA": {
@@ -135,16 +135,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 13,
+    "bars": 14,
     "tp1_done": false,
     "best_close": 0.2146,
     "realized": -0.6312310382854347,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6953236574136862,
+    "hold_conf": 0.6962102927228622,
     "peak_r": 0.4512854119693776,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    },
    "SOL": {
@@ -180,7 +180,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 104.661848,
     "realized": 0.0,
@@ -189,7 +189,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.8891475720325438,
     "peak_r": 0.0,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    }
   },
@@ -251,9 +251,9 @@
   "SOL|2026-08-26 11:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-27 12:00:00+00:00",
- "last_bar": "2026-08-27 11:00:00+00:00",
- "equity": 17022.68190173674,
+ "anchor": "2026-08-27 13:00:00+00:00",
+ "last_bar": "2026-08-27 12:00:00+00:00",
+ "equity": 17026.145532195234,
  "carry": {
   "cash": 16991.21420985188,
   "peak": 21067.775008135173,
@@ -300,16 +300,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 14,
+    "bars": 15,
     "tp1_done": false,
     "best_close": 0.377,
     "realized": -0.2548682131477783,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7454014593904058,
+    "hold_conf": 0.7478478148221783,
     "peak_r": 0.5558371924024411,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    }
   },
@@ -336,5 +336,5 @@
   "SUI|2026-08-25 01:00:00+00:00",
   "SOL|2026-08-26 11:00:00+00:00"
  ],
- "last_run": "2026-08-27 12:03:42.567863+00:00"
+ "last_run": "2026-08-27 13:03:44.511206+00:00"
 }
