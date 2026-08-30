@@ -65,15 +65,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 32,
+    "bars": 33,
     "tp1_done": false,
-    "best_close": 83.558,
+    "best_close": 83.749,
     "realized": -0.1761492672426,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.854308659320175,
-    "peak_r": 0.6964786233597313,
+    "hold_conf": 0.860575794999828,
+    "peak_r": 0.7622325973245963,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -110,16 +110,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 21,
+    "bars": 22,
     "tp1_done": false,
     "best_close": 0.085614232,
     "realized": -0.810379113857,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6557825187172628,
+    "hold_conf": 0.6747481537303648,
     "peak_r": 0.0,
-    "stall_count": 21,
+    "stall_count": 22,
     "trail_tightened": false
    }
   },
@@ -183,9 +183,9 @@
   "SOL|2026-08-27 09:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-30 12:00:00+00:00",
- "last_bar": "2026-08-30 11:00:00+00:00",
- "equity": 16936.21056268329,
+ "anchor": "2026-08-30 13:00:00+00:00",
+ "last_bar": "2026-08-30 12:00:00+00:00",
+ "equity": 16942.13964903202,
  "carry": {
   "cash": 16873.557163372996,
   "peak": 21067.775008135173,
@@ -227,20 +227,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 32,
+    "bars": 33,
     "tp1_done": false,
-    "best_close": 83.558,
+    "best_close": 83.749,
     "realized": -0.14861323650521385,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.854308659320175,
-    "peak_r": 0.6964786233597313,
+    "hold_conf": 0.860575794999828,
+    "peak_r": 0.7622325973245964,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "DOGE",
+    "direction": 1,
+    "conf": 0.8823291642344822,
+    "sl": 0.08405870753641036,
+    "setup": "PBK_L",
+    "regime": "TREND_UP",
+    "decided_ts": "2026-08-30 12:00:00+00:00",
+    "meta": {
+     "c_base": 0.7860530258808768,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 0.9583333333333335,
+     "hold_entry": 0.6747
+    },
+    "hold_dec": 0.6747481537303648
+   }
+  ]
  },
  "pages": {
   "HYPE|2026-08-29 04:00:00+00:00": "3cb8b798-76e3-8144-b94a-d6d75bfc556b"
@@ -264,5 +283,5 @@
   "SOL|2026-08-26 11:00:00+00:00",
   "ONDO|2026-08-26 22:00:00+00:00"
  ],
- "last_run": "2026-08-30 12:03:42.465266+00:00"
+ "last_run": "2026-08-30 13:03:39.946308+00:00"
 }
