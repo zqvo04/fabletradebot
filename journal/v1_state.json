@@ -19,7 +19,7 @@
     "setup": "PBK_L",
     "regime": "TREND_UP",
     "entry": 81.5348916,
-    "sl": 81.67964791116124,
+    "sl": 81.72960163179258,
     "sl0": 78.63012419990267,
     "tp1": 0.0,
     "notional": 3000.0,
@@ -45,7 +45,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 66,
+    "bars": 67,
     "tp1_done": false,
     "best_close": 84.8,
     "realized": -1.0465171109727,
@@ -54,7 +54,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.815099372726392,
     "peak_r": 1.1240515849532742,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": true
    },
    "SOL": {
@@ -90,16 +90,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
     "best_close": 104.41,
     "realized": 0.5470408024665001,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7025129740917178,
+    "hold_conf": 0.6897867464333547,
     "peak_r": 0.5685273292289178,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    }
   },
@@ -164,9 +164,9 @@
   "DOGE|2026-08-29 15:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-31 22:00:00+00:00",
- "last_bar": "2026-08-31 21:00:00+00:00",
- "equity": 16974.03083504026,
+ "anchor": "2026-08-31 23:00:00+00:00",
+ "last_bar": "2026-08-31 22:00:00+00:00",
+ "equity": 16961.30347690948,
  "carry": {
   "cash": 16873.557163372996,
   "peak": 21067.775008135173,
@@ -182,7 +182,7 @@
     "setup": "PBK_L",
     "regime": "TREND_UP",
     "entry": 81.5348916,
-    "sl": 81.67964791116124,
+    "sl": 81.72960163179258,
     "sl0": 78.63012419990267,
     "tp1": 0.0,
     "notional": 2531.033574505949,
@@ -208,7 +208,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 66,
+    "bars": 67,
     "tp1_done": false,
     "best_close": 84.8,
     "realized": -0.8829233147222908,
@@ -217,7 +217,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.815099372726392,
     "peak_r": 1.1240515849532742,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": true
    }
   },
@@ -245,5 +245,5 @@
   "SOL|2026-08-26 11:00:00+00:00",
   "ONDO|2026-08-26 22:00:00+00:00"
  ],
- "last_run": "2026-08-31 22:03:39.913166+00:00"
+ "last_run": "2026-08-31 23:03:39.440611+00:00"
 }
