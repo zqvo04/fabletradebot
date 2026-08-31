@@ -10,12 +10,7 @@
     116.54868661848343
    ]
   ],
-  "cooldown": {
-   "DOGE": {
-    "bars": 1,
-    "exp": true
-   }
-  },
+  "cooldown": {},
   "positions": {
    "HYPE": {
     "sym": "HYPE",
@@ -50,16 +45,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 52,
+    "bars": 53,
     "tp1_done": false,
     "best_close": 83.931,
-    "realized": -0.6021149026215,
+    "realized": -0.9021149026215001,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7086257728557656,
+    "hold_conf": 0.7147581634673089,
     "peak_r": 0.82488821649531,
-    "stall_count": 15,
+    "stall_count": 16,
     "trail_tightened": false
    },
    "SOL": {
@@ -95,15 +90,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
-    "best_close": 102.9,
-    "realized": 0.0,
+    "best_close": 103.15,
+    "realized": 0.36103393304200004,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6846798903588861,
-    "peak_r": 0.08865498543313043,
+    "hold_conf": 0.6916514581602746,
+    "peak_r": 0.16810404897547981,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -169,9 +164,9 @@
   "DOGE|2026-08-29 15:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-08-31 08:00:00+00:00",
- "last_bar": "2026-08-31 07:00:00+00:00",
- "equity": 16860.72872959988,
+ "anchor": "2026-08-31 09:00:00+00:00",
+ "last_bar": "2026-08-31 08:00:00+00:00",
+ "equity": 16866.218458569732,
  "carry": {
   "cash": 16873.557163372996,
   "peak": 21067.775008135173,
@@ -213,39 +208,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 52,
+    "bars": 53,
     "tp1_done": false,
     "best_close": 83.931,
-    "realized": -0.5079910114151323,
+    "realized": -0.7610943688657272,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7086257728557656,
+    "hold_conf": 0.7147581634673089,
     "peak_r": 0.8248882164953101,
-    "stall_count": 15,
+    "stall_count": 16,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "SOL",
-    "direction": 1,
-    "conf": 0.7499156051387195,
-    "sl": 100.15555686539793,
-    "setup": "PBK_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-08-31 07:00:00+00:00",
-    "meta": {
-     "c_base": 0.5453011002522172,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.6166666666666667,
-     "hold_entry": 0.6847
-    },
-    "hold_dec": 0.6846798903588861
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "HYPE|2026-08-29 04:00:00+00:00": "3cb8b798-76e3-8144-b94a-d6d75bfc556b"
@@ -269,5 +245,5 @@
   "SOL|2026-08-26 11:00:00+00:00",
   "ONDO|2026-08-26 22:00:00+00:00"
  ],
- "last_run": "2026-08-31 08:03:40.781120+00:00"
+ "last_run": "2026-08-31 09:03:41.683133+00:00"
 }
