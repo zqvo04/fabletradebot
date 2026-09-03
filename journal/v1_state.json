@@ -4,12 +4,7 @@
   "peak": 10000.0,
   "dd_frozen": false,
   "circuit_until": null,
-  "loss_log": [
-   [
-    "2026-09-01 18:00:00+00:00",
-    159.1944306886959
-   ]
-  ],
+  "loss_log": [],
   "cooldown": {},
   "positions": {
    "SOL": {
@@ -45,28 +40,36 @@
      ]
     ],
     "adds": 0,
-    "bars": 13,
+    "bars": 14,
     "tp1_done": false,
     "best_close": 101.07,
     "realized": 0.079075239158,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.667263888254611,
+    "hold_conf": 0.6570533443067424,
     "peak_r": 0.750738001913493,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
-   }
-  },
-  "pendings": [
-   {
+   },
+   "HYPE": {
     "sym": "HYPE",
     "direction": 1,
     "conf": 0.8261492706588442,
-    "sl": 80.20983612802831,
     "setup": "PBK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-09-03 02:00:00+00:00",
+    "entry": 82.3323698,
+    "sl": 80.20983612802831,
+    "sl0": 80.20983612802831,
+    "tp1": 0.0,
+    "notional": 3000.0,
+    "margin": 1000.0,
+    "risk_amt": 77.34018869350027,
+    "leverage": 3.0,
+    "liq_price": 55.71157023133334,
+    "opened_ts": "2026-09-03 03:00:00+00:00",
+    "risk_frac": 0.001,
+    "init_stop_frac": 0.02578006289783342,
     "meta": {
      "c_base": 0.6839077648342622,
      "c_fit": 1.0,
@@ -75,15 +78,35 @@
      "c_base_pct": 0.9,
      "hold_entry": 0.7222
     },
-    "hold_dec": 0.7221927288089405
+    "tranches": [
+     [
+      82.3323698,
+      3000.0
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 82.3323698,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7299145605578935,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
  "shadow_pages": {
-  "SOL|2026-09-02 14:00:00+00:00": "3cf8b798-76e3-81fb-941c-e0cc38ff0467"
+  "SOL|2026-09-02 14:00:00+00:00": "3cf8b798-76e3-81fb-941c-e0cc38ff0467",
+  "HYPE|2026-09-03 03:00:00+00:00": "3d08b798-76e3-811b-8801-f62ab557a0d8"
  },
  "shadow_seats": {
-  "SOL|2026-09-02 14:00:00+00:00": "Live-Blocked"
+  "SOL|2026-09-02 14:00:00+00:00": "Live-Blocked",
+  "HYPE|2026-09-03 03:00:00+00:00": "Live-Taken"
  },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
@@ -138,9 +161,9 @@
   "SOL|2026-08-31 06:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-03 03:00:00+00:00",
- "last_bar": "2026-09-03 02:00:00+00:00",
- "equity": 16781.579178946282,
+ "anchor": "2026-09-03 04:00:00+00:00",
+ "last_bar": "2026-09-03 03:00:00+00:00",
+ "equity": 16780.37548333258,
  "carry": {
   "cash": 16781.579178946282,
   "peak": 21067.775008135173,
@@ -153,16 +176,25 @@
    ]
   ],
   "cooldown": {},
-  "positions": {},
-  "pendings": [
-   {
+  "positions": {
+   "HYPE": {
     "sym": "HYPE",
     "direction": 1,
     "conf": 0.8261492706588442,
-    "sl": 80.20983612802831,
     "setup": "PBK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-09-03 02:00:00+00:00",
+    "entry": 82.3323698,
+    "sl": 80.20983612802831,
+    "sl0": 80.20983612802831,
+    "tp1": 0.0,
+    "notional": 2517.2368768419424,
+    "margin": 839.0789589473142,
+    "risk_amt": 64.89452501373104,
+    "leverage": 3.0,
+    "liq_price": 55.71157023133334,
+    "opened_ts": "2026-09-03 03:00:00+00:00",
+    "risk_frac": 0.0005,
+    "init_stop_frac": 0.02578006289783342,
     "meta": {
      "c_base": 0.6839077648342622,
      "c_fit": 1.0,
@@ -171,11 +203,31 @@
      "c_base_pct": 0.9,
      "hold_entry": 0.7222
     },
-    "hold_dec": 0.7221927288089405
+    "tranches": [
+     [
+      82.3323698,
+      2517.2368768419424
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 82.3323698,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7299145605578935,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
- "pages": {},
+ "pages": {
+  "HYPE|2026-09-03 03:00:00+00:00": "3d08b798-76e3-810d-b71c-c68fd2aab223"
+ },
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
   "XRP|2026-07-26 13:00:00+00:00",
@@ -197,5 +249,5 @@
   "HYPE|2026-08-29 04:00:00+00:00",
   "SOL|2026-09-02 04:00:00+00:00"
  ],
- "last_run": "2026-09-03 03:03:38.263204+00:00"
+ "last_run": "2026-09-03 04:03:41.248131+00:00"
 }
