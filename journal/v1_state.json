@@ -40,15 +40,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 29,
+    "bars": 30,
     "tp1_done": false,
-    "best_close": 105.16,
+    "best_close": 105.25,
     "realized": -0.1211047077035,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.83595493014093,
-    "peak_r": 2.3836971623984082,
+    "hold_conf": 0.8573480599810274,
+    "peak_r": 2.419630249059447,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -85,16 +85,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
-    "best_close": 84.504,
+    "best_close": 85.793,
     "realized": -0.3318855487575,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8417436636042646,
-    "peak_r": 1.023131095010013,
-    "stall_count": 3,
+    "hold_conf": 0.8694517747715063,
+    "peak_r": 1.6304241698014315,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -161,9 +161,9 @@
   "SOL|2026-08-31 06:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-03 19:00:00+00:00",
- "last_bar": "2026-09-03 18:00:00+00:00",
- "equity": 16846.68736239626,
+ "anchor": "2026-09-03 20:00:00+00:00",
+ "last_bar": "2026-09-03 19:00:00+00:00",
+ "equity": 16887.106302835713,
  "carry": {
   "cash": 16781.579178946282,
   "peak": 21067.775008135173,
@@ -210,16 +210,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
-    "best_close": 84.504,
+    "best_close": 85.793,
     "realized": -0.27847818074110114,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8417436636042646,
-    "peak_r": 1.023131095010013,
-    "stall_count": 3,
+    "hold_conf": 0.8694517747715063,
+    "peak_r": 1.6304241698014312,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -249,5 +249,5 @@
   "HYPE|2026-08-29 04:00:00+00:00",
   "SOL|2026-09-02 04:00:00+00:00"
  ],
- "last_run": "2026-09-03 19:03:45.293400+00:00"
+ "last_run": "2026-09-03 20:03:55.679410+00:00"
 }
