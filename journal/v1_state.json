@@ -40,16 +40,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 33,
+    "bars": 34,
     "tp1_done": false,
     "best_close": 105.25,
     "realized": -0.1211047077035,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8573480599810274,
+    "hold_conf": 0.8369598857817104,
     "peak_r": 2.419630249059447,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    },
    "HYPE": {
@@ -85,20 +85,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 20,
+    "bars": 21,
     "tp1_done": false,
-    "best_close": 85.828,
+    "best_close": 87.451,
     "realized": -0.3318855487575,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8694517747715063,
-    "peak_r": 1.6469138964249361,
+    "hold_conf": 0.8964441127810721,
+    "peak_r": 2.4115660767092377,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "HYPE",
+    "direction": 1,
+    "conf": 0.8178191286951124,
+    "sl": 85.37816573712063,
+    "setup": "BRK_L",
+    "regime": "TREND_UP",
+    "decided_ts": "2026-09-03 23:00:00+00:00",
+    "meta": {
+     "c_base": 0.6687620521729318,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 1.0,
+     "hold_entry": 0.8964
+    },
+    "hold_dec": 0.8964441127810721
+   }
+  ]
  },
  "shadow_pages": {
   "SOL|2026-09-02 14:00:00+00:00": "3cf8b798-76e3-81fb-941c-e0cc38ff0467",
@@ -161,9 +180,9 @@
   "SOL|2026-08-31 06:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-03 23:00:00+00:00",
- "last_bar": "2026-09-03 22:00:00+00:00",
- "equity": 16888.17639581255,
+ "anchor": "2026-09-04 00:00:00+00:00",
+ "last_bar": "2026-09-03 23:00:00+00:00",
+ "equity": 16937.798135852812,
  "carry": {
   "cash": 16781.579178946282,
   "peak": 21067.775008135173,
@@ -210,20 +229,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 20,
+    "bars": 21,
     "tp1_done": false,
-    "best_close": 85.828,
+    "best_close": 87.451,
     "realized": -0.27847818074110114,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8694517747715063,
-    "peak_r": 1.6469138964249361,
+    "hold_conf": 0.8964441127810721,
+    "peak_r": 2.4115660767092377,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "HYPE",
+    "direction": 1,
+    "conf": 0.8178191286951124,
+    "sl": 85.37816573712063,
+    "setup": "BRK_L",
+    "regime": "TREND_UP",
+    "decided_ts": "2026-09-03 23:00:00+00:00",
+    "meta": {
+     "c_base": 0.6687620521729318,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 1.0,
+     "hold_entry": 0.8964
+    },
+    "hold_dec": 0.8964441127810721
+   }
+  ]
  },
  "pages": {
   "HYPE|2026-09-03 03:00:00+00:00": "3d08b798-76e3-810d-b71c-c68fd2aab223"
@@ -249,5 +287,5 @@
   "HYPE|2026-08-29 04:00:00+00:00",
   "SOL|2026-09-02 04:00:00+00:00"
  ],
- "last_run": "2026-09-03 23:03:39.770479+00:00"
+ "last_run": "2026-09-04 00:03:45.983705+00:00"
 }
