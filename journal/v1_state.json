@@ -18,12 +18,7 @@
     98.7057220162609
    ]
   ],
-  "cooldown": {
-   "HYPE": {
-    "bars": 1,
-    "exp": true
-   }
-  },
+  "cooldown": {},
   "positions": {
    "ETH": {
     "sym": "ETH",
@@ -58,16 +53,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 2467.11,
     "realized": 0.47212324444954257,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6365569441071541,
+    "hold_conf": 0.606194860458356,
     "peak_r": 0.48362831078246815,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false
    }
   },
@@ -143,9 +138,9 @@
   "HYPE|2026-09-08 15:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-10 23:00:00+00:00",
- "last_bar": "2026-09-10 22:00:00+00:00",
- "equity": 16482.55343852189,
+ "anchor": "2026-09-11 00:00:00+00:00",
+ "last_bar": "2026-09-10 23:00:00+00:00",
+ "equity": 16464.251865721944,
  "carry": {
   "cash": 16478.73712562505,
   "peak": 21067.775008135173,
@@ -157,12 +152,7 @@
     81.73064641832808
    ]
   ],
-  "cooldown": {
-   "HYPE": {
-    "bars": 1,
-    "exp": true
-   }
-  },
+  "cooldown": {},
   "positions": {
    "ETH": {
     "sym": "ETH",
@@ -197,16 +187,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 2467.11,
     "realized": 0.3889997418090614,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6365569441071541,
+    "hold_conf": 0.606194860458356,
     "peak_r": 0.48362831078246815,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false
    }
   },
@@ -241,5 +231,5 @@
   "SOL|2026-09-08 10:00:00+00:00",
   "HYPE|2026-09-08 15:00:00+00:00"
  ],
- "last_run": "2026-09-10 23:03:42.595827+00:00"
+ "last_run": "2026-09-11 00:03:47.650928+00:00"
 }
