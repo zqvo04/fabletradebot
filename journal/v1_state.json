@@ -4,31 +4,27 @@
   "peak": 10000.0,
   "dd_frozen": false,
   "circuit_until": null,
-  "loss_log": [
-   [
-    "2026-09-09 15:00:00+00:00",
-    110.46618231902963
-   ],
-   [
-    "2026-09-09 15:00:00+00:00",
-    86.36282310663032
-   ],
-   [
-    "2026-09-10 12:00:00+00:00",
-    98.7057220162609
-   ]
-  ],
+  "loss_log": [],
   "cooldown": {},
-  "positions": {},
-  "pendings": [
-   {
+  "positions": {
+   "SOL": {
     "sym": "SOL",
     "direction": 1,
     "conf": 0.6516411894740772,
-    "sl": 100.36512900050869,
     "setup": "RCL_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-09-13 01:00:00+00:00",
+    "entry": 102.270892,
+    "sl": 100.36512900050869,
+    "sl0": 100.36512900050869,
+    "tp1": 0.0,
+    "notional": 5000.0,
+    "margin": 1000.0,
+    "risk_amt": 93.17230749739211,
+    "leverage": 5.0,
+    "liq_price": 82.83942252000001,
+    "opened_ts": "2026-09-13 02:00:00+00:00",
+    "risk_frac": 0.001,
+    "init_stop_frac": 0.018634461499478422,
     "meta": {
      "c_base": 0.48783246571044353,
      "c_fit": 1.0,
@@ -37,12 +33,34 @@
      "c_base_pct": 0.6916666666666668,
      "hold_entry": 0.5898
     },
-    "hold_dec": 0.5897929381043927
+    "tranches": [
+     [
+      102.270892,
+      5000.0
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 102.270892,
+    "realized": 0.0,
+    "bias_flip_streak": 1,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.575220079323784,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
- "shadow_pages": {},
- "shadow_seats": {},
+ "shadow_pages": {
+  "SOL|2026-09-13 02:00:00+00:00": "3da8b798-76e3-81df-acb0-ee10913f93af"
+ },
+ "shadow_seats": {
+  "SOL|2026-09-13 02:00:00+00:00": "Live-Taken"
+ },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
   "SOL|2026-08-01 18:00:00+00:00",
@@ -108,31 +126,35 @@
   "ETH|2026-09-10 15:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-13 02:00:00+00:00",
- "last_bar": "2026-09-13 01:00:00+00:00",
- "equity": 16647.73288829456,
+ "anchor": "2026-09-13 03:00:00+00:00",
+ "last_bar": "2026-09-13 02:00:00+00:00",
+ "equity": 16630.60460904082,
  "carry": {
   "cash": 16647.73288829456,
   "peak": 21067.775008135173,
   "dd_frozen": true,
   "circuit_until": null,
-  "loss_log": [
-   [
-    "2026-09-10 12:00:00+00:00",
-    81.73064641832808
-   ]
-  ],
+  "loss_log": [],
   "cooldown": {},
-  "positions": {},
-  "pendings": [
-   {
+  "positions": {
+   "SOL": {
     "sym": "SOL",
     "direction": 1,
     "conf": 0.6516411894740772,
-    "sl": 100.36512900050869,
     "setup": "RCL_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-09-13 01:00:00+00:00",
+    "entry": 102.270892,
+    "sl": 100.36512900050869,
+    "sl0": 100.36512900050869,
+    "tp1": 0.0,
+    "notional": 4161.93322207364,
+    "margin": 832.3866444147279,
+    "risk_amt": 77.55538439013141,
+    "leverage": 5.0,
+    "liq_price": 82.83942252000001,
+    "opened_ts": "2026-09-13 02:00:00+00:00",
+    "risk_frac": 0.0005,
+    "init_stop_frac": 0.018634461499478422,
     "meta": {
      "c_base": 0.48783246571044353,
      "c_fit": 1.0,
@@ -141,11 +163,31 @@
      "c_base_pct": 0.6916666666666668,
      "hold_entry": 0.5898
     },
-    "hold_dec": 0.5897929381043927
+    "tranches": [
+     [
+      102.270892,
+      4161.93322207364
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 102.270892,
+    "realized": 0.0,
+    "bias_flip_streak": 1,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.575220079323784,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
- "pages": {},
+ "pages": {
+  "SOL|2026-09-13 02:00:00+00:00": "3da8b798-76e3-8145-bce5-cc41c0c4c4c5"
+ },
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
   "XRP|2026-07-26 13:00:00+00:00",
@@ -173,5 +215,5 @@
   "HYPE|2026-09-08 15:00:00+00:00",
   "ETH|2026-09-10 15:00:00+00:00"
  ],
- "last_run": "2026-09-13 02:03:39.838814+00:00"
+ "last_run": "2026-09-13 03:03:38.589704+00:00"
 }
