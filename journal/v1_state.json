@@ -20,15 +20,15 @@
   ],
   "cooldown": {
    "XRP": {
-    "bars": 2,
+    "bars": 1,
     "exp": true
    },
    "ADA": {
-    "bars": 3,
+    "bars": 2,
     "exp": true
    },
    "SOL": {
-    "bars": 5,
+    "bars": 4,
     "exp": true
    }
   },
@@ -66,15 +66,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 27,
+    "bars": 28,
     "tp1_done": false,
-    "best_close": 2532.25,
+    "best_close": 2537.35,
     "realized": -1.067647278707,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7928933084632136,
-    "peak_r": 1.0260856435030015,
+    "hold_conf": 0.8021643324897093,
+    "peak_r": 1.1544980518350314,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -157,9 +157,9 @@
   "SOL|2026-09-14 10:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-14 18:00:00+00:00",
- "last_bar": "2026-09-14 17:00:00+00:00",
- "equity": 16749.195178592887,
+ "anchor": "2026-09-14 19:00:00+00:00",
+ "last_bar": "2026-09-14 18:00:00+00:00",
+ "equity": 16766.19949792361,
  "carry": {
   "cash": 16614.20823714629,
   "peak": 21067.775008135173,
@@ -201,15 +201,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 27,
+    "bars": 28,
     "tp1_done": false,
-    "best_close": 2532.25,
+    "best_close": 2537.35,
     "realized": -0.886905710613033,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7928933084632136,
-    "peak_r": 1.0260856435030017,
+    "hold_conf": 0.8021643324897093,
+    "peak_r": 1.1544980518350316,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -247,5 +247,5 @@
   "ETH|2026-09-10 15:00:00+00:00",
   "SOL|2026-09-13 02:00:00+00:00"
  ],
- "last_run": "2026-09-14 18:03:42.033106+00:00"
+ "last_run": "2026-09-14 19:03:37.532176+00:00"
 }
