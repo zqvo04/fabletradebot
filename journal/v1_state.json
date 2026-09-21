@@ -16,56 +16,11 @@
   ],
   "cooldown": {
    "HYPE": {
-    "bars": 8,
+    "bars": 7,
     "exp": false
    }
   },
   "positions": {
-   "XRP": {
-    "sym": "XRP",
-    "direction": 1,
-    "conf": 0.9133749856611326,
-    "setup": "PBK_L",
-    "regime": "TREND_UP",
-    "entry": 1.3906560399999999,
-    "sl": 1.3651120989699053,
-    "sl0": 1.3651120989699053,
-    "tp1": 0.0,
-    "notional": 5000.0,
-    "margin": 1000.0,
-    "risk_amt": 91.84133349787419,
-    "leverage": 5.0,
-    "liq_price": 1.1264313924,
-    "opened_ts": "2026-09-20 16:00:00+00:00",
-    "risk_frac": 0.001,
-    "init_stop_frac": 0.018368266699574837,
-    "meta": {
-     "c_base": 0.842499973929332,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9583333333333335,
-     "hold_entry": 0.7968
-    },
-    "tranches": [
-     [
-      1.3906560399999999,
-      5000.0
-     ]
-    ],
-    "adds": 0,
-    "bars": 27,
-    "tp1_done": false,
-    "best_close": 1.5091,
-    "realized": -1.5,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.9324752442307449,
-    "peak_r": 4.636871023952623,
-    "stall_count": 0,
-    "trail_tightened": false
-   },
    "SUI": {
     "sym": "SUI",
     "direction": 1,
@@ -99,16 +54,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 18,
+    "bars": 19,
     "tp1_done": false,
     "best_close": 1.0373,
     "realized": -3.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9460562810608371,
+    "hold_conf": 0.9627411511394544,
     "peak_r": 2.2958647964538272,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    },
    "BTC": {
@@ -144,15 +99,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
-    "best_close": 86035.2,
+    "best_close": 86451.6,
     "realized": -1.3637117074968157,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9196553580835966,
-    "peak_r": 1.1564298048556576,
+    "hold_conf": 0.9327830541450598,
+    "peak_r": 1.3657523422190725,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -189,16 +144,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
-    "best_close": 117.98,
+    "best_close": 118.31,
     "realized": -1.11908108037,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9105351957797823,
-    "peak_r": 0.9773814877711907,
-    "stall_count": 5,
+    "hold_conf": 0.9272159823782484,
+    "peak_r": 1.097555820259171,
+    "stall_count": 0,
     "trail_tightened": false
    },
    "ADA": {
@@ -234,16 +189,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
     "best_close": 0.2457,
     "realized": -5.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9311702891786785,
+    "hold_conf": 0.9408321169300145,
     "peak_r": 1.1505882316414286,
-    "stall_count": 6,
+    "stall_count": 7,
     "trail_tightened": false
    },
    "DOGE": {
@@ -279,16 +234,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
     "best_close": 0.09966,
     "realized": -5.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9321326508247845,
+    "hold_conf": 0.9498913462257227,
     "peak_r": 3.2195050409788055,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    },
    "ONDO": {
@@ -324,28 +279,36 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 0.4549,
     "realized": -1.5,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9066693204645044,
+    "hold_conf": 0.9075844037024351,
     "peak_r": 0.2607796583186635,
-    "stall_count": 6,
+    "stall_count": 7,
     "trail_tightened": false
-   }
-  },
-  "pendings": [
-   {
+   },
+   "XRP": {
     "sym": "XRP",
     "direction": 1,
     "conf": 0.6293046910724274,
-    "sl": 1.4693958129452254,
     "setup": "BRK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-09-21 18:00:00+00:00",
+    "entry": 1.50980368,
+    "sl": 1.4693958129452254,
+    "sl0": 1.4693958129452254,
+    "tp1": 0.0,
+    "notional": 50000.0,
+    "margin": 10000.0,
+    "risk_amt": 1338.1828243647785,
+    "leverage": 5.0,
+    "liq_price": 1.2229409808000002,
+    "opened_ts": "2026-09-21 19:00:00+00:00",
+    "risk_frac": 0.01,
+    "init_stop_frac": 0.02676365648729557,
     "meta": {
      "c_base": 0.3260085292225952,
      "c_fit": 1.0,
@@ -354,27 +317,45 @@
      "c_base_pct": 0.7083333333333335,
      "hold_entry": 0.9325
     },
-    "hold_dec": 0.9324752442307449
+    "tranches": [
+     [
+      1.50980368,
+      50000.0
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 1.50980368,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.9479410960098278,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
  "shadow_pages": {
-  "XRP|2026-09-20 16:00:00+00:00": "3e18b798-76e3-8136-b029-c2386ad7893c",
   "SUI|2026-09-21 01:00:00+00:00": "3e28b798-76e3-81b9-a4eb-d883373fde3c",
   "BTC|2026-09-21 09:00:00+00:00": "3e28b798-76e3-81dd-9aa7-df6291166631",
   "SOL|2026-09-21 09:00:00+00:00": "3e28b798-76e3-8179-99b7-f9d6a688418a",
   "ADA|2026-09-21 09:00:00+00:00": "3e28b798-76e3-8181-a862-db0a21a23876",
   "DOGE|2026-09-21 09:00:00+00:00": "3e28b798-76e3-8139-ba70-febb27e3e557",
-  "ONDO|2026-09-21 11:00:00+00:00": "3e28b798-76e3-8156-a825-fe5f9a81baa0"
+  "ONDO|2026-09-21 11:00:00+00:00": "3e28b798-76e3-8156-a825-fe5f9a81baa0",
+  "XRP|2026-09-21 19:00:00+00:00": "3e28b798-76e3-810b-a44d-cf9e6042f37a"
  },
  "shadow_seats": {
-  "XRP|2026-09-20 16:00:00+00:00": "Live-Taken",
   "SUI|2026-09-21 01:00:00+00:00": "Live-Blocked",
   "BTC|2026-09-21 09:00:00+00:00": "Live-Blocked",
   "SOL|2026-09-21 09:00:00+00:00": "Live-Blocked",
   "ADA|2026-09-21 09:00:00+00:00": "Live-Blocked",
   "DOGE|2026-09-21 09:00:00+00:00": "Live-Blocked",
-  "ONDO|2026-09-21 11:00:00+00:00": "Live-Blocked"
+  "ONDO|2026-09-21 11:00:00+00:00": "Live-Blocked",
+  "XRP|2026-09-21 19:00:00+00:00": "Live-Taken"
  },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
@@ -460,14 +441,15 @@
   "ETH|2026-09-21 01:00:00+00:00",
   "SOL|2026-09-20 16:00:00+00:00",
   "DOGE|2026-09-20 16:00:00+00:00",
-  "HYPE|2026-09-21 09:00:00+00:00"
+  "HYPE|2026-09-21 09:00:00+00:00",
+  "XRP|2026-09-20 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-21 19:00:00+00:00",
- "last_bar": "2026-09-21 18:00:00+00:00",
- "equity": 17047.32839229701,
+ "anchor": "2026-09-21 20:00:00+00:00",
+ "last_bar": "2026-09-21 19:00:00+00:00",
+ "equity": 16965.35030992935,
  "carry": {
-  "cash": 16693.13641353403,
+  "cash": 17041.643591559226,
   "peak": 21067.775008135173,
   "dd_frozen": true,
   "circuit_until": null,
@@ -477,58 +459,21 @@
    "XRP": {
     "sym": "XRP",
     "direction": 1,
-    "conf": 0.9133749856611326,
-    "setup": "PBK_L",
-    "regime": "TREND_UP",
-    "entry": 1.3906560399999999,
-    "sl": 1.3651120989699053,
-    "sl0": 1.3651120989699053,
-    "tp1": 0.0,
-    "notional": 4173.2841033835075,
-    "margin": 834.6568206767015,
-    "risk_amt": 76.6559954240443,
-    "leverage": 5.0,
-    "liq_price": 1.1264313924,
-    "opened_ts": "2026-09-20 16:00:00+00:00",
-    "risk_frac": 0.0005,
-    "init_stop_frac": 0.018368266699574837,
-    "meta": {
-     "c_base": 0.842499973929332,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9583333333333335,
-     "hold_entry": 0.7968
-    },
-    "tranches": [
-     [
-      1.3906560399999999,
-      4173.2841033835075
-     ]
-    ],
-    "adds": 0,
-    "bars": 27,
-    "tp1_done": false,
-    "best_close": 1.5091,
-    "realized": -1.2519852310150523,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.9324752442307449,
-    "peak_r": 4.636871023952625,
-    "stall_count": 0,
-    "trail_tightened": false
-   }
-  },
-  "pendings": [
-   {
-    "sym": "XRP",
-    "direction": 1,
     "conf": 0.6293046910724274,
-    "sl": 1.4693958129452254,
     "setup": "BRK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-09-21 18:00:00+00:00",
+    "entry": 1.50980368,
+    "sl": 1.4693958129452254,
+    "sl0": 1.4693958129452254,
+    "tp1": 0.0,
+    "notional": 42604.10897889807,
+    "margin": 8520.821795779613,
+    "risk_amt": 1140.2417376585327,
+    "leverage": 5.0,
+    "liq_price": 1.2229409808000002,
+    "opened_ts": "2026-09-21 19:00:00+00:00",
+    "risk_frac": 0.005,
+    "init_stop_frac": 0.02676365648729557,
     "meta": {
      "c_base": 0.3260085292225952,
      "c_fit": 1.0,
@@ -537,30 +482,49 @@
      "c_base_pct": 0.7083333333333335,
      "hold_entry": 0.9325
     },
-    "hold_dec": 0.9324752442307449
-   },
+    "tranches": [
+     [
+      1.50980368,
+      42604.10897889807
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 1.50980368,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.9479410960098278,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
+   }
+  },
+  "pendings": [
    {
-    "sym": "DOGE",
+    "sym": "BTC",
     "direction": 1,
-    "conf": 0.7305769017950579,
-    "sl": 0.09595567006342072,
+    "conf": 0.6751868415394724,
+    "sl": 85123.36361999795,
     "setup": "BRK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-09-21 18:00:00+00:00",
+    "decided_ts": "2026-09-21 19:00:00+00:00",
     "meta": {
-     "c_base": 0.5101398214455597,
+     "c_base": 0.4094306209808587,
      "c_fit": 1.0,
      "c_align": 1.0,
      "c_fund": 0.0,
-     "c_base_pct": 0.975,
-     "hold_entry": 0.9321
+     "c_base_pct": 0.825,
+     "hold_entry": 0.9328
     },
-    "hold_dec": 0.9321326508247845
+    "hold_dec": 0.9327830541450598
    }
   ]
  },
  "pages": {
-  "XRP|2026-09-20 16:00:00+00:00": "3e18b798-76e3-81ec-b6af-ca994049dbd2"
+  "XRP|2026-09-21 19:00:00+00:00": "3e28b798-76e3-81d8-9d6a-d3cff2ac5b27"
  },
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
@@ -593,7 +557,8 @@
   "XRP|2026-09-15 18:00:00+00:00",
   "HYPE|2026-09-16 12:00:00+00:00",
   "BTC|2026-09-18 04:00:00+00:00",
-  "HYPE|2026-09-18 08:00:00+00:00"
+  "HYPE|2026-09-18 08:00:00+00:00",
+  "XRP|2026-09-20 16:00:00+00:00"
  ],
- "last_run": "2026-09-21 19:03:43.512613+00:00"
+ "last_run": "2026-09-21 20:03:45.339713+00:00"
 }
