@@ -49,7 +49,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 45,
+    "bars": 46,
     "tp1_done": false,
     "best_close": 1.0508,
     "realized": -7.5,
@@ -58,7 +58,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9420705903488402,
     "peak_r": 2.589533536800033,
-    "stall_count": 21,
+    "stall_count": 22,
     "trail_tightened": false
    },
    "BTC": {
@@ -68,7 +68,7 @@
     "setup": "BRK_L",
     "regime": "TREND_UP",
     "entry": 83734.7436,
-    "sl": 85402.08559425185,
+    "sl": 85444.52233751958,
     "sl0": 81745.4690324121,
     "tp1": 0.0,
     "notional": 67348.9682836757,
@@ -94,7 +94,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 37,
+    "bars": 38,
     "tp1_done": false,
     "best_close": 86965.2,
     "realized": -18.497957272526012,
@@ -103,7 +103,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9637178260834824,
     "peak_r": 1.6239369127998742,
-    "stall_count": 25,
+    "stall_count": 26,
     "trail_tightened": true
    },
    "SOL": {
@@ -113,7 +113,7 @@
     "setup": "BRK_L",
     "regime": "TREND_UP",
     "entry": 115.2961,
-    "sl": 112.55008932394315,
+    "sl": 116.04849920267252,
     "sl0": 112.55008932394315,
     "tp1": 0.0,
     "notional": 50000.0,
@@ -139,7 +139,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 37,
+    "bars": 38,
     "tp1_done": false,
     "best_close": 119.43,
     "realized": -11.1314365906,
@@ -148,8 +148,8 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9294663775122833,
     "peak_r": 1.5054202214305015,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    },
    "ADA": {
     "sym": "ADA",
@@ -184,7 +184,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 37,
+    "bars": 38,
     "tp1_done": false,
     "best_close": 0.2534,
     "realized": -20.0,
@@ -193,7 +193,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9320357634332861,
     "peak_r": 2.1922534541227225,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false
    },
    "DOGE": {
@@ -229,7 +229,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 37,
+    "bars": 38,
     "tp1_done": false,
     "best_close": 0.10193,
     "realized": -20.0,
@@ -238,7 +238,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9483379422733549,
     "peak_r": 4.160898245456656,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    },
    "XRP": {
@@ -274,7 +274,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 27,
+    "bars": 28,
     "tp1_done": false,
     "best_close": 1.5885,
     "realized": -15.0,
@@ -283,7 +283,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.945044107760738,
     "peak_r": 1.9475494683578185,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false
    },
    "HYPE": {
@@ -319,7 +319,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 97.162,
     "realized": 0.0,
@@ -328,7 +328,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.8892916742630782,
     "peak_r": 0.1233965305379034,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -442,9 +442,9 @@
   "ONDO|2026-09-21 11:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-22 22:00:00+00:00",
- "last_bar": "2026-09-22 21:00:00+00:00",
- "equity": 18671.064184370993,
+ "anchor": "2026-09-22 23:00:00+00:00",
+ "last_bar": "2026-09-22 22:00:00+00:00",
+ "equity": 18778.293764126563,
  "carry": {
   "cash": 17041.643591559226,
   "peak": 21067.775008135173,
@@ -486,7 +486,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 27,
+    "bars": 28,
     "tp1_done": false,
     "best_close": 1.5885,
     "realized": -12.781232693669422,
@@ -495,30 +495,11 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.945044107760738,
     "peak_r": 1.9475494683578187,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "HYPE",
-    "direction": 1,
-    "conf": 0.5957301384202531,
-    "sl": 94.94597565715141,
-    "setup": "BRK_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-09-22 21:00:00+00:00",
-    "meta": {
-     "c_base": 0.26496388803682375,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.35,
-     "hold_entry": 0.8893
-    },
-    "hold_dec": 0.8892916742630782
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "XRP|2026-09-21 19:00:00+00:00": "3e28b798-76e3-81d8-9d6a-d3cff2ac5b27"
@@ -557,5 +538,5 @@
   "HYPE|2026-09-18 08:00:00+00:00",
   "XRP|2026-09-20 16:00:00+00:00"
  ],
- "last_run": "2026-09-22 22:03:42.034227+00:00"
+ "last_run": "2026-09-22 23:03:41.314917+00:00"
 }
