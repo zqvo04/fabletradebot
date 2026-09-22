@@ -16,7 +16,7 @@
   ],
   "cooldown": {
    "ONDO": {
-    "bars": 3,
+    "bars": 2,
     "exp": false
    }
   },
@@ -54,16 +54,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 42,
+    "bars": 43,
     "tp1_done": false,
     "best_close": 1.0508,
     "realized": -7.5,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9456771386690834,
+    "hold_conf": 0.9420705903488402,
     "peak_r": 2.589533536800033,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    },
    "BTC": {
@@ -99,16 +99,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 34,
+    "bars": 35,
     "tp1_done": false,
     "best_close": 86965.2,
     "realized": -18.497957272526012,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.968861447249938,
+    "hold_conf": 0.9637178260834824,
     "peak_r": 1.6239369127998742,
-    "stall_count": 22,
+    "stall_count": 23,
     "trail_tightened": false
    },
    "SOL": {
@@ -144,16 +144,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 34,
+    "bars": 35,
     "tp1_done": false,
     "best_close": 119.43,
     "realized": -11.1314365906,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.937046191906638,
+    "hold_conf": 0.9294663775122833,
     "peak_r": 1.5054202214305015,
-    "stall_count": 20,
+    "stall_count": 21,
     "trail_tightened": false
    },
    "ADA": {
@@ -189,16 +189,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 34,
+    "bars": 35,
     "tp1_done": false,
     "best_close": 0.2534,
     "realized": -20.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9352260077860273,
+    "hold_conf": 0.9320357634332861,
     "peak_r": 2.1922534541227225,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    },
    "DOGE": {
@@ -234,16 +234,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 34,
+    "bars": 35,
     "tp1_done": false,
     "best_close": 0.10193,
     "realized": -20.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.951247148061634,
+    "hold_conf": 0.9483379422733549,
     "peak_r": 4.160898245456656,
-    "stall_count": 15,
+    "stall_count": 16,
     "trail_tightened": false
    },
    "XRP": {
@@ -279,16 +279,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 24,
+    "bars": 25,
     "tp1_done": false,
     "best_close": 1.5885,
     "realized": -15.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9517718854336503,
+    "hold_conf": 0.945044107760738,
     "peak_r": 1.9475494683578185,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    },
    "HYPE": {
@@ -324,16 +324,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 96.883095,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.880151662003709,
+    "hold_conf": 0.8892916742630782,
     "peak_r": 0.0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false
    }
   },
@@ -447,9 +447,9 @@
   "ONDO|2026-09-21 11:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-22 19:00:00+00:00",
- "last_bar": "2026-09-22 18:00:00+00:00",
- "equity": 19043.545882469283,
+ "anchor": "2026-09-22 20:00:00+00:00",
+ "last_bar": "2026-09-22 19:00:00+00:00",
+ "equity": 19218.499407333635,
  "carry": {
   "cash": 17041.643591559226,
   "peak": 21067.775008135173,
@@ -491,16 +491,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 24,
+    "bars": 25,
     "tp1_done": false,
     "best_close": 1.5885,
     "realized": -12.781232693669422,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9517718854336503,
+    "hold_conf": 0.945044107760738,
     "peak_r": 1.9475494683578187,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    }
   },
@@ -543,5 +543,5 @@
   "HYPE|2026-09-18 08:00:00+00:00",
   "XRP|2026-09-20 16:00:00+00:00"
  ],
- "last_run": "2026-09-22 19:03:46.543680+00:00"
+ "last_run": "2026-09-22 20:03:43.482313+00:00"
 }
