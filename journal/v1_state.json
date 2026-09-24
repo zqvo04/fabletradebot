@@ -12,56 +12,15 @@
   ],
   "cooldown": {
    "DOGE": {
-    "bars": 7,
+    "bars": 6,
+    "exp": false
+   },
+   "ADA": {
+    "bars": 11,
     "exp": false
    }
   },
   "positions": {
-   "ADA": {
-    "sym": "ADA",
-    "direction": 1,
-    "conf": 0.8083973264060715,
-    "setup": "BRK_L",
-    "regime": "TREND_UP",
-    "entry": 0.23719484,
-    "sl": 0.248090056333858,
-    "sl0": 0.22980282975158423,
-    "tp1": 0.0,
-    "notional": 50000.0,
-    "margin": 10000.0,
-    "risk_amt": 1558.214809482315,
-    "leverage": 5.0,
-    "liq_price": 0.1921278204,
-    "opened_ts": "2026-09-21 09:00:00+00:00",
-    "risk_frac": 0.01,
-    "init_stop_frac": 0.031164296189646303,
-    "meta": {
-     "c_base": 0.6516315025564938,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9958333333333332,
-     "hold_entry": 0.9098
-    },
-    "tranches": [
-     [
-      0.23719484,
-      50000.0
-     ]
-    ],
-    "adds": 0,
-    "bars": 67,
-    "tp1_done": false,
-    "best_close": 0.2598,
-    "realized": -40.0,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.7103564953845157,
-    "peak_r": 3.0580531195617136,
-    "stall_count": 24,
-    "trail_tightened": true
-   },
    "XRP": {
     "sym": "XRP",
     "direction": 1,
@@ -69,7 +28,7 @@
     "setup": "BRK_L",
     "regime": "TREND_UP",
     "entry": 1.50980368,
-    "sl": 1.4693958129452254,
+    "sl": 1.5684121334816121,
     "sl0": 1.4693958129452254,
     "tp1": 0.0,
     "notional": 50000.0,
@@ -95,17 +54,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 57,
+    "bars": 58,
     "tp1_done": false,
     "best_close": 1.6376,
     "realized": -27.882936017379997,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6223008371969961,
+    "hold_conf": 0.6319885869856061,
     "peak_r": 3.162659385776687,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    },
    "ETH": {
     "sym": "ETH",
@@ -140,16 +99,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 5,
+    "bars": 6,
     "tp1_done": false,
     "best_close": 2689.73784,
     "realized": -0.37062398039202904,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6943290291728371,
+    "hold_conf": 0.7020149674873251,
     "peak_r": 0.0,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    },
    "SUI": {
@@ -185,16 +144,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 0.9677803199999999,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7305159986230717,
+    "hold_conf": 0.737977696441134,
     "peak_r": 0.0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false
    },
    "ONDO": {
@@ -230,15 +189,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
-    "best_close": 0.4186,
+    "best_close": 0.4264,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6989929107449746,
-    "peak_r": 0.08162443807678113,
+    "hold_conf": 0.7295222971264533,
+    "peak_r": 0.5910668957070585,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -246,14 +205,12 @@
   "pendings": []
  },
  "shadow_pages": {
-  "ADA|2026-09-21 09:00:00+00:00": "3e28b798-76e3-8181-a862-db0a21a23876",
   "XRP|2026-09-21 19:00:00+00:00": "3e28b798-76e3-810b-a44d-cf9e6042f37a",
   "ETH|2026-09-23 23:00:00+00:00": "3e58b798-76e3-81ab-a358-f808bd0cd97e",
   "SUI|2026-09-24 03:00:00+00:00": "3e58b798-76e3-81da-8572-c36f75d24ff4",
   "ONDO|2026-09-24 03:00:00+00:00": "3e58b798-76e3-81ab-b209-c854afdb2396"
  },
  "shadow_seats": {
-  "ADA|2026-09-21 09:00:00+00:00": "Live-Blocked",
   "XRP|2026-09-21 19:00:00+00:00": "Live-Taken",
   "ETH|2026-09-23 23:00:00+00:00": "Live-Blocked",
   "SUI|2026-09-24 03:00:00+00:00": "Live-Blocked",
@@ -351,12 +308,13 @@
   "HYPE|2026-09-22 18:00:00+00:00",
   "SUI|2026-09-21 01:00:00+00:00",
   "SOL|2026-09-21 09:00:00+00:00",
-  "DOGE|2026-09-21 09:00:00+00:00"
+  "DOGE|2026-09-21 09:00:00+00:00",
+  "ADA|2026-09-21 09:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-24 04:00:00+00:00",
- "last_bar": "2026-09-24 03:00:00+00:00",
- "equity": 16560.64456579773,
+ "anchor": "2026-09-24 05:00:00+00:00",
+ "last_bar": "2026-09-24 04:00:00+00:00",
+ "equity": 16749.707245893078,
  "carry": {
   "cash": 17041.643591559226,
   "peak": 21067.775008135173,
@@ -372,7 +330,7 @@
     "setup": "BRK_L",
     "regime": "TREND_UP",
     "entry": 1.50980368,
-    "sl": 1.4693958129452254,
+    "sl": 1.5684121334816121,
     "sl0": 1.4693958129452254,
     "tp1": 0.0,
     "notional": 42604.10897889807,
@@ -398,20 +356,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 57,
+    "bars": 58,
     "tp1_done": false,
     "best_close": 1.6376,
     "realized": -23.758552894721994,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6223008371969961,
+    "hold_conf": 0.6319885869856061,
     "peak_r": 3.162659385776687,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "ONDO",
+    "direction": 1,
+    "conf": 0.880325538592639,
+    "sl": 0.4021576928247655,
+    "setup": "PBK_L",
+    "regime": "TREND_UP",
+    "decided_ts": "2026-09-24 04:00:00+00:00",
+    "meta": {
+     "c_base": 0.7824100701684343,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 0.9541666666666667,
+     "hold_entry": 0.7295
+    },
+    "hold_dec": 0.7295222971264533
+   }
+  ]
  },
  "pages": {
   "XRP|2026-09-21 19:00:00+00:00": "3e28b798-76e3-81d8-9d6a-d3cff2ac5b27"
@@ -450,5 +427,5 @@
   "HYPE|2026-09-18 08:00:00+00:00",
   "XRP|2026-09-20 16:00:00+00:00"
  ],
- "last_run": "2026-09-24 04:03:42.250869+00:00"
+ "last_run": "2026-09-24 05:03:42.412611+00:00"
 }
