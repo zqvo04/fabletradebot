@@ -19,24 +19,20 @@
    ]
   ],
   "cooldown": {
-   "DOGE": {
-    "bars": 1,
-    "exp": false
-   },
    "ADA": {
-    "bars": 6,
+    "bars": 5,
     "exp": false
    },
    "XRP": {
-    "bars": 7,
+    "bars": 6,
     "exp": false
    },
    "BTC": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    },
    "HYPE": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    }
   },
@@ -74,7 +70,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 11,
+    "bars": 12,
     "tp1_done": false,
     "best_close": 2691.91,
     "realized": -0.6186132956097021,
@@ -83,7 +79,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.6708177804668287,
     "peak_r": 0.031156823494828078,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    },
    "SUI": {
@@ -119,16 +115,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 7,
+    "bars": 8,
     "tp1_done": false,
     "best_close": 0.9689,
     "realized": -0.6,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6938500998614563,
+    "hold_conf": 0.7025841431332385,
     "peak_r": 0.029310877859681676,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    },
    "ONDO": {
@@ -164,16 +160,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 7,
+    "bars": 8,
     "tp1_done": false,
     "best_close": 0.4385,
     "realized": -0.1773564229002,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7403503009785652,
+    "hold_conf": 0.7456035982977418,
     "peak_r": 1.3813558363899272,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    }
   },
@@ -288,8 +284,8 @@
   "HYPE|2026-09-24 08:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-24 10:00:00+00:00",
- "last_bar": "2026-09-24 09:00:00+00:00",
+ "anchor": "2026-09-24 11:00:00+00:00",
+ "last_bar": "2026-09-24 10:00:00+00:00",
  "equity": 18394.30333611135,
  "carry": {
   "cash": 18394.30333611135,
@@ -304,11 +300,11 @@
   ],
   "cooldown": {
    "XRP": {
-    "bars": 7,
+    "bars": 6,
     "exp": false
    },
    "HYPE": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    }
   },
@@ -352,5 +348,5 @@
   "XRP|2026-09-21 19:00:00+00:00",
   "HYPE|2026-09-24 08:00:00+00:00"
  ],
- "last_run": "2026-09-24 10:03:43.384731+00:00"
+ "last_run": "2026-09-24 11:03:40.608649+00:00"
 }
