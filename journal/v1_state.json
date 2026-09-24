@@ -15,12 +15,8 @@
    ]
   ],
   "cooldown": {
-   "BTC": {
-    "bars": 1,
-    "exp": true
-   },
    "HYPE": {
-    "bars": 2,
+    "bars": 1,
     "exp": true
    }
   },
@@ -58,16 +54,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 20,
+    "bars": 21,
     "tp1_done": false,
-    "best_close": 2691.91,
+    "best_close": 2694.84,
     "realized": -1.132284889134363,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7292669388918711,
-    "peak_r": 0.031156823494828078,
-    "stall_count": 11,
+    "hold_conf": 0.7479716384956873,
+    "peak_r": 0.07318388082018722,
+    "stall_count": 0,
     "trail_tightened": false
    },
    "SUI": {
@@ -103,16 +99,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
-    "best_close": 1.0152,
+    "best_close": 1.0284,
     "realized": -1.1578243714824001,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8211036643850484,
-    "peak_r": 1.2413479285377178,
-    "stall_count": 2,
+    "hold_conf": 0.8545166027244661,
+    "peak_r": 1.5868962885582338,
+    "stall_count": 0,
     "trail_tightened": false
    },
    "ONDO": {
@@ -148,16 +144,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 5,
+    "bars": 6,
     "tp1_done": false,
     "best_close": 0.523,
     "realized": -1.5,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8602618463642409,
+    "hold_conf": 0.8870234227802947,
     "peak_r": 1.4938432365647922,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false
    },
    "SOL": {
@@ -193,16 +189,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 5,
+    "bars": 6,
     "tp1_done": false,
     "best_close": 117.33,
     "realized": -0.35192076738,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8083055216105046,
+    "hold_conf": 0.8189134827746609,
     "peak_r": 0.7187483644820487,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -320,9 +316,9 @@
   "ONDO|2026-09-24 03:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-24 19:00:00+00:00",
- "last_bar": "2026-09-24 18:00:00+00:00",
- "equity": 21707.37031212082,
+ "anchor": "2026-09-24 20:00:00+00:00",
+ "last_bar": "2026-09-24 19:00:00+00:00",
+ "equity": 22191.99319614219,
  "carry": {
   "cash": 19120.57918777357,
   "peak": 23574.9414261544,
@@ -336,7 +332,7 @@
   ],
   "cooldown": {
    "HYPE": {
-    "bars": 2,
+    "bars": 1,
     "exp": true
    }
   },
@@ -374,57 +370,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 5,
+    "bars": 6,
     "tp1_done": false,
     "best_close": 0.523,
     "realized": -2.8680868781660354,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8602618463642409,
+    "hold_conf": 0.8870234227802947,
     "peak_r": 1.4938432365647925,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "ETH",
-    "direction": 1,
-    "conf": 0.8278483154995853,
-    "sl": 2621.6403941472313,
-    "setup": "PBK_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-09-24 18:00:00+00:00",
-    "meta": {
-     "c_base": 0.6869969372719731,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8916666666666667,
-     "hold_entry": 0.7293
-    },
-    "hold_dec": 0.7292669388918711
-   },
-   {
-    "sym": "SOL",
-    "direction": 1,
-    "conf": 0.737090386810914,
-    "sl": 111.22075668871182,
-    "setup": "RCL_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-09-24 18:00:00+00:00",
-    "meta": {
-     "c_base": 0.5219825214743891,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.7625,
-     "hold_entry": 0.8083
-    },
-    "hold_dec": 0.8083055216105046
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "ONDO|2026-09-24 14:00:00+00:00": "3e58b798-76e3-81c4-afad-eab775db73d8"
@@ -466,5 +425,5 @@
   "HYPE|2026-09-24 08:00:00+00:00",
   "ONDO|2026-09-24 12:00:00+00:00"
  ],
- "last_run": "2026-09-24 19:03:41.711891+00:00"
+ "last_run": "2026-09-24 20:03:40.149484+00:00"
 }
