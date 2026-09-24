@@ -16,11 +16,11 @@
   ],
   "cooldown": {
    "BTC": {
-    "bars": 3,
+    "bars": 2,
     "exp": true
    },
    "HYPE": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    }
   },
@@ -58,16 +58,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 18,
+    "bars": 19,
     "tp1_done": false,
     "best_close": 2691.91,
     "realized": -1.132284889134363,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7252104539098675,
+    "hold_conf": 0.7009391521008783,
     "peak_r": 0.031156823494828078,
-    "stall_count": 9,
+    "stall_count": 10,
     "trail_tightened": false
    },
    "SUI": {
@@ -103,16 +103,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 14,
+    "bars": 15,
     "tp1_done": false,
     "best_close": 1.0152,
     "realized": -1.1578243714824001,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8264196041287286,
+    "hold_conf": 0.8194823592509508,
     "peak_r": 1.2413479285377178,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    },
    "ONDO": {
@@ -148,15 +148,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
-    "best_close": 0.5179,
+    "best_close": 0.523,
     "realized": -1.5,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8602618463642409,
-    "peak_r": 1.2918065740576874,
+    "peak_r": 1.4938432365647922,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -193,16 +193,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 117.0,
     "realized": -0.35192076738,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7995605069885988,
+    "hold_conf": 0.791345493252869,
     "peak_r": 0.6184168290886718,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -320,12 +320,12 @@
   "ONDO|2026-09-24 03:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-24 17:00:00+00:00",
- "last_bar": "2026-09-24 16:00:00+00:00",
- "equity": 22972.11783871318,
+ "anchor": "2026-09-24 18:00:00+00:00",
+ "last_bar": "2026-09-24 17:00:00+00:00",
+ "equity": 23574.9414261544,
  "carry": {
   "cash": 19120.57918777357,
-  "peak": 22972.11783871318,
+  "peak": 23574.9414261544,
   "dd_frozen": false,
   "circuit_until": null,
   "loss_log": [
@@ -336,7 +336,7 @@
   ],
   "cooldown": {
    "HYPE": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    }
   },
@@ -374,57 +374,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
-    "best_close": 0.5179,
+    "best_close": 0.523,
     "realized": -2.8680868781660354,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8602618463642409,
-    "peak_r": 1.2918065740576872,
+    "peak_r": 1.4938432365647925,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "SOL",
-    "direction": 1,
-    "conf": 0.7849262882832833,
-    "sl": 111.22075668871182,
-    "setup": "RCL_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-09-24 16:00:00+00:00",
-    "meta": {
-     "c_base": 0.6089568877877879,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8625,
-     "hold_entry": 0.7996
-    },
-    "hold_dec": 0.7995605069885988
-   },
-   {
-    "sym": "SUI",
-    "direction": 1,
-    "conf": 0.774634442399859,
-    "sl": 0.9156254048958538,
-    "setup": "RCL_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-09-24 16:00:00+00:00",
-    "meta": {
-     "c_base": 0.5902444407270164,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8125,
-     "hold_entry": 0.8264
-    },
-    "hold_dec": 0.8264196041287286
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "ONDO|2026-09-24 14:00:00+00:00": "3e58b798-76e3-81c4-afad-eab775db73d8"
@@ -466,5 +429,5 @@
   "HYPE|2026-09-24 08:00:00+00:00",
   "ONDO|2026-09-24 12:00:00+00:00"
  ],
- "last_run": "2026-09-24 17:03:40.876296+00:00"
+ "last_run": "2026-09-24 18:03:38.794609+00:00"
 }
