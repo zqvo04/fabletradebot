@@ -49,16 +49,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 25,
+    "bars": 26,
     "tp1_done": false,
     "best_close": 2694.84,
-    "realized": -1.132284889134363,
+    "realized": -0.7165500779811673,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7362743196826878,
+    "hold_conf": 0.7399598595028589,
     "peak_r": 0.07318388082018722,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false
    },
    "SUI": {
@@ -94,16 +94,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 21,
+    "bars": 22,
     "tp1_done": false,
-    "best_close": 1.0284,
-    "realized": -1.1578243714824001,
+    "best_close": 1.0547,
+    "realized": -1.7562005954244002,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8384462296270189,
-    "peak_r": 1.5868962885582338,
-    "stall_count": 4,
+    "hold_conf": 0.8444307832400572,
+    "peak_r": 2.275375217993056,
+    "stall_count": 0,
     "trail_tightened": false
    },
    "ONDO": {
@@ -139,16 +139,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
-    "best_close": 0.5255,
-    "realized": -1.5,
+    "best_close": 0.5257,
+    "realized": -3.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.907013021960526,
-    "peak_r": 1.5928808162251358,
-    "stall_count": 2,
+    "peak_r": 1.6008038225979626,
+    "stall_count": 0,
     "trail_tightened": false
    },
    "SOL": {
@@ -184,16 +184,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
-    "best_close": 117.33,
-    "realized": -0.35192076738,
+    "best_close": 117.38,
+    "realized": 0.19692865525799996,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8142383231009467,
-    "peak_r": 0.7187483644820487,
-    "stall_count": 5,
+    "hold_conf": 0.8253364929101638,
+    "peak_r": 0.733950112268923,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -311,12 +311,12 @@
   "ONDO|2026-09-24 03:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-25 00:00:00+00:00",
- "last_bar": "2026-09-24 23:00:00+00:00",
- "equity": 23433.100582050585,
+ "anchor": "2026-09-25 01:00:00+00:00",
+ "last_bar": "2026-09-25 00:00:00+00:00",
+ "equity": 23891.21523850981,
  "carry": {
   "cash": 19120.57918777357,
-  "peak": 23870.443184704007,
+  "peak": 23891.21523850981,
   "dd_frozen": false,
   "circuit_until": null,
   "loss_log": [
@@ -360,16 +360,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
-    "best_close": 0.5255,
-    "realized": -2.8680868781660354,
+    "best_close": 0.5257,
+    "realized": -5.736173756332071,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.907013021960526,
-    "peak_r": 1.5928808162251356,
-    "stall_count": 2,
+    "peak_r": 1.6008038225979624,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -415,5 +415,5 @@
   "HYPE|2026-09-24 08:00:00+00:00",
   "ONDO|2026-09-24 12:00:00+00:00"
  ],
- "last_run": "2026-09-25 00:03:45.889452+00:00"
+ "last_run": "2026-09-25 01:03:43.021235+00:00"
 }
