@@ -12,7 +12,7 @@
   ],
   "cooldown": {
    "ONDO": {
-    "bars": 11,
+    "bars": 10,
     "exp": false
    }
   },
@@ -50,16 +50,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 67,
+    "bars": 68,
     "tp1_done": false,
     "best_close": 2716.49,
     "realized": -2.367161439983756,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7790493360942248,
+    "hold_conf": 0.768930476887441,
     "peak_r": 0.3837251064495114,
-    "stall_count": 29,
+    "stall_count": 30,
     "trail_tightened": false
    },
    "SUI": {
@@ -95,7 +95,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 30,
+    "bars": 31,
     "tp1_done": false,
     "best_close": 1.1942,
     "realized": -7.42464827476689,
@@ -104,7 +104,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9577087395516724,
     "peak_r": 0.7476573916450343,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    },
    "BTC": {
@@ -140,16 +140,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
     "best_close": 84180.93282,
     "realized": 0.111243554772,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7698724328725706,
+    "hold_conf": 0.7607275268137192,
     "peak_r": 0.0,
-    "stall_count": 9,
+    "stall_count": 10,
     "trail_tightened": false
    },
    "HYPE": {
@@ -185,16 +185,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 92.62,
     "realized": -0.117573146379,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7163731284577479,
+    "hold_conf": 0.7083633886366485,
     "peak_r": 0.18125726108878928,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false
    }
   },
@@ -318,8 +318,8 @@
   "ONDO|2026-09-24 14:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-26 18:00:00+00:00",
- "last_bar": "2026-09-26 17:00:00+00:00",
+ "anchor": "2026-09-26 19:00:00+00:00",
+ "last_bar": "2026-09-26 18:00:00+00:00",
  "equity": 25317.808804128654,
  "carry": {
   "cash": 25317.808804128654,
@@ -329,7 +329,7 @@
   "loss_log": [],
   "cooldown": {
    "ONDO": {
-    "bars": 11,
+    "bars": 10,
     "exp": false
    }
   },
@@ -375,5 +375,5 @@
   "ONDO|2026-09-24 12:00:00+00:00",
   "ONDO|2026-09-24 14:00:00+00:00"
  ],
- "last_run": "2026-09-26 18:03:44.219099+00:00"
+ "last_run": "2026-09-26 19:03:39.330587+00:00"
 }
