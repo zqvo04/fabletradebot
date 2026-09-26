@@ -53,16 +53,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 56,
+    "bars": 57,
     "tp1_done": false,
     "best_close": 2716.49,
     "realized": -1.8292665443697511,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7516945195007588,
+    "hold_conf": 0.7669140463408546,
     "peak_r": 0.3837251064495114,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    },
    "ONDO": {
@@ -72,7 +72,7 @@
     "setup": "BRK_L",
     "regime": "TREND_UP",
     "entry": 0.485291,
-    "sl": 0.4600480567801245,
+    "sl": 0.5350119798489344,
     "sl0": 0.4600480567801245,
     "tp1": 0.0,
     "notional": 30000.0,
@@ -98,17 +98,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 41,
+    "bars": 42,
     "tp1_done": false,
     "best_close": 0.5664,
     "realized": -6.958393453314001,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8411038080950591,
+    "hold_conf": 0.8459130041172362,
     "peak_r": 3.2131356194683938,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    },
    "SUI": {
     "sym": "SUI",
@@ -143,16 +143,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 19,
+    "bars": 20,
     "tp1_done": false,
     "best_close": 1.1942,
     "realized": -2.858755583839702,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9179384447650204,
+    "hold_conf": 0.9221576864082209,
     "peak_r": 0.7476573916450343,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    }
   },
@@ -273,9 +273,9 @@
   "HYPE|2026-09-25 09:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-26 07:00:00+00:00",
- "last_bar": "2026-09-26 06:00:00+00:00",
- "equity": 26294.94091072664,
+ "anchor": "2026-09-26 08:00:00+00:00",
+ "last_bar": "2026-09-26 07:00:00+00:00",
+ "equity": 26519.522247224348,
  "carry": {
   "cash": 19120.57918777357,
   "peak": 28701.98386769757,
@@ -291,7 +291,7 @@
     "setup": "BRK_L",
     "regime": "TREND_UP",
     "entry": 0.485291,
-    "sl": 0.4600480567801245,
+    "sl": 0.5350119798489344,
     "sl0": 0.4600480567801245,
     "tp1": 0.0,
     "notional": 57361.737563320705,
@@ -317,17 +317,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 41,
+    "bars": 42,
     "tp1_done": false,
     "best_close": 0.5664,
     "realized": -13.304851304377554,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8411038080950591,
+    "hold_conf": 0.8459130041172362,
     "peak_r": 3.2131356194683933,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    }
   },
   "pendings": []
@@ -372,5 +372,5 @@
   "HYPE|2026-09-24 08:00:00+00:00",
   "ONDO|2026-09-24 12:00:00+00:00"
  ],
- "last_run": "2026-09-26 07:03:46.945314+00:00"
+ "last_run": "2026-09-26 08:03:43.672214+00:00"
 }
