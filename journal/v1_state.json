@@ -18,12 +18,7 @@
     220.5849701951799
    ]
   ],
-  "cooldown": {
-   "HYPE": {
-    "bars": 1,
-    "exp": true
-   }
-  },
+  "cooldown": {},
   "positions": {
    "ETH": {
     "sym": "ETH",
@@ -58,16 +53,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 51,
+    "bars": 52,
     "tp1_done": false,
     "best_close": 2716.49,
     "realized": -1.8292665443697511,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.761259261099895,
+    "hold_conf": 0.758526495154429,
     "peak_r": 0.3837251064495114,
-    "stall_count": 13,
+    "stall_count": 14,
     "trail_tightened": false
    },
    "ONDO": {
@@ -103,7 +98,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 36,
+    "bars": 37,
     "tp1_done": false,
     "best_close": 0.5664,
     "realized": -6.958393453314001,
@@ -112,7 +107,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.8567167690129369,
     "peak_r": 3.2131356194683938,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    },
    "SUI": {
@@ -148,7 +143,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 14,
+    "bars": 15,
     "tp1_done": false,
     "best_close": 1.1942,
     "realized": -2.858755583839702,
@@ -157,7 +152,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9009454316645051,
     "peak_r": 0.7476573916450343,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    }
   },
@@ -278,9 +273,9 @@
   "HYPE|2026-09-25 09:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-26 02:00:00+00:00",
- "last_bar": "2026-09-26 01:00:00+00:00",
- "equity": 25987.619081835033,
+ "anchor": "2026-09-26 03:00:00+00:00",
+ "last_bar": "2026-09-26 02:00:00+00:00",
+ "equity": 25585.73669020756,
  "carry": {
   "cash": 19120.57918777357,
   "peak": 28701.98386769757,
@@ -322,7 +317,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 36,
+    "bars": 37,
     "tp1_done": false,
     "best_close": 0.5664,
     "realized": -13.304851304377554,
@@ -331,7 +326,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.8567167690129369,
     "peak_r": 3.2131356194683933,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    }
   },
@@ -377,5 +372,5 @@
   "HYPE|2026-09-24 08:00:00+00:00",
   "ONDO|2026-09-24 12:00:00+00:00"
  ],
- "last_run": "2026-09-26 02:03:44.001891+00:00"
+ "last_run": "2026-09-26 03:04:17.643953+00:00"
 }
