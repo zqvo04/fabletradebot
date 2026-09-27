@@ -45,16 +45,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 80,
+    "bars": 81,
     "tp1_done": false,
-    "best_close": 2716.49,
+    "best_close": 2717.14,
     "realized": -2.726274773040718,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8095413276473229,
-    "peak_r": 0.3837251064495114,
-    "stall_count": 42,
+    "hold_conf": 0.8448484134843122,
+    "peak_r": 0.3930485150711785,
+    "stall_count": 0,
     "trail_tightened": false
    },
    "SUI": {
@@ -64,7 +64,7 @@
     "setup": "BRK_L",
     "regime": "TREND_UP",
     "entry": 1.1394832799999999,
-    "sl": 1.142051922360387,
+    "sl": 1.193968466991899,
     "sl0": 1.0662990640590466,
     "tp1": 0.0,
     "notional": 24912.11013958227,
@@ -90,15 +90,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 43,
+    "bars": 44,
     "tp1_done": false,
-    "best_close": 1.1953,
+    "best_close": 1.2635,
     "realized": -9.915859288725116,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8370670193192892,
-    "peak_r": 0.7626879550781058,
+    "hold_conf": 0.8206731740652513,
+    "peak_r": 1.6945828879284544,
     "stall_count": 0,
     "trail_tightened": true
    },
@@ -135,15 +135,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 22,
+    "bars": 23,
     "tp1_done": false,
-    "best_close": 84473.0,
+    "best_close": 84746.5,
     "realized": 0.28626412808,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8118979093203454,
-    "peak_r": 0.43218023893487467,
+    "hold_conf": 0.8453597275338309,
+    "peak_r": 0.8368860855441683,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -180,20 +180,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
-    "best_close": 93.233,
+    "best_close": 93.341,
     "realized": -0.6485163762936,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7576702186303313,
-    "peak_r": 0.5858464152381728,
-    "stall_count": 5,
+    "hold_conf": 0.7859162492212239,
+    "peak_r": 0.6571280280409941,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "SOL",
+    "direction": 1,
+    "conf": 0.94690251572327,
+    "sl": 121.9154135216302,
+    "setup": "BRK_L",
+    "regime": "TREND_UP",
+    "decided_ts": "2026-09-27 07:00:00+00:00",
+    "meta": {
+     "c_base": 0.9034591194968546,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 1.0,
+     "hold_entry": 0.9041
+    },
+    "hold_dec": 0.9040636166482742
+   }
+  ]
  },
  "shadow_pages": {
   "ETH|2026-09-23 23:00:00+00:00": "3e58b798-76e3-81ab-a358-f808bd0cd97e",
@@ -313,9 +332,9 @@
   "ONDO|2026-09-24 14:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-27 07:00:00+00:00",
- "last_bar": "2026-09-27 06:00:00+00:00",
- "equity": 25422.4537786523,
+ "anchor": "2026-09-27 08:00:00+00:00",
+ "last_bar": "2026-09-27 07:00:00+00:00",
+ "equity": 25504.763871968,
  "carry": {
   "cash": 25317.808804128654,
   "peak": 28701.98386769757,
@@ -357,20 +376,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
-    "best_close": 84473.0,
+    "best_close": 84746.5,
     "realized": 0.22155687059004633,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8118979093203454,
-    "peak_r": 0.6941093917798439,
+    "hold_conf": 0.8453597275338309,
+    "peak_r": 1.2412300481686724,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "SOL",
+    "direction": 1,
+    "conf": 0.94690251572327,
+    "sl": 121.9154135216302,
+    "setup": "BRK_L",
+    "regime": "TREND_UP",
+    "decided_ts": "2026-09-27 07:00:00+00:00",
+    "meta": {
+     "c_base": 0.9034591194968546,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 1.0,
+     "hold_entry": 0.9041
+    },
+    "hold_dec": 0.9040636166482742
+   }
+  ]
  },
  "pages": {
   "BTC|2026-09-26 22:00:00+00:00": "3e78b798-76e3-8101-92d5-f039a2254f3c"
@@ -413,5 +451,5 @@
   "ONDO|2026-09-24 12:00:00+00:00",
   "ONDO|2026-09-24 14:00:00+00:00"
  ],
- "last_run": "2026-09-27 07:03:43.158595+00:00"
+ "last_run": "2026-09-27 08:03:42.719308+00:00"
 }
