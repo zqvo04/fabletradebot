@@ -24,11 +24,11 @@
   ],
   "cooldown": {
    "SUI": {
-    "bars": 2,
+    "bars": 1,
     "exp": false
    },
    "ADA": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    }
   },
@@ -66,16 +66,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 112,
+    "bars": 113,
     "tp1_done": false,
     "best_close": 2717.14,
     "realized": -4.353364767532337,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6632076765255175,
+    "hold_conf": 0.6917140909583317,
     "peak_r": 0.3930485150711785,
-    "stall_count": 31,
+    "stall_count": 32,
     "trail_tightened": false
    },
    "SOL": {
@@ -111,16 +111,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
     "best_close": 120.007984,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6637278854086032,
+    "hold_conf": 0.6814283458804506,
     "peak_r": 0.0,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    }
   },
@@ -245,9 +245,9 @@
   "ADA|2026-09-28 13:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-28 15:00:00+00:00",
- "last_bar": "2026-09-28 14:00:00+00:00",
- "equity": 25235.52344919931,
+ "anchor": "2026-09-28 16:00:00+00:00",
+ "last_bar": "2026-09-28 15:00:00+00:00",
+ "equity": 25335.6708008745,
  "carry": {
   "cash": 25136.8054785248,
   "peak": 28701.98386769757,
@@ -294,16 +294,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 2689.71,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6632076765255175,
+    "hold_conf": 0.6917140909583317,
     "peak_r": 1.058562569830372,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    }
   },
@@ -351,5 +351,5 @@
   "ONDO|2026-09-24 14:00:00+00:00",
   "BTC|2026-09-26 22:00:00+00:00"
  ],
- "last_run": "2026-09-28 15:03:47.084830+00:00"
+ "last_run": "2026-09-28 16:03:43.354696+00:00"
 }
