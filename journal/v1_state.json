@@ -28,11 +28,11 @@
   ],
   "cooldown": {
    "HYPE": {
-    "bars": 6,
+    "bars": 5,
     "exp": true
    },
    "SOL": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    }
   },
@@ -70,16 +70,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 123,
+    "bars": 124,
     "tp1_done": false,
     "best_close": 2717.14,
     "realized": -5.4800546087304465,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6770056774439994,
+    "hold_conf": 0.6627628106738184,
     "peak_r": 0.3930485150711785,
-    "stall_count": 42,
+    "stall_count": 43,
     "trail_tightened": false
    },
    "BTC": {
@@ -115,7 +115,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
     "best_close": 83991.8,
     "realized": -0.9682828809398776,
@@ -124,7 +124,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.6005877411358834,
     "peak_r": 0.19004215685538212,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    }
   },
@@ -251,9 +251,9 @@
   "SOL|2026-09-28 13:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-29 02:00:00+00:00",
- "last_bar": "2026-09-29 01:00:00+00:00",
- "equity": 25218.084293334145,
+ "anchor": "2026-09-29 03:00:00+00:00",
+ "last_bar": "2026-09-29 02:00:00+00:00",
+ "equity": 25144.440966676968,
  "carry": {
   "cash": 25136.8054785248,
   "peak": 28701.98386769757,
@@ -300,16 +300,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 15,
+    "bars": 16,
     "tp1_done": false,
     "best_close": 2698.37,
     "realized": -2.293998712020544,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6770056774439994,
+    "hold_conf": 0.6627628106738184,
     "peak_r": 1.3270083066134515,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    }
   },
@@ -357,5 +357,5 @@
   "ONDO|2026-09-24 14:00:00+00:00",
   "BTC|2026-09-26 22:00:00+00:00"
  ],
- "last_run": "2026-09-29 02:03:39.549933+00:00"
+ "last_run": "2026-09-29 03:03:41.036987+00:00"
 }
