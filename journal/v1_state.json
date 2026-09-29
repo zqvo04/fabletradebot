@@ -53,16 +53,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 137,
+    "bars": 138,
     "tp1_done": false,
     "best_close": 2735.49,
-    "realized": -6.187347746545228,
+    "realized": -6.926143507434995,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7038369749622226,
+    "hold_conf": 0.7067970777243578,
     "peak_r": 0.6562555123135879,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    },
    "BTC": {
@@ -98,16 +98,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 23,
+    "bars": 24,
     "tp1_done": false,
     "best_close": 84310.7,
-    "realized": -1.4221941027121388,
+    "realized": -2.008741282258898,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6413715962399811,
+    "hold_conf": 0.6400073897851447,
     "peak_r": 0.40204798449335755,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false
    },
    "ADA": {
@@ -143,16 +143,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
     "best_close": 0.2539,
-    "realized": -0.6182989885089951,
+    "realized": -1.2365979770179902,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6634431219143585,
+    "hold_conf": 0.6452947431787779,
     "peak_r": 0.3802638616169923,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false
    }
   },
@@ -281,9 +281,9 @@
   "SOL|2026-09-28 13:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-29 16:00:00+00:00",
- "last_bar": "2026-09-29 15:00:00+00:00",
- "equity": 25297.008198116615,
+ "anchor": "2026-09-29 17:00:00+00:00",
+ "last_bar": "2026-09-29 16:00:00+00:00",
+ "equity": 25313.48884590682,
  "carry": {
   "cash": 25136.8054785248,
   "peak": 28701.98386769757,
@@ -325,16 +325,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 29,
+    "bars": 30,
     "tp1_done": false,
     "best_close": 2735.49,
-    "realized": -3.7340840734388205,
+    "realized": -5.238310402598881,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7038369749622226,
+    "hold_conf": 0.7067970777243578,
     "peak_r": 2.4776671691293917,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    }
   },
@@ -382,5 +382,5 @@
   "ONDO|2026-09-24 14:00:00+00:00",
   "BTC|2026-09-26 22:00:00+00:00"
  ],
- "last_run": "2026-09-29 16:03:39.640376+00:00"
+ "last_run": "2026-09-29 17:03:43.639437+00:00"
 }
