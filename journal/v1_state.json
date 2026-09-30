@@ -12,7 +12,7 @@
   ],
   "cooldown": {
    "ETH": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    }
   },
@@ -50,16 +50,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 49,
+    "bars": 50,
     "tp1_done": false,
     "best_close": 85254.3,
     "realized": -5.044397075701272,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7549060565909209,
+    "hold_conf": 0.7498914267109765,
     "peak_r": 1.0293565419069621,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    },
    "ADA": {
@@ -95,16 +95,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 35,
+    "bars": 36,
     "tp1_done": false,
     "best_close": 0.2539,
     "realized": -3.0914949425449754,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7055020623427454,
+    "hold_conf": 0.6866897683769406,
     "peak_r": 0.3802638616169923,
-    "stall_count": 30,
+    "stall_count": 31,
     "trail_tightened": false
    },
    "SOL": {
@@ -140,16 +140,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 121.86,
     "realized": -0.406385443819,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7304151762710392,
+    "hold_conf": 0.7178641427243716,
     "peak_r": 1.1337853721490476,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    }
   },
@@ -279,8 +279,8 @@
   "ETH|2026-09-23 23:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-09-30 18:00:00+00:00",
- "last_bar": "2026-09-30 17:00:00+00:00",
+ "anchor": "2026-09-30 19:00:00+00:00",
+ "last_bar": "2026-09-30 18:00:00+00:00",
  "equity": 25335.881637243518,
  "carry": {
   "cash": 25335.881637243518,
@@ -290,7 +290,7 @@
   "loss_log": [],
   "cooldown": {
    "ETH": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    }
   },
@@ -338,5 +338,5 @@
   "BTC|2026-09-26 22:00:00+00:00",
   "ETH|2026-09-28 11:00:00+00:00"
  ],
- "last_run": "2026-09-30 18:03:42.600975+00:00"
+ "last_run": "2026-09-30 19:03:41.955845+00:00"
 }
