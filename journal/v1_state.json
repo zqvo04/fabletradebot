@@ -16,11 +16,11 @@
   ],
   "cooldown": {
    "SOL": {
-    "bars": 2,
+    "bars": 1,
     "exp": true
    },
    "HYPE": {
-    "bars": 5,
+    "bars": 4,
     "exp": true
    }
   },
@@ -58,16 +58,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 60,
+    "bars": 61,
     "tp1_done": false,
     "best_close": 85254.3,
     "realized": -5.988526042187957,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7564996222208742,
+    "hold_conf": 0.7701374931442989,
     "peak_r": 1.0293565419069621,
-    "stall_count": 16,
+    "stall_count": 17,
     "trail_tightened": false
    },
    "ADA": {
@@ -103,16 +103,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 46,
+    "bars": 47,
     "tp1_done": false,
     "best_close": 0.2539,
     "realized": -3.7097939310539703,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7829780611824286,
+    "hold_conf": 0.790412426536802,
     "peak_r": 0.3802638616169923,
-    "stall_count": 41,
+    "stall_count": 42,
     "trail_tightened": false
    }
   },
@@ -242,9 +242,9 @@
   "HYPE|2026-09-30 21:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-01 05:00:00+00:00",
- "last_bar": "2026-10-01 04:00:00+00:00",
- "equity": 25449.86006836588,
+ "anchor": "2026-10-01 06:00:00+00:00",
+ "last_bar": "2026-10-01 05:00:00+00:00",
+ "equity": 25482.202126126864,
  "carry": {
   "cash": 25399.566012410367,
   "peak": 28701.98386769757,
@@ -253,7 +253,7 @@
   "loss_log": [],
   "cooldown": {
    "HYPE": {
-    "bars": 5,
+    "bars": 4,
     "exp": true
    }
   },
@@ -291,15 +291,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
-    "best_close": 0.2526,
+    "best_close": 0.2535,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7829780611824286,
-    "peak_r": 0.12375717347626186,
+    "hold_conf": 0.790412426536802,
+    "peak_r": 0.2033403682865132,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -308,20 +308,20 @@
    {
     "sym": "BTC",
     "direction": 1,
-    "conf": 0.8545280407359823,
-    "sl": 83105.0053966682,
-    "setup": "PBK_L",
+    "conf": 0.7232336147876364,
+    "sl": 82935.52286991401,
+    "setup": "RCL_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-10-01 04:00:00+00:00",
+    "decided_ts": "2026-10-01 05:00:00+00:00",
     "meta": {
-     "c_base": 0.7355055286108768,
+     "c_base": 0.49678839052297524,
      "c_fit": 1.0,
      "c_align": 1.0,
      "c_fund": 0.0,
-     "c_base_pct": 0.9,
-     "hold_entry": 0.7565
+     "c_base_pct": 0.625,
+     "hold_entry": 0.7701
     },
-    "hold_dec": 0.7564996222208742
+    "hold_dec": 0.7701374931442989
    }
   ]
  },
@@ -369,5 +369,5 @@
   "ETH|2026-09-28 11:00:00+00:00",
   "HYPE|2026-09-30 21:00:00+00:00"
  ],
- "last_run": "2026-10-01 05:03:41.588593+00:00"
+ "last_run": "2026-10-01 06:03:41.270659+00:00"
 }
