@@ -12,7 +12,7 @@
   ],
   "cooldown": {
    "BTC": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    }
   },
@@ -50,16 +50,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 62,
+    "bars": 63,
     "tp1_done": false,
     "best_close": 0.2539,
     "realized": -4.307333799764958,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7366396251033794,
+    "hold_conf": 0.7164390950210693,
     "peak_r": 0.3802638616169923,
-    "stall_count": 57,
+    "stall_count": 58,
     "trail_tightened": false
    },
    "ETH": {
@@ -95,16 +95,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 11,
+    "bars": 12,
     "tp1_done": false,
     "best_close": 2705.32,
     "realized": -0.805321896658,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7660051252616714,
+    "hold_conf": 0.7568663604891274,
     "peak_r": 0.4163695665036782,
-    "stall_count": 9,
+    "stall_count": 10,
     "trail_tightened": false
    },
    "SOL": {
@@ -140,16 +140,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 118.387336,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7050157219445307,
+    "hold_conf": 0.6908813161934286,
     "peak_r": 0.0,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false
    }
   },
@@ -282,9 +282,9 @@
   "BTC|2026-09-28 17:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-01 21:00:00+00:00",
- "last_bar": "2026-10-01 20:00:00+00:00",
- "equity": 25258.528887330685,
+ "anchor": "2026-10-01 22:00:00+00:00",
+ "last_bar": "2026-10-01 21:00:00+00:00",
+ "equity": 25172.283399968062,
  "carry": {
   "cash": 25399.566012410367,
   "peak": 28701.98386769757,
@@ -326,16 +326,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 17,
+    "bars": 18,
     "tp1_done": false,
     "best_close": 0.2535,
     "realized": -0.8723964427387007,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7366396251033794,
+    "hold_conf": 0.7164390950210693,
     "peak_r": 0.2033403682865132,
-    "stall_count": 15,
+    "stall_count": 16,
     "trail_tightened": false
    }
   },
@@ -385,5 +385,5 @@
   "ETH|2026-09-28 11:00:00+00:00",
   "HYPE|2026-09-30 21:00:00+00:00"
  ],
- "last_run": "2026-10-01 21:03:41.763719+00:00"
+ "last_run": "2026-10-01 22:03:41.781444+00:00"
 }
