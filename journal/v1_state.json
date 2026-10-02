@@ -12,16 +12,32 @@
    [
     "2026-10-02 14:00:00+00:00",
     1616.6967237561516
+   ],
+   [
+    "2026-10-02 18:00:00+00:00",
+    205.5144648347599
+   ],
+   [
+    "2026-10-02 18:00:00+00:00",
+    317.81107770222013
    ]
   ],
   "cooldown": {
    "BTC": {
-    "bars": 8,
+    "bars": 7,
     "exp": false
    },
    "ETH": {
-    "bars": 8,
+    "bars": 7,
     "exp": false
+   },
+   "DOGE": {
+    "bars": 11,
+    "exp": true
+   },
+   "XRP": {
+    "bars": 11,
+    "exp": true
    }
   },
   "positions": {
@@ -58,16 +74,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 83,
+    "bars": 84,
     "tp1_done": false,
     "best_close": 0.257,
     "realized": -5.933330372028365,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7700127162092313,
+    "hold_conf": 0.7011766093609717,
     "peak_r": 0.6208173570199912,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false
    },
    "SOL": {
@@ -103,106 +119,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 24,
+    "bars": 25,
     "tp1_done": false,
     "best_close": 123.46,
     "realized": -1.724348280769,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7719497913577303,
+    "hold_conf": 0.7302626949752651,
     "peak_r": 2.0624030830162954,
-    "stall_count": 13,
-    "trail_tightened": false
-   },
-   "DOGE": {
-    "sym": "DOGE",
-    "direction": 1,
-    "conf": 0.8082270962965556,
-    "setup": "PBK_L",
-    "regime": "TREND_UP",
-    "entry": 0.094307708,
-    "sl": 0.09251972532578903,
-    "sl0": 0.09251972532578903,
-    "tp1": 0.0,
-    "notional": 10000.0,
-    "margin": 2000.0,
-    "risk_amt": 189.5903009551427,
-    "leverage": 5.0,
-    "liq_price": 0.07638924348000001,
-    "opened_ts": "2026-10-02 03:00:00+00:00",
-    "risk_frac": 0.002,
-    "init_stop_frac": 0.018959030095514272,
-    "meta": {
-     "c_base": 0.6513219932664648,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8708333333333332,
-     "hold_entry": 0.7103
-    },
-    "tranches": [
-     [
-      0.094307708,
-      10000.0
-     ]
-    ],
-    "adds": 0,
-    "bars": 15,
-    "tp1_done": false,
-    "best_close": 0.09713,
-    "realized": -2.0,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.7250838475930902,
-    "peak_r": 1.5784783827647846,
-    "stall_count": 5,
-    "trail_tightened": false
-   },
-   "XRP": {
-    "sym": "XRP",
-    "direction": 1,
-    "conf": 0.7471402638829021,
-    "setup": "RCL_L",
-    "regime": "TREND_UP",
-    "entry": 1.50890332,
-    "sl": 1.4633447228453722,
-    "sl0": 1.4633447228453722,
-    "tp1": 0.0,
-    "notional": 10000.0,
-    "margin": 2000.0,
-    "risk_amt": 301.9318504423977,
-    "leverage": 5.0,
-    "liq_price": 1.2222116892000001,
-    "opened_ts": "2026-10-02 04:00:00+00:00",
-    "risk_frac": 0.002,
-    "init_stop_frac": 0.03019318504423977,
-    "meta": {
-     "c_base": 0.5402550252416404,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8083333333333332,
-     "hold_entry": 0.7453
-    },
-    "tranches": [
-     [
-      1.50890332,
-      10000.0
-     ]
-    ],
-    "adds": 0,
-    "bars": 14,
-    "tp1_done": false,
-    "best_close": 1.542,
-    "realized": -2.0,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.7263190173525199,
-    "peak_r": 0.7264639841228785,
-    "stall_count": 5,
+    "stall_count": 14,
     "trail_tightened": false
    }
   },
@@ -210,15 +136,11 @@
  },
  "shadow_pages": {
   "ADA|2026-09-29 07:00:00+00:00": "3ea8b798-76e3-81dc-aaa9-e6040be4218e",
-  "SOL|2026-10-01 18:00:00+00:00": "3ec8b798-76e3-8175-8218-d0aeb75a7a76",
-  "DOGE|2026-10-02 03:00:00+00:00": "3ed8b798-76e3-811d-b7b9-d4f92855c710",
-  "XRP|2026-10-02 04:00:00+00:00": "3ed8b798-76e3-817e-981e-df2006d24988"
+  "SOL|2026-10-01 18:00:00+00:00": "3ec8b798-76e3-8175-8218-d0aeb75a7a76"
  },
  "shadow_seats": {
   "ADA|2026-09-29 07:00:00+00:00": "Live-Blocked",
-  "SOL|2026-10-01 18:00:00+00:00": "Live-Blocked",
-  "DOGE|2026-10-02 03:00:00+00:00": "Live-Blocked",
-  "XRP|2026-10-02 04:00:00+00:00": "Live-Blocked"
+  "SOL|2026-10-01 18:00:00+00:00": "Live-Blocked"
  },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
@@ -338,71 +260,35 @@
   "HYPE|2026-10-02 05:00:00+00:00",
   "ETH|2026-10-01 10:00:00+00:00",
   "BTC|2026-10-02 05:00:00+00:00",
-  "ETH|2026-10-02 09:00:00+00:00"
+  "ETH|2026-10-02 09:00:00+00:00",
+  "DOGE|2026-10-02 03:00:00+00:00",
+  "XRP|2026-10-02 04:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-02 18:00:00+00:00",
- "last_bar": "2026-10-02 17:00:00+00:00",
- "equity": 25353.181137634056,
+ "anchor": "2026-10-02 19:00:00+00:00",
+ "last_bar": "2026-10-02 18:00:00+00:00",
+ "equity": 24977.451333127417,
  "carry": {
-  "cash": 25399.566012410367,
+  "cash": 24977.451333127417,
   "peak": 28701.98386769757,
   "dd_frozen": false,
   "circuit_until": null,
-  "loss_log": [],
-  "cooldown": {},
-  "positions": {
+  "loss_log": [
+   [
+    "2026-10-02 18:00:00+00:00",
+    422.11467928294934
+   ]
+  ],
+  "cooldown": {
    "ADA": {
-    "sym": "ADA",
-    "direction": 1,
-    "conf": 0.8093762612172353,
-    "setup": "PBK_L",
-    "regime": "TREND_UP",
-    "entry": 0.25120043999999997,
-    "sl": 0.23989151979208592,
-    "sl0": 0.23989151979208592,
-    "tp1": 0.0,
-    "notional": 9027.043488960511,
-    "margin": 1805.4086977921022,
-    "risk_amt": 406.39305619856583,
-    "leverage": 5.0,
-    "liq_price": 0.2034723564,
-    "opened_ts": "2026-10-01 04:00:00+00:00",
-    "risk_frac": 0.0007108029707712211,
-    "init_stop_frac": 0.04501950795911842,
-    "meta": {
-     "c_base": 0.6534113840313367,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8416666666666667,
-     "hold_entry": 0.7698
-    },
-    "tranches": [
-     [
-      0.25120043999999997,
-      9027.043488960511
-     ]
-    ],
-    "adds": 0,
-    "bars": 38,
-    "tp1_done": false,
-    "best_close": 0.257,
-    "realized": -3.246319422318177,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.7700127162092313,
-    "peak_r": 0.5128305703263758,
-    "stall_count": 8,
-    "trail_tightened": false
+    "bars": 11,
+    "exp": true
    }
   },
+  "positions": {},
   "pendings": []
  },
- "pages": {
-  "ADA|2026-10-01 04:00:00+00:00": "3ec8b798-76e3-8186-a0eb-f6a945ca81bd"
- },
+ "pages": {},
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
   "XRP|2026-07-26 13:00:00+00:00",
@@ -442,7 +328,8 @@
   "ONDO|2026-09-24 14:00:00+00:00",
   "BTC|2026-09-26 22:00:00+00:00",
   "ETH|2026-09-28 11:00:00+00:00",
-  "HYPE|2026-09-30 21:00:00+00:00"
+  "HYPE|2026-09-30 21:00:00+00:00",
+  "ADA|2026-10-01 04:00:00+00:00"
  ],
- "last_run": "2026-10-02 18:03:41.114346+00:00"
+ "last_run": "2026-10-02 19:03:46.434722+00:00"
 }
