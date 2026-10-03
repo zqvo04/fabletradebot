@@ -32,24 +32,33 @@
   ],
   "cooldown": {
    "SOL": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    },
    "ADA": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    }
   },
-  "positions": {},
-  "pendings": [
-   {
+  "positions": {
+   "BTC": {
     "sym": "BTC",
     "direction": 1,
     "conf": 0.8808125899156205,
-    "sl": 84299.44280351365,
     "setup": "PBK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-10-03 12:00:00+00:00",
+    "entry": 84859.16844,
+    "sl": 84299.44280351365,
+    "sl0": 84299.44280351365,
+    "tp1": 0.0,
+    "notional": 20000.0,
+    "margin": 2000.0,
+    "risk_amt": 131.91871821890373,
+    "leverage": 10.0,
+    "liq_price": 77221.8432804,
+    "opened_ts": "2026-10-03 13:00:00+00:00",
+    "risk_frac": 0.002,
+    "init_stop_frac": 0.006595935910945187,
     "meta": {
      "c_base": 0.7832956180284008,
      "c_fit": 1.0,
@@ -58,12 +67,34 @@
      "c_base_pct": 0.9583333333333335,
      "hold_entry": 0.7788
     },
-    "hold_dec": 0.7787677258748684
+    "tranches": [
+     [
+      84859.16844,
+      20000.0
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 84859.16844,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7779538345540812,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
- "shadow_pages": {},
- "shadow_seats": {},
+ "shadow_pages": {
+  "BTC|2026-10-03 13:00:00+00:00": "3ee8b798-76e3-8149-aa2e-f82495abac81"
+ },
+ "shadow_seats": {
+  "BTC|2026-10-03 13:00:00+00:00": "Live-Taken"
+ },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
   "SOL|2026-08-01 18:00:00+00:00",
@@ -190,9 +221,9 @@
   "ADA|2026-09-29 07:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-03 13:00:00+00:00",
- "last_bar": "2026-10-03 12:00:00+00:00",
- "equity": 24959.37470738809,
+ "anchor": "2026-10-03 14:00:00+00:00",
+ "last_bar": "2026-10-03 13:00:00+00:00",
+ "equity": 24951.20725875831,
  "carry": {
   "cash": 24959.37470738809,
   "peak": 28701.98386769757,
@@ -209,16 +240,25 @@
    ]
   ],
   "cooldown": {},
-  "positions": {},
-  "pendings": [
-   {
+  "positions": {
+   "BTC": {
     "sym": "BTC",
     "direction": 1,
     "conf": 0.8808125899156205,
-    "sl": 84299.44280351365,
     "setup": "PBK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-10-03 12:00:00+00:00",
+    "entry": 84859.16844,
+    "sl": 84299.44280351365,
+    "sl0": 84299.44280351365,
+    "tp1": 0.0,
+    "notional": 24959.374707388095,
+    "margin": 2495.9374707388097,
+    "risk_amt": 164.63043594719815,
+    "leverage": 10.0,
+    "liq_price": 77221.8432804,
+    "opened_ts": "2026-10-03 13:00:00+00:00",
+    "risk_frac": 0.001,
+    "init_stop_frac": 0.006595935910945187,
     "meta": {
      "c_base": 0.7832956180284008,
      "c_fit": 1.0,
@@ -227,11 +267,31 @@
      "c_base_pct": 0.9583333333333335,
      "hold_entry": 0.7788
     },
-    "hold_dec": 0.7787677258748684
+    "tranches": [
+     [
+      84859.16844,
+      24959.374707388095
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 84859.16844,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7779538345540812,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
- "pages": {},
+ "pages": {
+  "BTC|2026-10-03 13:00:00+00:00": "3ee8b798-76e3-8148-8652-c082c56c0a79"
+ },
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
   "XRP|2026-07-26 13:00:00+00:00",
@@ -275,5 +335,5 @@
   "ADA|2026-10-01 04:00:00+00:00",
   "HYPE|2026-10-03 00:00:00+00:00"
  ],
- "last_run": "2026-10-03 13:03:45.013307+00:00"
+ "last_run": "2026-10-03 14:03:38.609151+00:00"
 }
