@@ -7,7 +7,7 @@
   "loss_log": [],
   "cooldown": {
    "DOGE": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    }
   },
@@ -45,15 +45,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 31,
+    "bars": 32,
     "tp1_done": false,
-    "best_close": 85385.3,
+    "best_close": 85793.4,
     "realized": -2.4673677512200003,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8714032173928644,
-    "peak_r": 0.9399811723879237,
+    "hold_conf": 0.8771745384856665,
+    "peak_r": 1.6690883874188884,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -90,16 +90,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 12,
+    "bars": 13,
     "tp1_done": false,
     "best_close": 0.2526,
     "realized": -0.670952349108,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8142457467752591,
+    "hold_conf": 0.8026462647220388,
     "peak_r": 1.393410666768059,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -240,9 +240,9 @@
   "DOGE|2026-10-04 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-04 20:00:00+00:00",
- "last_bar": "2026-10-04 19:00:00+00:00",
- "equity": 25111.04501976829,
+ "anchor": "2026-10-04 21:00:00+00:00",
+ "last_bar": "2026-10-04 20:00:00+00:00",
+ "equity": 25231.078258431087,
  "carry": {
   "cash": 24959.37470738809,
   "peak": 28701.98386769757,
@@ -284,15 +284,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 31,
+    "bars": 32,
     "tp1_done": false,
-    "best_close": 85385.3,
+    "best_close": 85793.4,
     "realized": -3.0791978121812753,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8714032173928644,
-    "peak_r": 0.9399811723879238,
+    "hold_conf": 0.8771745384856665,
+    "peak_r": 1.6690883874188882,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -345,5 +345,5 @@
   "ADA|2026-10-01 04:00:00+00:00",
   "HYPE|2026-10-03 00:00:00+00:00"
  ],
- "last_run": "2026-10-04 20:03:37.363433+00:00"
+ "last_run": "2026-10-04 21:03:45.195623+00:00"
 }
