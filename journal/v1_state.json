@@ -7,7 +7,7 @@
   "loss_log": [],
   "cooldown": {
    "DOGE": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    }
   },
@@ -45,16 +45,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 30,
+    "bars": 31,
     "tp1_done": false,
-    "best_close": 85338.2,
+    "best_close": 85385.3,
     "realized": -2.4673677512200003,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8563366415470108,
-    "peak_r": 0.8558328023120515,
-    "stall_count": 2,
+    "hold_conf": 0.8714032173928644,
+    "peak_r": 0.9399811723879237,
+    "stall_count": 0,
     "trail_tightened": false
    },
    "ADA": {
@@ -90,15 +90,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 11,
+    "bars": 12,
     "tp1_done": false,
-    "best_close": 0.2496,
+    "best_close": 0.2526,
     "realized": -0.670952349108,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7628788204844577,
-    "peak_r": 0.7696518480384016,
+    "hold_conf": 0.8142457467752591,
+    "peak_r": 1.393410666768059,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -240,9 +240,9 @@
   "DOGE|2026-10-04 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-04 19:00:00+00:00",
- "last_bar": "2026-10-04 18:00:00+00:00",
- "equity": 25084.926540000448,
+ "anchor": "2026-10-04 20:00:00+00:00",
+ "last_bar": "2026-10-04 19:00:00+00:00",
+ "equity": 25111.04501976829,
  "carry": {
   "cash": 24959.37470738809,
   "peak": 28701.98386769757,
@@ -284,39 +284,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 30,
+    "bars": 31,
     "tp1_done": false,
-    "best_close": 85338.2,
+    "best_close": 85385.3,
     "realized": -3.0791978121812753,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8563366415470108,
-    "peak_r": 0.8558328023120515,
-    "stall_count": 2,
+    "hold_conf": 0.8714032173928644,
+    "peak_r": 0.9399811723879238,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "ADA",
-    "direction": 1,
-    "conf": 0.7441899111895638,
-    "sl": 0.23933546757922236,
-    "setup": "RCL_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-10-04 18:00:00+00:00",
-    "meta": {
-     "c_base": 0.5348907476173889,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.7916666666666665,
-     "hold_entry": 0.7629
-    },
-    "hold_dec": 0.7628788204844577
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "BTC|2026-10-03 13:00:00+00:00": "3ee8b798-76e3-8148-8652-c082c56c0a79"
@@ -364,5 +345,5 @@
   "ADA|2026-10-01 04:00:00+00:00",
   "HYPE|2026-10-03 00:00:00+00:00"
  ],
- "last_run": "2026-10-04 19:03:42.922896+00:00"
+ "last_run": "2026-10-04 20:03:37.363433+00:00"
 }
