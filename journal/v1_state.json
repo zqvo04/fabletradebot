@@ -40,16 +40,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 47,
+    "bars": 48,
     "tp1_done": false,
     "best_close": 86611.1,
     "realized": -4.755713979344001,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8954450446039328,
+    "hold_conf": 0.8824345903135813,
     "peak_r": 3.1299827018781903,
-    "stall_count": 11,
+    "stall_count": 12,
     "trail_tightened": false
    },
    "ADA": {
@@ -85,7 +85,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 13,
+    "bars": 14,
     "tp1_done": false,
     "best_close": 0.275,
     "realized": -10.0,
@@ -94,7 +94,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.9388906432238735,
     "peak_r": 1.8196351684169818,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false
    },
    "HYPE": {
@@ -130,7 +130,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 93.423,
     "realized": 0.0,
@@ -139,7 +139,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.8973974786118788,
     "peak_r": 0.3749191178925202,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -283,9 +283,9 @@
   "ADA|2026-10-04 08:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-05 12:00:00+00:00",
- "last_bar": "2026-10-05 11:00:00+00:00",
- "equity": 25339.755441539965,
+ "anchor": "2026-10-05 13:00:00+00:00",
+ "last_bar": "2026-10-05 12:00:00+00:00",
+ "equity": 25248.69371478181,
  "carry": {
   "cash": 24959.37470738809,
   "peak": 28701.98386769757,
@@ -327,16 +327,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 47,
+    "bars": 48,
     "tp1_done": false,
     "best_close": 86611.1,
     "realized": -5.9349823605805305,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8954450446039328,
+    "hold_conf": 0.8824345903135813,
     "peak_r": 3.1299827018781903,
-    "stall_count": 11,
+    "stall_count": 12,
     "trail_tightened": false
    }
   },
@@ -388,5 +388,5 @@
   "ADA|2026-10-01 04:00:00+00:00",
   "HYPE|2026-10-03 00:00:00+00:00"
  ],
- "last_run": "2026-10-05 12:03:41.371487+00:00"
+ "last_run": "2026-10-05 13:03:40.288765+00:00"
 }
