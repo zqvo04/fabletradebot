@@ -7,7 +7,7 @@
   "loss_log": [],
   "cooldown": {
    "DOGE": {
-    "bars": 2,
+    "bars": 1,
     "exp": true
    }
   },
@@ -45,16 +45,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 38,
+    "bars": 39,
     "tp1_done": false,
     "best_close": 86611.1,
     "realized": -3.8787332698380004,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9115657714486809,
+    "hold_conf": 0.8925578703711643,
     "peak_r": 3.1299827018781903,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    },
    "ADA": {
@@ -90,15 +90,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
-    "best_close": 0.2685,
+    "best_close": 0.2688,
     "realized": -5.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8539180791874522,
-    "peak_r": 0.8952521521271999,
+    "hold_conf": 0.8943413991832733,
+    "peak_r": 0.937915983648262,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -241,9 +241,9 @@
   "ADA|2026-10-04 08:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-05 03:00:00+00:00",
- "last_bar": "2026-10-05 02:00:00+00:00",
- "equity": 25430.94099362454,
+ "anchor": "2026-10-05 04:00:00+00:00",
+ "last_bar": "2026-10-05 03:00:00+00:00",
+ "equity": 25301.466277478095,
  "carry": {
   "cash": 24959.37470738809,
   "peak": 28701.98386769757,
@@ -285,16 +285,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 38,
+    "bars": 39,
     "tp1_done": false,
     "best_close": 86611.1,
     "realized": -4.840537853594965,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9115657714486809,
+    "hold_conf": 0.8925578703711643,
     "peak_r": 3.1299827018781903,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false
    }
   },
@@ -346,5 +346,5 @@
   "ADA|2026-10-01 04:00:00+00:00",
   "HYPE|2026-10-03 00:00:00+00:00"
  ],
- "last_run": "2026-10-05 03:03:45.928793+00:00"
+ "last_run": "2026-10-05 04:03:43.491632+00:00"
 }
