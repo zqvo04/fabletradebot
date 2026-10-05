@@ -40,16 +40,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 51,
+    "bars": 52,
     "tp1_done": false,
     "best_close": 86611.1,
-    "realized": -4.755713979344001,
+    "realized": -5.286394696876001,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7717593108172436,
+    "hold_conf": 0.7755944418576965,
     "peak_r": 3.1299827018781903,
-    "stall_count": 15,
+    "stall_count": 16,
     "trail_tightened": false
    },
    "ADA": {
@@ -85,16 +85,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 17,
+    "bars": 18,
     "tp1_done": false,
     "best_close": 0.275,
-    "realized": -10.0,
+    "realized": -15.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.910498740795999,
     "peak_r": 1.8196351684169818,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false
    },
    "HYPE": {
@@ -130,16 +130,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
-    "best_close": 93.423,
-    "realized": 0.0,
+    "best_close": 93.547,
+    "realized": -3.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8914024581935869,
-    "peak_r": 0.3749191178925202,
-    "stall_count": 4,
+    "peak_r": 0.46176742938144255,
+    "stall_count": 0,
     "trail_tightened": false
    }
   },
@@ -283,9 +283,9 @@
   "ADA|2026-10-04 08:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-05 16:00:00+00:00",
- "last_bar": "2026-10-05 15:00:00+00:00",
- "equity": 25060.040641323543,
+ "anchor": "2026-10-05 17:00:00+00:00",
+ "last_bar": "2026-10-05 16:00:00+00:00",
+ "equity": 25073.643529063615,
  "carry": {
   "cash": 24959.37470738809,
   "peak": 28701.98386769757,
@@ -327,16 +327,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 51,
+    "bars": 52,
     "tp1_done": false,
     "best_close": 86611.1,
-    "realized": -5.9349823605805305,
+    "realized": -6.597255304523869,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7717593108172436,
+    "hold_conf": 0.7755944418576965,
     "peak_r": 3.1299827018781903,
-    "stall_count": 15,
+    "stall_count": 16,
     "trail_tightened": false
    }
   },
@@ -388,5 +388,5 @@
   "ADA|2026-10-01 04:00:00+00:00",
   "HYPE|2026-10-03 00:00:00+00:00"
  ],
- "last_run": "2026-10-05 16:04:21.552062+00:00"
+ "last_run": "2026-10-05 17:03:47.058727+00:00"
 }
