@@ -40,16 +40,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 43,
+    "bars": 44,
     "tp1_done": false,
     "best_close": 86611.1,
-    "realized": -3.8787332698380004,
+    "realized": -4.755713979344001,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8964073801963297,
     "peak_r": 3.1299827018781903,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    },
    "ADA": {
@@ -85,28 +85,36 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
     "best_close": 0.2729,
-    "realized": -5.0,
+    "realized": -10.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9167054254466906,
     "peak_r": 1.5209883477695074,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
-   }
-  },
-  "pendings": [
-   {
+   },
+   "HYPE": {
     "sym": "HYPE",
     "direction": 1,
     "conf": 0.9475869845360834,
-    "sl": 91.45992244908628,
     "setup": "BRK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-10-05 07:00:00+00:00",
+    "entry": 92.88769919999999,
+    "sl": 91.45992244908628,
+    "sl0": 91.45992244908628,
+    "tp1": 0.0,
+    "notional": 30000.0,
+    "margin": 10000.0,
+    "risk_amt": 461.1299762650515,
+    "leverage": 3.0,
+    "liq_price": 62.854009792,
+    "opened_ts": "2026-10-05 08:00:00+00:00",
+    "risk_frac": 0.01,
+    "init_stop_frac": 0.01537099920883505,
     "meta": {
      "c_base": 0.9047036082474244,
      "c_fit": 1.0,
@@ -115,17 +123,37 @@
      "c_base_pct": 1.0,
      "hold_entry": 0.8766
     },
-    "hold_dec": 0.876574552188723
+    "tranches": [
+     [
+      92.88769919999999,
+      30000.0
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 93.419,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.876574552188723,
+    "peak_r": 0.37211755945739017,
+    "stall_count": 0,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
  "shadow_pages": {
   "BTC|2026-10-03 13:00:00+00:00": "3ee8b798-76e3-8149-aa2e-f82495abac81",
-  "ADA|2026-10-04 23:00:00+00:00": "3f08b798-76e3-818a-ad7f-e70217df2766"
+  "ADA|2026-10-04 23:00:00+00:00": "3f08b798-76e3-818a-ad7f-e70217df2766",
+  "HYPE|2026-10-05 08:00:00+00:00": "3f08b798-76e3-81be-8e85-f45deeeeae69"
  },
  "shadow_seats": {
   "BTC|2026-10-03 13:00:00+00:00": "Live-Taken",
-  "ADA|2026-10-04 23:00:00+00:00": "Live-Blocked"
+  "ADA|2026-10-04 23:00:00+00:00": "Live-Blocked",
+  "HYPE|2026-10-05 08:00:00+00:00": "Live-Blocked"
  },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
@@ -255,9 +283,9 @@
   "ADA|2026-10-04 08:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-05 08:00:00+00:00",
- "last_bar": "2026-10-05 07:00:00+00:00",
- "equity": 25355.05622132608,
+ "anchor": "2026-10-05 09:00:00+00:00",
+ "last_bar": "2026-10-05 08:00:00+00:00",
+ "equity": 25345.57915662333,
  "carry": {
   "cash": 24959.37470738809,
   "peak": 28701.98386769757,
@@ -299,16 +327,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 43,
+    "bars": 44,
     "tp1_done": false,
     "best_close": 86611.1,
-    "realized": -4.840537853594965,
+    "realized": -5.9349823605805305,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8964073801963297,
     "peak_r": 3.1299827018781903,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    }
   },
@@ -316,17 +344,17 @@
    {
     "sym": "HYPE",
     "direction": 1,
-    "conf": 0.9475869845360834,
-    "sl": 91.45992244908628,
+    "conf": 0.8423779794215347,
+    "sl": 92.08009329479086,
     "setup": "BRK_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-10-05 07:00:00+00:00",
+    "decided_ts": "2026-10-05 08:00:00+00:00",
     "meta": {
-     "c_base": 0.9047036082474244,
+     "c_base": 0.7134145080391541,
      "c_fit": 1.0,
      "c_align": 1.0,
      "c_fund": 0.0,
-     "c_base_pct": 1.0,
+     "c_base_pct": 0.9958333333333332,
      "hold_entry": 0.8766
     },
     "hold_dec": 0.876574552188723
@@ -379,5 +407,5 @@
   "ADA|2026-10-01 04:00:00+00:00",
   "HYPE|2026-10-03 00:00:00+00:00"
  ],
- "last_run": "2026-10-05 08:03:38.731130+00:00"
+ "last_run": "2026-10-05 09:03:42.682386+00:00"
 }
