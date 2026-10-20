@@ -6,10 +6,6 @@
   "circuit_until": null,
   "loss_log": [
    [
-    "2026-10-18 22:00:00+00:00",
-    171.64596205135706
-   ],
-   [
     "2026-10-19 08:00:00+00:00",
     32.98100804049424
    ]
@@ -49,28 +45,36 @@
      ]
     ],
     "adds": 0,
-    "bars": 17,
+    "bars": 18,
     "tp1_done": false,
     "best_close": 0.07903,
     "realized": 0.8359196103095189,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6153295467210462,
+    "hold_conf": 0.6250438874597571,
     "peak_r": 0.08383869968920142,
-    "stall_count": 12,
+    "stall_count": 13,
     "trail_tightened": false
-   }
-  },
-  "pendings": [
-   {
+   },
+   "ONDO": {
     "sym": "ONDO",
     "direction": 1,
     "conf": 0.6134114990316821,
-    "sl": 0.41991888776852293,
     "setup": "RCL_L",
     "regime": "TREND_UP",
-    "decided_ts": "2026-10-20 03:00:00+00:00",
+    "entry": 0.44206508,
+    "sl": 0.41991888776852293,
+    "sl0": 0.41991888776852293,
+    "tp1": 0.0,
+    "notional": 6000.0,
+    "margin": 2000.0,
+    "risk_amt": 300.5827861111817,
+    "leverage": 3.0,
+    "liq_price": 0.29913070413333337,
+    "opened_ts": "2026-10-20 04:00:00+00:00",
+    "risk_frac": 0.002,
+    "init_stop_frac": 0.05009713101853028,
     "meta": {
      "c_base": 0.6001421194515433,
      "c_fit": 1.0,
@@ -79,15 +83,35 @@
      "c_base_pct": 0.8375,
      "hold_entry": 0.5423
     },
-    "hold_dec": 0.5422797662370977
+    "tranches": [
+     [
+      0.44206508,
+      6000.0
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 0.44206508,
+    "realized": 0.0,
+    "bias_flip_streak": 1,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.5303392058337751,
+    "peak_r": 0.0,
+    "stall_count": 1,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
  "shadow_pages": {
-  "DOGE|2026-10-19 11:00:00+00:00": "3fe8b798-76e3-81bd-bd10-ec29d5d52be0"
+  "DOGE|2026-10-19 11:00:00+00:00": "3fe8b798-76e3-81bd-bd10-ec29d5d52be0",
+  "ONDO|2026-10-20 04:00:00+00:00": "3ff8b798-76e3-8104-9a13-e2c9986c8023"
  },
  "shadow_seats": {
-  "DOGE|2026-10-19 11:00:00+00:00": "Live-Taken"
+  "DOGE|2026-10-19 11:00:00+00:00": "Live-Taken",
+  "ONDO|2026-10-20 04:00:00+00:00": "Live-Blocked"
  },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
@@ -237,19 +261,15 @@
   "HYPE|2026-10-19 07:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-20 04:00:00+00:00",
- "last_bar": "2026-10-20 03:00:00+00:00",
- "equity": 24037.869534376936,
+ "anchor": "2026-10-20 05:00:00+00:00",
+ "last_bar": "2026-10-20 04:00:00+00:00",
+ "equity": 24069.322367077748,
  "carry": {
   "cash": 24125.978254119927,
   "peak": 28701.98386769757,
   "dd_frozen": false,
   "circuit_until": null,
   "loss_log": [
-   [
-    "2026-10-18 22:00:00+00:00",
-    208.69616131112443
-   ],
    [
     "2026-10-19 08:00:00+00:00",
     39.85066990241946
@@ -290,39 +310,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 17,
+    "bars": 18,
     "tp1_done": false,
     "best_close": 0.07903,
     "realized": 1.0083689170259929,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6153295467210462,
+    "hold_conf": 0.6250438874597571,
     "peak_r": 0.08383869968920142,
-    "stall_count": 12,
+    "stall_count": 13,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "ONDO",
-    "direction": 1,
-    "conf": 0.6134114990316821,
-    "sl": 0.41991888776852293,
-    "setup": "RCL_L",
-    "regime": "TREND_UP",
-    "decided_ts": "2026-10-20 03:00:00+00:00",
-    "meta": {
-     "c_base": 0.6001421194515433,
-     "c_fit": 1.0,
-     "c_align": 0.6666666666666666,
-     "c_fund": -0.1,
-     "c_base_pct": 0.8375,
-     "hold_entry": 0.5423
-    },
-    "hold_dec": 0.5422797662370977
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "DOGE|2026-10-19 11:00:00+00:00": "3fe8b798-76e3-811d-a485-cbccf31cb64d"
@@ -381,5 +382,5 @@
   "SOL|2026-10-19 02:00:00+00:00",
   "HYPE|2026-10-19 07:00:00+00:00"
  ],
- "last_run": "2026-10-20 04:03:40.335354+00:00"
+ "last_run": "2026-10-20 05:03:43.479716+00:00"
 }
