@@ -45,20 +45,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 6,
+    "bars": 7,
     "tp1_done": false,
     "best_close": 2332.46,
     "realized": 0.47031035098742285,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.5859885653742102,
+    "hold_conf": 0.5110708111998881,
     "peak_r": 0.10332853191169647,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "BTC",
+    "direction": 1,
+    "conf": 0.737700364199136,
+    "sl": 79976.13359819952,
+    "setup": "RCL_L",
+    "regime": "TREND_UP",
+    "decided_ts": "2026-10-28 19:00:00+00:00",
+    "meta": {
+     "c_base": 0.6443036924832776,
+     "c_fit": 1.0,
+     "c_align": 0.6666666666666666,
+     "c_fund": 0.0,
+     "c_base_pct": 0.7916666666666665,
+     "hold_entry": 0.6834
+    },
+    "hold_dec": 0.6833560559498076
+   }
+  ]
  },
  "shadow_pages": {
   "ETH|2026-10-28 13:00:00+00:00": "4078b798-76e3-81e3-ad6e-de566727cf83"
@@ -220,9 +239,9 @@
   "BTC|2026-10-27 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-28 19:00:00+00:00",
- "last_bar": "2026-10-28 18:00:00+00:00",
- "equity": 22495.678667553802,
+ "anchor": "2026-10-28 20:00:00+00:00",
+ "last_bar": "2026-10-28 19:00:00+00:00",
+ "equity": 22443.322938193938,
  "carry": {
   "cash": 22544.25059920218,
   "peak": 28701.98386769757,
@@ -269,20 +288,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 6,
+    "bars": 7,
     "tp1_done": false,
     "best_close": 2332.46,
     "realized": 0.5301397206029597,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.5859885653742102,
+    "hold_conf": 0.5110708111998881,
     "peak_r": 0.10332853191169646,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "BTC",
+    "direction": 1,
+    "conf": 0.737700364199136,
+    "sl": 79976.13359819952,
+    "setup": "RCL_L",
+    "regime": "TREND_UP",
+    "decided_ts": "2026-10-28 19:00:00+00:00",
+    "meta": {
+     "c_base": 0.6443036924832776,
+     "c_fit": 1.0,
+     "c_align": 0.6666666666666666,
+     "c_fund": 0.0,
+     "c_base_pct": 0.7916666666666665,
+     "hold_entry": 0.6834
+    },
+    "hold_dec": 0.6833560559498076
+   }
+  ]
  },
  "pages": {
   "ETH|2026-10-28 13:00:00+00:00": "4078b798-76e3-8160-bdef-c7c09c357942"
@@ -345,5 +383,5 @@
   "XRP|2026-10-25 06:00:00+00:00",
   "BTC|2026-10-27 16:00:00+00:00"
  ],
- "last_run": "2026-10-28 19:03:46.122324+00:00"
+ "last_run": "2026-10-28 20:03:44.501155+00:00"
 }
