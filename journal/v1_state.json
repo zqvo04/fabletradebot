@@ -12,7 +12,7 @@
   ],
   "cooldown": {
    "BTC": {
-    "bars": 5,
+    "bars": 4,
     "exp": true
    }
   },
@@ -50,16 +50,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 15,
+    "bars": 16,
     "tp1_done": false,
     "best_close": 2307.9,
     "realized": 1.1171582749970674,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6699761970554171,
+    "hold_conf": 0.6495844723413478,
     "peak_r": 0.5325655347477156,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    },
    "ADA": {
@@ -95,7 +95,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
     "best_close": 0.1973,
     "realized": 0.0,
@@ -104,7 +104,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.704994263872387,
     "peak_r": 0.12062258651232594,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -273,9 +273,9 @@
   "BTC|2026-10-28 20:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-29 04:00:00+00:00",
- "last_bar": "2026-10-29 03:00:00+00:00",
- "equity": 22641.56020101451,
+ "anchor": "2026-10-29 05:00:00+00:00",
+ "last_bar": "2026-10-29 04:00:00+00:00",
+ "equity": 22601.844235335142,
  "carry": {
   "cash": 22544.25059920218,
   "peak": 28701.98386769757,
@@ -317,16 +317,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 15,
+    "bars": 16,
     "tp1_done": false,
     "best_close": 2307.9,
     "realized": 1.2592748055253153,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6699761970554171,
+    "hold_conf": 0.6495844723413478,
     "peak_r": 0.5325655347477156,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -393,5 +393,5 @@
   "XRP|2026-10-25 06:00:00+00:00",
   "BTC|2026-10-27 16:00:00+00:00"
  ],
- "last_run": "2026-10-29 04:03:44.265230+00:00"
+ "last_run": "2026-10-29 05:03:48.113931+00:00"
 }
