@@ -61,7 +61,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 44,
+    "bars": 45,
     "tp1_done": false,
     "best_close": 2194.74,
     "realized": 1.216116827104818,
@@ -70,7 +70,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7331052043929247,
     "peak_r": 2.5102715298993514,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    },
    "HYPE": {
@@ -106,7 +106,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 21,
+    "bars": 22,
     "tp1_done": false,
     "best_close": 96.344,
     "realized": -0.5356991598056993,
@@ -115,7 +115,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.8210896682605404,
     "peak_r": 0.762531800673594,
-    "stall_count": 16,
+    "stall_count": 17,
     "trail_tightened": false
    },
    "XRP": {
@@ -151,7 +151,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
     "best_close": 1.2097,
     "realized": -1.2727550129725331,
@@ -160,7 +160,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7402527977239001,
     "peak_r": 3.4489439739994436,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    },
    "SOL": {
@@ -196,7 +196,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 12,
+    "bars": 13,
     "tp1_done": false,
     "best_close": 93.92,
     "realized": -0.4309231506826966,
@@ -205,7 +205,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7106219533904058,
     "peak_r": 0.2689366460957755,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    }
   },
@@ -382,9 +382,9 @@
   "SUI|2026-10-29 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-30 09:00:00+00:00",
- "last_bar": "2026-10-30 08:00:00+00:00",
- "equity": 22893.521403713876,
+ "anchor": "2026-10-30 10:00:00+00:00",
+ "last_bar": "2026-10-30 09:00:00+00:00",
+ "equity": 22891.756249683684,
  "carry": {
   "cash": 22544.25059920218,
   "peak": 28701.98386769757,
@@ -426,7 +426,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 44,
+    "bars": 45,
     "tp1_done": false,
     "best_close": 2194.74,
     "realized": 1.370822125407882,
@@ -435,7 +435,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7331052043929247,
     "peak_r": 2.510271529899351,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    }
   },
@@ -502,5 +502,5 @@
   "XRP|2026-10-25 06:00:00+00:00",
   "BTC|2026-10-27 16:00:00+00:00"
  ],
- "last_run": "2026-10-30 09:03:45.340607+00:00"
+ "last_run": "2026-10-30 10:03:35.884361+00:00"
 }
