@@ -26,7 +26,12 @@
     98.5300677225514
    ]
   ],
-  "cooldown": {},
+  "cooldown": {
+   "HYPE": {
+    "bars": 11,
+    "exp": true
+   }
+  },
   "positions": {
    "ETH": {
     "sym": "ETH",
@@ -61,7 +66,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 53,
+    "bars": 54,
     "tp1_done": false,
     "best_close": 2194.74,
     "realized": 1.2469512408805625,
@@ -70,53 +75,8 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7674212763112559,
     "peak_r": 2.5102715298993514,
-    "stall_count": 16,
+    "stall_count": 17,
     "trail_tightened": false
-   },
-   "HYPE": {
-    "sym": "HYPE",
-    "direction": 1,
-    "conf": 0.5824164101771886,
-    "setup": "RCL_L",
-    "regime": "RANGE",
-    "entry": 88.01277599999999,
-    "sl": 90.63899411504197,
-    "sl0": 77.08703625689617,
-    "tp1": 0.0,
-    "notional": 2577.7740438835544,
-    "margin": 1288.8870219417772,
-    "risk_amt": 320.00000000000006,
-    "leverage": 2.0,
-    "liq_price": 44.886515759999995,
-    "opened_ts": "2026-10-29 12:00:00+00:00",
-    "risk_frac": 0.0012888870219417772,
-    "init_stop_frac": 0.12413811084772307,
-    "meta": {
-     "c_base": 0.8165146851706458,
-     "c_fit": 0.0,
-     "c_align": 0.6666666666666666,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9833333333333333,
-     "hold_entry": 0.7389
-    },
-    "tranches": [
-     [
-      88.01277599999999,
-      2577.7740438835544
-     ]
-    ],
-    "adds": 0,
-    "bars": 30,
-    "tp1_done": false,
-    "best_close": 96.344,
-    "realized": -0.7934765641940547,
-    "bias_flip_streak": 0,
-    "fade_streak": 0,
-    "loss_fade_streak": 0,
-    "hold_conf": 0.8005119675860497,
-    "peak_r": 0.762531800673594,
-    "stall_count": 25,
-    "trail_tightened": true
    },
    "XRP": {
     "sym": "XRP",
@@ -151,7 +111,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 25,
+    "bars": 26,
     "tp1_done": false,
     "best_close": 1.2097,
     "realized": -2.137221758251611,
@@ -160,7 +120,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7477120118105857,
     "peak_r": 3.4489439739994436,
-    "stall_count": 16,
+    "stall_count": 17,
     "trail_tightened": false
    },
    "SOL": {
@@ -196,7 +156,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 21,
+    "bars": 22,
     "tp1_done": false,
     "best_close": 93.92,
     "realized": -0.23878564977940622,
@@ -205,7 +165,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.759572909187425,
     "peak_r": 0.2689366460957755,
-    "stall_count": 16,
+    "stall_count": 17,
     "trail_tightened": false
    }
   },
@@ -213,13 +173,11 @@
  },
  "shadow_pages": {
   "ETH|2026-10-28 13:00:00+00:00": "4078b798-76e3-81e3-ad6e-de566727cf83",
-  "HYPE|2026-10-29 12:00:00+00:00": "4088b798-76e3-8187-b5fd-f6628fdb0873",
   "XRP|2026-10-29 17:00:00+00:00": "4088b798-76e3-8119-be4d-c1fb3de42ce1",
   "SOL|2026-10-29 21:00:00+00:00": "4088b798-76e3-8122-bde1-fde3babd4f1f"
  },
  "shadow_seats": {
   "ETH|2026-10-28 13:00:00+00:00": "Live-Taken",
-  "HYPE|2026-10-29 12:00:00+00:00": "Live-Blocked",
   "XRP|2026-10-29 17:00:00+00:00": "Live-Blocked",
   "SOL|2026-10-29 21:00:00+00:00": "Live-Blocked"
  },
@@ -379,12 +337,13 @@
   "ADA|2026-10-29 02:00:00+00:00",
   "DOGE|2026-10-29 07:00:00+00:00",
   "BTC|2026-10-29 16:00:00+00:00",
-  "SUI|2026-10-29 16:00:00+00:00"
+  "SUI|2026-10-29 16:00:00+00:00",
+  "HYPE|2026-10-29 12:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-30 18:00:00+00:00",
- "last_bar": "2026-10-30 17:00:00+00:00",
- "equity": 22848.008882550894,
+ "anchor": "2026-10-30 19:00:00+00:00",
+ "last_bar": "2026-10-30 18:00:00+00:00",
+ "equity": 22886.432503315296,
  "carry": {
   "cash": 22544.25059920218,
   "peak": 28701.98386769757,
@@ -426,7 +385,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 53,
+    "bars": 54,
     "tp1_done": false,
     "best_close": 2194.74,
     "realized": 1.405579062969876,
@@ -435,7 +394,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7674212763112559,
     "peak_r": 2.510271529899351,
-    "stall_count": 16,
+    "stall_count": 17,
     "trail_tightened": false
    }
   },
@@ -502,5 +461,5 @@
   "XRP|2026-10-25 06:00:00+00:00",
   "BTC|2026-10-27 16:00:00+00:00"
  ],
- "last_run": "2026-10-30 18:03:41.504320+00:00"
+ "last_run": "2026-10-30 19:03:44.248456+00:00"
 }
