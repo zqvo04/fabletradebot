@@ -28,19 +28,19 @@
   ],
   "cooldown": {
    "ADA": {
-    "bars": 2,
+    "bars": 1,
     "exp": true
    },
    "DOGE": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    },
    "BTC": {
-    "bars": 5,
+    "bars": 4,
     "exp": true
    },
    "SUI": {
-    "bars": 5,
+    "bars": 4,
     "exp": true
    }
   },
@@ -78,15 +78,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 35,
+    "bars": 36,
     "tp1_done": false,
-    "best_close": 2252.49,
-    "realized": 1.9214361363447399,
+    "best_close": 2221.64,
+    "realized": 1.7284140575886395,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.706903742764002,
-    "peak_r": 1.5009703526281721,
+    "peak_r": 2.040138167672601,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -123,16 +123,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 12,
+    "bars": 13,
     "tp1_done": false,
     "best_close": 96.344,
-    "realized": -0.20642255705670756,
+    "realized": -0.46419996144506304,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.7776267461997266,
     "peak_r": 0.762531800673594,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false
    },
    "XRP": {
@@ -168,15 +168,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 7,
+    "bars": 8,
     "tp1_done": false,
-    "best_close": 1.2368,
-    "realized": 0.0,
+    "best_close": 1.2239,
+    "realized": -0.023385287334351794,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.7464408183789017,
-    "peak_r": 2.397346279127543,
+    "peak_r": 2.89792230362376,
     "stall_count": 0,
     "trail_tightened": false
    },
@@ -213,15 +213,15 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
-    "best_close": 95.58,
-    "realized": 0.0,
+    "best_close": 94.77,
+    "realized": 0.056653860148517664,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.7243646168049693,
-    "peak_r": 0.06144270565500307,
+    "peak_r": 0.16268974888212748,
     "stall_count": 0,
     "trail_tightened": false
    }
@@ -399,9 +399,9 @@
   "SUI|2026-10-29 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-30 00:00:00+00:00",
- "last_bar": "2026-10-29 23:00:00+00:00",
- "equity": 22817.122480263566,
+ "anchor": "2026-10-30 01:00:00+00:00",
+ "last_bar": "2026-10-30 00:00:00+00:00",
+ "equity": 22914.14597805692,
  "carry": {
   "cash": 22544.25059920218,
   "peak": 28701.98386769757,
@@ -443,57 +443,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 35,
+    "bars": 36,
     "tp1_done": false,
-    "best_close": 2252.49,
-    "realized": 2.165866888405931,
+    "best_close": 2221.64,
+    "realized": 1.9482899826731075,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.706903742764002,
-    "peak_r": 1.5009703526281721,
+    "peak_r": 2.040138167672601,
     "stall_count": 0,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "BTC",
-    "direction": -1,
-    "conf": 0.5936067574053636,
-    "sl": 82474.85706015337,
-    "setup": "RCL_S",
-    "regime": "RANGE",
-    "decided_ts": "2026-10-29 23:00:00+00:00",
-    "meta": {
-     "c_base": 0.9580728922521763,
-     "c_fit": 0.0,
-     "c_align": 0.3333333333333333,
-     "c_fund": 0.0,
-     "c_base_pct": 1.0,
-     "hold_entry": 0.5539
-    },
-    "hold_dec": 0.5538999144532394
-   },
-   {
-    "sym": "DOGE",
-    "direction": -1,
-    "conf": 0.7127511446451507,
-    "sl": 0.08230030149874452,
-    "setup": "RCL_S",
-    "regime": "TREND_DOWN",
-    "decided_ts": "2026-10-29 23:00:00+00:00",
-    "meta": {
-     "c_base": 0.7807596569305769,
-     "c_fit": 1.0,
-     "c_align": 0.6666666666666666,
-     "c_fund": -0.1,
-     "c_base_pct": 0.9666666666666667,
-     "hold_entry": 0.6866
-    },
-    "hold_dec": 0.6866133094321927
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "ETH|2026-10-28 13:00:00+00:00": "4078b798-76e3-8160-bdef-c7c09c357942"
@@ -556,5 +519,5 @@
   "XRP|2026-10-25 06:00:00+00:00",
   "BTC|2026-10-27 16:00:00+00:00"
  ],
- "last_run": "2026-10-30 00:03:45.723473+00:00"
+ "last_run": "2026-10-30 01:03:43.687094+00:00"
 }
