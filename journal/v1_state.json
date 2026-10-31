@@ -28,7 +28,7 @@
   ],
   "cooldown": {
    "HYPE": {
-    "bars": 5,
+    "bars": 4,
     "exp": true
    }
   },
@@ -40,7 +40,7 @@
     "setup": "PBK_S",
     "regime": "RANGE",
     "entry": 2338.372232,
-    "sl": 2395.5900390337115,
+    "sl": 2255.6281472741193,
     "sl0": 2395.5900390337115,
     "tp1": 0.0,
     "notional": 6538.8657223365135,
@@ -66,7 +66,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 60,
+    "bars": 61,
     "tp1_done": false,
     "best_close": 2194.74,
     "realized": 0.7161321767885745,
@@ -75,8 +75,8 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7721561141579714,
     "peak_r": 2.5102715298993514,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    },
    "XRP": {
     "sym": "XRP",
@@ -85,7 +85,7 @@
     "setup": "PBK_S",
     "regime": "RANGE",
     "entry": 1.2985803599999999,
-    "sl": 1.3243506713387871,
+    "sl": 1.2451443298792366,
     "sl0": 1.3243506713387871,
     "tp1": 0.0,
     "notional": 8062.489229118396,
@@ -111,17 +111,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 32,
+    "bars": 33,
     "tp1_done": false,
     "best_close": 1.2097,
     "realized": -2.5788943949572127,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7252034120646201,
+    "hold_conf": 0.7374484905137253,
     "peak_r": 3.4489439739994436,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    },
    "SOL": {
     "sym": "SOL",
@@ -156,16 +156,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 28,
+    "bars": 29,
     "tp1_done": false,
     "best_close": 93.92,
     "realized": -0.39843735977620254,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7477665427905695,
+    "hold_conf": 0.750096270842975,
     "peak_r": 0.2689366460957755,
-    "stall_count": 23,
+    "stall_count": 24,
     "trail_tightened": false
    }
   },
@@ -341,9 +341,9 @@
   "HYPE|2026-10-29 12:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-10-31 01:00:00+00:00",
- "last_bar": "2026-10-31 00:00:00+00:00",
- "equity": 22831.713274025053,
+ "anchor": "2026-10-31 02:00:00+00:00",
+ "last_bar": "2026-10-31 01:00:00+00:00",
+ "equity": 22847.9463869813,
  "carry": {
   "cash": 22544.25059920218,
   "peak": 28701.98386769757,
@@ -359,7 +359,7 @@
     "setup": "PBK_S",
     "regime": "RANGE",
     "entry": 2338.372232,
-    "sl": 2395.5900390337115,
+    "sl": 2255.6281472741193,
     "sl0": 2395.5900390337115,
     "tp1": 0.0,
     "notional": 7370.691373944376,
@@ -385,7 +385,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 60,
+    "bars": 61,
     "tp1_done": false,
     "best_close": 2194.74,
     "realized": 0.807233162783689,
@@ -394,8 +394,8 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.7721561141579714,
     "peak_r": 2.510271529899351,
-    "stall_count": 23,
-    "trail_tightened": false
+    "stall_count": 24,
+    "trail_tightened": true
    }
   },
   "pendings": []
@@ -461,5 +461,5 @@
   "XRP|2026-10-25 06:00:00+00:00",
   "BTC|2026-10-27 16:00:00+00:00"
  ],
- "last_run": "2026-10-31 01:03:40.633661+00:00"
+ "last_run": "2026-10-31 02:03:39.099670+00:00"
 }
