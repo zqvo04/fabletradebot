@@ -53,16 +53,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 106,
+    "bars": 107,
     "tp1_done": false,
     "best_close": 91.49,
     "realized": 0.9091483176428183,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.9027790395378533,
+    "hold_conf": 0.9073504659943264,
     "peak_r": 0.5726777757771485,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    },
    "SUI": {
@@ -98,16 +98,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 26,
+    "bars": 27,
     "tp1_done": false,
     "best_close": 0.8615,
     "realized": 1.150611273018,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.903295997623585,
+    "hold_conf": 0.9120683303649092,
     "peak_r": 2.54384125310474,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    },
    "DOGE": {
@@ -143,16 +143,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 23,
+    "bars": 24,
     "tp1_done": false,
     "best_close": 0.07368,
     "realized": 0.6179492049915424,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8875534750038071,
+    "hold_conf": 0.893224798118679,
     "peak_r": 0.8369137913088069,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    },
    "XRP": {
@@ -188,16 +188,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 20,
+    "bars": 21,
     "tp1_done": false,
     "best_close": 1.2412,
     "realized": 0.4535251145144287,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8102927994604479,
+    "hold_conf": 0.7874195051935599,
     "peak_r": 0.26525098699721283,
-    "stall_count": 13,
+    "stall_count": 14,
     "trail_tightened": false
    },
    "ETH": {
@@ -233,16 +233,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 15,
+    "bars": 16,
     "tp1_done": false,
     "best_close": 2245.2,
     "realized": 0.8895730876657687,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8318110485675801,
+    "hold_conf": 0.8076342637134589,
     "peak_r": 0.6530569752216516,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
@@ -427,24 +427,15 @@
   "HYPE|2026-11-02 04:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-03 07:00:00+00:00",
- "last_bar": "2026-11-03 06:00:00+00:00",
- "equity": 22364.44997154815,
+ "anchor": "2026-11-03 08:00:00+00:00",
+ "last_bar": "2026-11-03 07:00:00+00:00",
+ "equity": 22331.623915706223,
  "carry": {
   "cash": 22215.02708330934,
   "peak": 28701.98386769757,
   "dd_frozen": true,
   "circuit_until": null,
-  "loss_log": [
-   [
-    "2026-11-02 01:00:00+00:00",
-    127.42806596286516
-   ],
-   [
-    "2026-11-02 06:00:00+00:00",
-    489.3463411203642
-   ]
-  ],
+  "loss_log": [],
   "cooldown": {},
   "positions": {
    "DOGE": {
@@ -480,39 +471,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 23,
+    "bars": 24,
     "tp1_done": false,
     "best_close": 0.07368,
     "realized": 0.6863879162498294,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8875534750038071,
+    "hold_conf": 0.893224798118679,
     "peak_r": 0.8369137913088072,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "XRP",
-    "direction": -1,
-    "conf": 0.7669738657678995,
-    "sl": 1.2638382551833494,
-    "setup": "PBK_S",
-    "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-03 06:00:00+00:00",
-    "meta": {
-     "c_base": 0.5763161195779992,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.6833333333333332,
-     "hold_entry": 0.8103
-    },
-    "hold_dec": 0.8102927994604479
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "DOGE|2026-11-02 08:00:00+00:00": "40c8b798-76e3-811e-a993-ddd2c5bd46a4"
@@ -578,5 +550,5 @@
   "ETH|2026-11-01 13:00:00+00:00",
   "HYPE|2026-11-02 04:00:00+00:00"
  ],
- "last_run": "2026-11-03 07:03:47.192568+00:00"
+ "last_run": "2026-11-03 08:03:47.396984+00:00"
 }
