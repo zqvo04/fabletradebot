@@ -6,18 +6,6 @@
   "circuit_until": null,
   "loss_log": [
    [
-    "2026-11-02 01:00:00+00:00",
-    111.62331278719802
-   ],
-   [
-    "2026-11-02 01:00:00+00:00",
-    6.199876854411175
-   ],
-   [
-    "2026-11-02 06:00:00+00:00",
-    431.0591021145133
-   ],
-   [
     "2026-11-03 12:00:00+00:00",
     170.56111665262824
    ]
@@ -57,7 +45,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 124,
+    "bars": 125,
     "tp1_done": false,
     "best_close": 91.49,
     "realized": 1.225072695030958,
@@ -66,7 +54,7 @@
     "loss_fade_streak": 0,
     "hold_conf": 0.8814549345863325,
     "peak_r": 0.5726777757771485,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    },
    "SUI": {
@@ -102,16 +90,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 44,
+    "bars": 45,
     "tp1_done": false,
     "best_close": 0.8615,
     "realized": 2.950611273018,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7734466965880649,
+    "hold_conf": 0.8005562502741939,
     "peak_r": 2.54384125310474,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    },
    "DOGE": {
@@ -147,16 +135,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 41,
+    "bars": 42,
     "tp1_done": false,
     "best_close": 0.07368,
     "realized": 1.6412710650486146,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8138448321402237,
+    "hold_conf": 0.8423766647174658,
     "peak_r": 0.8369137913088069,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    },
    "ETH": {
@@ -192,28 +180,36 @@
      ]
     ],
     "adds": 0,
-    "bars": 33,
+    "bars": 34,
     "tp1_done": false,
     "best_close": 2245.2,
     "realized": 3.380008758880609,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7378192945120589,
+    "hold_conf": 0.760987716133357,
     "peak_r": 0.6530569752216516,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
-   }
-  },
-  "pendings": [
-   {
+   },
+   "XRP": {
     "sym": "XRP",
     "direction": -1,
     "conf": 0.9249763882259752,
-    "sl": 1.294073546284425,
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-04 00:00:00+00:00",
+    "entry": 1.2604956,
+    "sl": 1.294073546284425,
+    "sl0": 1.294073546284425,
+    "tp1": 0.0,
+    "notional": 6006.302300076885,
+    "margin": 1201.260460015377,
+    "risk_amt": 160.00000000000003,
+    "leverage": 5.0,
+    "liq_price": 1.499989764,
+    "opened_ts": "2026-11-04 01:00:00+00:00",
+    "risk_frac": 0.001201260460015377,
+    "init_stop_frac": 0.026638685834702643,
     "meta": {
      "c_base": 0.8635934331381367,
      "c_fit": 1.0,
@@ -222,21 +218,41 @@
      "c_base_pct": 0.9916666666666667,
      "hold_entry": 0.6801
     },
-    "hold_dec": 0.6801374736259577
+    "tranches": [
+     [
+      1.2604956,
+      6006.302300076885
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 1.2529,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7112118247917159,
+    "peak_r": 0.2262079978227654,
+    "stall_count": 0,
+    "trail_tightened": false
    }
-  ]
+  },
+  "pendings": []
  },
  "shadow_pages": {
   "SOL|2026-10-29 21:00:00+00:00": "4088b798-76e3-8122-bde1-fde3babd4f1f",
   "SUI|2026-11-02 05:00:00+00:00": "40c8b798-76e3-8157-9bfc-dfd0d1788c95",
   "DOGE|2026-11-02 08:00:00+00:00": "40c8b798-76e3-8184-ab26-f227bccaf656",
-  "ETH|2026-11-02 16:00:00+00:00": "40c8b798-76e3-815b-93b8-e4adf8005410"
+  "ETH|2026-11-02 16:00:00+00:00": "40c8b798-76e3-815b-93b8-e4adf8005410",
+  "XRP|2026-11-04 01:00:00+00:00": "40e8b798-76e3-819e-aff5-de7206ccf44b"
  },
  "shadow_seats": {
   "SOL|2026-10-29 21:00:00+00:00": "Live-Blocked",
   "SUI|2026-11-02 05:00:00+00:00": "Live-Blocked",
   "DOGE|2026-11-02 08:00:00+00:00": "Live-Taken",
-  "ETH|2026-11-02 16:00:00+00:00": "Live-Blocked"
+  "ETH|2026-11-02 16:00:00+00:00": "Live-Blocked",
+  "XRP|2026-11-04 01:00:00+00:00": "Live-Blocked"
  },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
@@ -404,9 +420,9 @@
   "XRP|2026-11-02 11:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-04 01:00:00+00:00",
- "last_bar": "2026-11-04 00:00:00+00:00",
- "equity": 22271.211717144415,
+ "anchor": "2026-11-04 02:00:00+00:00",
+ "last_bar": "2026-11-04 01:00:00+00:00",
+ "equity": 22331.734757602968,
  "carry": {
   "cash": 22215.02708330934,
   "peak": 28701.98386769757,
@@ -448,57 +464,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 41,
+    "bars": 42,
     "tp1_done": false,
     "best_close": 0.07368,
     "realized": 1.8230440580553469,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8138448321402237,
+    "hold_conf": 0.8423766647174658,
     "peak_r": 0.8369137913088072,
-    "stall_count": 18,
+    "stall_count": 19,
     "trail_tightened": false
    }
   },
-  "pendings": [
-   {
-    "sym": "XRP",
-    "direction": -1,
-    "conf": 0.9249763882259752,
-    "sl": 1.294073546284425,
-    "setup": "PBK_S",
-    "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-04 00:00:00+00:00",
-    "meta": {
-     "c_base": 0.8635934331381367,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9916666666666667,
-     "hold_entry": 0.6801
-    },
-    "hold_dec": 0.6801374736259577
-   },
-   {
-    "sym": "SUI",
-    "direction": -1,
-    "conf": 0.6322107081174431,
-    "sl": 0.9088366830152451,
-    "setup": "PBK_S",
-    "regime": "RANGE",
-    "decided_ts": "2026-11-04 00:00:00+00:00",
-    "meta": {
-     "c_base": 0.7858376511226237,
-     "c_fit": 0.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9583333333333335,
-     "hold_entry": 0.7734
-    },
-    "hold_dec": 0.7734466965880649
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "DOGE|2026-11-02 08:00:00+00:00": "40c8b798-76e3-811e-a993-ddd2c5bd46a4"
@@ -564,5 +543,5 @@
   "ETH|2026-11-01 13:00:00+00:00",
   "HYPE|2026-11-02 04:00:00+00:00"
  ],
- "last_run": "2026-11-04 01:03:44.275754+00:00"
+ "last_run": "2026-11-04 02:03:45.309372+00:00"
 }
