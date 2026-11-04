@@ -24,19 +24,19 @@
   ],
   "cooldown": {
    "BTC": {
-    "bars": 5,
+    "bars": 4,
     "exp": true
    },
    "SUI": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    },
    "ETH": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    },
    "XRP": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    }
   },
@@ -74,16 +74,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 134,
+    "bars": 135,
     "tp1_done": false,
     "best_close": 90.82,
     "realized": 1.4154338478408883,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7729612444822823,
+    "hold_conf": 0.7587907857880227,
     "peak_r": 0.6564253300514367,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false
    },
    "DOGE": {
@@ -119,16 +119,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 51,
+    "bars": 52,
     "tp1_done": false,
     "best_close": 0.07309,
     "realized": 2.1356779969157955,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7408641000127647,
+    "hold_conf": 0.7308500230858441,
     "peak_r": 1.177466158359619,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false
    }
   },
@@ -312,9 +312,9 @@
   "XRP|2026-11-04 01:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-04 11:00:00+00:00",
- "last_bar": "2026-11-04 10:00:00+00:00",
- "equity": 22207.134582874703,
+ "anchor": "2026-11-04 12:00:00+00:00",
+ "last_bar": "2026-11-04 11:00:00+00:00",
+ "equity": 22205.082954384583,
  "carry": {
   "cash": 22215.02708330934,
   "peak": 28701.98386769757,
@@ -356,16 +356,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 51,
+    "bars": 52,
     "tp1_done": false,
     "best_close": 0.07309,
     "realized": 2.372207227135612,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7408641000127647,
+    "hold_conf": 0.7308500230858441,
     "peak_r": 1.1774661583596193,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false
    }
   },
@@ -435,5 +435,5 @@
   "ETH|2026-11-01 13:00:00+00:00",
   "HYPE|2026-11-02 04:00:00+00:00"
  ],
- "last_run": "2026-11-04 11:03:41.574330+00:00"
+ "last_run": "2026-11-04 12:03:44.853767+00:00"
 }
