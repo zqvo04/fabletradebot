@@ -16,19 +16,19 @@
   ],
   "cooldown": {
    "DOGE": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    },
    "ADA": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    },
    "ONDO": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    },
    "SUI": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    }
   },
@@ -66,16 +66,16 @@
      ]
     ],
     "adds": 0,
-    "bars": 15,
+    "bars": 16,
     "tp1_done": false,
     "best_close": 89.14,
     "realized": -0.06672814563674918,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8801874152101488,
+    "hold_conf": 0.8974789723246632,
     "peak_r": 0.11808378134896173,
-    "stall_count": 13,
+    "stall_count": 14,
     "trail_tightened": false
    }
   },
@@ -266,8 +266,8 @@
   "SUI|2026-11-05 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-06 07:00:00+00:00",
- "last_bar": "2026-11-06 06:00:00+00:00",
+ "anchor": "2026-11-06 08:00:00+00:00",
+ "last_bar": "2026-11-06 07:00:00+00:00",
  "equity": 22277.095013776736,
  "carry": {
   "cash": 22277.095013776736,
@@ -282,7 +282,7 @@
   ],
   "cooldown": {
    "DOGE": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    }
   },
@@ -354,5 +354,5 @@
   "HYPE|2026-11-04 15:00:00+00:00",
   "DOGE|2026-11-05 13:00:00+00:00"
  ],
- "last_run": "2026-11-06 07:03:41.505947+00:00"
+ "last_run": "2026-11-06 08:03:42.828421+00:00"
 }
