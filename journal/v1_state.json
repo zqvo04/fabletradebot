@@ -45,7 +45,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 118,
+    "bars": 119,
     "tp1_done": false,
     "best_close": 84.07,
     "realized": 1.2356351839270805,
@@ -56,7 +56,7 @@
     "peak_r": 0.7456701607315264,
     "mae_r": 0.0,
     "bars_to_peak": 118,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": true,
     "be_level": 0.0
    },
@@ -93,18 +93,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 21,
+    "bars": 22,
     "tp1_done": false,
     "best_close": 0.1761,
     "realized": 0.948463476866672,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8399672281702467,
+    "hold_conf": 0.8191925696339312,
     "peak_r": 0.6729516359407091,
     "mae_r": 0.0,
     "bars_to_peak": 21,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -141,18 +141,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 21,
+    "bars": 22,
     "tp1_done": false,
     "best_close": 0.8291,
     "realized": 0.5718777801067159,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8333485806932591,
+    "hold_conf": 0.805472715666219,
     "peak_r": 0.9501266782733564,
     "mae_r": 0.0,
     "bars_to_peak": 21,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -349,9 +349,9 @@
   "BTC|2026-11-08 22:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-10 14:00:00+00:00",
- "last_bar": "2026-11-10 13:00:00+00:00",
- "equity": 22389.083829816434,
+ "anchor": "2026-11-10 15:00:00+00:00",
+ "last_bar": "2026-11-10 14:00:00+00:00",
+ "equity": 22373.459053913233,
  "carry": {
   "cash": 22277.095013776736,
   "peak": 28701.98386769757,
@@ -393,7 +393,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 40,
+    "bars": 41,
     "tp1_done": false,
     "best_close": 84.07,
     "realized": 1.0124077078300222,
@@ -404,7 +404,7 @@
     "peak_r": 0.6227046674130772,
     "mae_r": -0.1347889808844742,
     "bars_to_peak": 40,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -478,5 +478,5 @@
   "HYPE|2026-11-04 15:00:00+00:00",
   "DOGE|2026-11-05 13:00:00+00:00"
  ],
- "last_run": "2026-11-10 14:03:45.086527+00:00"
+ "last_run": "2026-11-10 15:03:46.531409+00:00"
 }
