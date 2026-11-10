@@ -149,6 +149,15 @@ def post_shadow_open(pos: dict, seat_state: str) -> str | None:
     return resp.get("id") if resp else None
 
 
+def _s0_note(tr: dict) -> str:
+    """S0 stop/MAE suffix for the Note rich_text (no new Notion properties)."""
+    try:
+        return (f" | mae {float(tr['mae_r']):+.2f}R | stop {float(tr['stop_atr']):.1f}ATR"
+                f" | bias{int(tr['bias4h_entry']):+d}")
+    except (KeyError, TypeError, ValueError):
+        return ""    # old-style record (no S0 fields) or NaN/None value
+
+
 def post_shadow_close(tr: dict, page_id: str | None, seat_state: str) -> str | None:
     """Resolve a shadow row (or create it resolved if the open write failed)."""
     if not _enabled(SHADOW_DB):
@@ -169,7 +178,8 @@ def post_shadow_close(tr: dict, page_id: str | None, seat_state: str) -> str | N
         "Note": {"rich_text": [{"text": {"content":
                  f"shadow ({seat_state}) | setup {tr['setup']} | "
                  f"regime {tr['regime']} | exit {tr['reason']} | "
-                 f"peak {peak:+.2f}R (gave back {giveback:+.2f}R)"}}]},
+                 f"peak {peak:+.2f}R (gave back {giveback:+.2f}R)"
+                 + _s0_note(tr)}}]},
     }
     if page_id:
         resp = _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH")
@@ -197,7 +207,8 @@ def post_close(tr: dict, page_id: str | None) -> str | None:
         "Note": {"rich_text": [{"text": {"content":
                  f"setup {tr['setup']} | regime {tr['regime']} | exit {tr['reason']} | "
                  f"peak {tr.get('peak_r', 0.0):+.2f}R "
-                 f"(gave back {max(0.0, tr.get('peak_r', 0.0) - tr['r']):+.2f}R)"}}]},
+                 f"(gave back {max(0.0, tr.get('peak_r', 0.0) - tr['r']):+.2f}R)"
+                 + _s0_note(tr)}}]},
     }
     if page_id:
         resp = _request(f"{_BASE}/{page_id}", {"properties": props}, "PATCH")
