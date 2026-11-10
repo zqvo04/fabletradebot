@@ -104,6 +104,9 @@ def metrics(trades: pd.DataFrame, equity: pd.Series, equity0: float) -> dict:
         "expectancy_r": round(r.mean(), 4),
         "median_r": round(r.median(), 4),
         "profit_factor": round(wins.pnl.sum() / max(1e-9, -losses.pnl.sum()), 3),
+        # RR target metric (STOP_REDESIGN §8): avg win R / |avg loss R|
+        "payoff_r": round(wins.r.mean() / max(1e-9, -losses.r.mean()), 3)
+        if len(wins) and len(losses) else None,
         "total_return": round(total_ret, 4),
         "monthly_geo": round((1 + total_ret) ** (1 / months) - 1, 4),
         "max_dd": round(float(dd), 4),

@@ -37,6 +37,7 @@ Design discipline (why this is governance, not curve-fitting):
 """
 from __future__ import annotations
 
+import csv
 import os
 
 import pandas as pd
@@ -46,7 +47,10 @@ LEDGER_COLS = ["closed", "sym", "setup", "dir", "r", "pnl", "reason", "regime", 
                # attribution-only, appended last so older rows stay readable:
                # peak_r - r is the give-back, the forward judge for the exit axis
                # (GIVEBACK_REDESIGN.md). No promotion logic reads it.
-               "peak_r"]
+               "peak_r",
+               # S0 stop/MAE instrumentation (STOP_REDESIGN.md); attribution-only
+               "sl0", "init_stop_frac", "stop_atr", "mae_r", "bars_to_peak",
+               "bias4h_entry"]
 # promotion's read source (shadow_ledger.csv, see the module docstring). Kept
 # as its own constant, not shadow.LEDGER_PATH, so this module has no import
 # dependency on shadow.py.
@@ -65,10 +69,33 @@ def append_trade(row: dict, path: str = LEDGER_PATH) -> None:
     Called from the live loop under the same closed_keys de-dup guard that
     gates Notion/Telegram, so each trade is written exactly once.
     """
-    rec = {k: row.get(k) for k in LEDGER_COLS}
+    append_csv_row({k: row.get(k) for k in LEDGER_COLS}, LEDGER_COLS, path)
+
+
+def append_csv_row(rec: dict, cols: list, path: str) -> None:
+    """Append `rec` to a ledger CSV, migrating an old-header file first.
+
+    If the existing header lacks columns in `cols`, the file is rewritten once
+    with the new header; old rows keep their raw text verbatim (csv module, no
+    float round-trip) and get empty cells for the new columns.
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    header = not os.path.exists(path)
-    pd.DataFrame([rec]).to_csv(path, mode="a", header=header, index=False)
+    if os.path.exists(path) and os.path.getsize(path) > 0:
+        with open(path, newline="") as f:
+            rows = list(csv.reader(f))
+        old = rows[0]
+        if old != cols:
+            if set(old) - set(cols):
+                raise ValueError(f"{path}: header has columns not in {cols}")
+            idx = {c: i for i, c in enumerate(old)}
+            with open(path, "w", newline="") as f:
+                w = csv.writer(f, lineterminator="\n")
+                w.writerow(cols)
+                w.writerows([r[idx[c]] if c in idx else "" for c in cols] for r in rows[1:])
+        header = False
+    else:
+        header = True
+    pd.DataFrame([rec], columns=cols).to_csv(path, mode="a", header=header, index=False)
 
 
 def load_ledger(path: str = LEDGER_PATH) -> pd.DataFrame:

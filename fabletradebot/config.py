@@ -338,6 +338,12 @@ class Params:
     # hold_conf_min_r (back-compat: base byte-identical when unset — whale
     # arms it, see the profile block below for the owner-override rationale).
     hold_giveback_arm: float = 0.0
+    # BE-1R (STOP_REDESIGN §15, owner rule 2026-11-10): once the trade has proven
+    # be_arm_r (close-based peak_r), lift the stop to entry + be_lock_r * R0
+    # (R0 = |entry - sl0|). Raise-only; 0 = off (byte-identical). Known cost:
+    # the same object as rejected X-G -- adopted on owner override, see §15.
+    be_arm_r: float = 0.0
+    be_lock_r: float = 0.0
     # W-MINR (review, off by default): enforce the documented min_r contract on
     # the conviction-collapse leg too. As shipped, only the giveback leg reads
     # hold_conf_min_r; on a profile where giveback never reaches its own arming
@@ -607,6 +613,12 @@ def profile(name: str = "base") -> Params:
             # live runners at any measured cell.
             hold_giveback=0.4,
             hold_giveback_arm=8.0,
+            # BE-1R (STOP_REDESIGN §15, OWNER OVERRIDE 2026-11-10): once +1R is
+            # proven, lift the stop to -0.5R. NOT G5-clean: chosen after seeing
+            # the cells (BE 0R = 18.1x, -0.3R = 10.9x, -0.5R = 66.2x, -0.7R = 76.2x
+            # vs 50.6x; cost x2 23.4x vs 29.0x) -- path-sensitive, shadow-judged.
+            be_arm_r=1.0,
+            be_lock_r=-0.5,
             # and cut a LOSING single position early when its live conviction
             # stays below this (adverse regime/momentum) for hold_conf_bars,
             # protecting the concentrated account before a full leveraged stop.

@@ -30,11 +30,15 @@ from dataclasses import replace
 
 from . import journal_notion
 from .config import UNIVERSE, Params
+from .promotion import append_csv_row
 from .engine import deserialize_carry, run, serialize_carry
 
 LEDGER_PATH = "journal/shadow_ledger.csv"
 LEDGER_COLS = ["closed", "opened", "sym", "setup", "dir", "seat_state", "r", "pnl",
-               "reason", "regime", "conf", "peak_r", "bars", "hold_entry", "leverage"]
+               "reason", "regime", "conf", "peak_r", "bars", "hold_entry", "leverage",
+               # S0 stop/MAE instrumentation (STOP_REDESIGN.md); attribution-only
+               "sl0", "init_stop_frac", "stop_atr", "mae_r", "bars_to_peak",
+               "bias4h_entry"]
 EQUITY = float(os.environ.get("SHADOW_EQUITY", "10000"))
 TAKEN, BLOCKED = "Live-Taken", "Live-Blocked"
 
@@ -83,9 +87,7 @@ def params_backtest(p: Params) -> Params:
 def append_trade(row: dict, seat_state: str, path: str = LEDGER_PATH) -> None:
     rec = {k: row.get(k) for k in LEDGER_COLS}
     rec["seat_state"] = seat_state
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    pd.DataFrame([rec]).to_csv(path, mode="a", header=not os.path.exists(path),
-                               index=False)
+    append_csv_row(rec, LEDGER_COLS, path)
 
 
 def same_symbol_blocked(candidates: dict, positions: dict, bar) -> int:

@@ -51,8 +51,11 @@ class Position:
     loss_fade_streak: int = 0      # consecutive bars of collapsed hold_conf (loser)
     hold_conf: float = 0.0         # live re-scored conviction (latest bar)
     peak_r: float = 0.0            # best unrealized R reached (give-back exit)
+    mae_r: float = 0.0             # worst unrealized R (close-based; S0 attribution only)
+    bars_to_peak: int = 0          # pos.bars when peak_r last increased (S0, attribution only)
     stall_count: int = 0           # consecutive bars with no new best_close (X-A)
     trail_tightened: bool = False  # X-A width ratchet, one-way once armed
+    be_level: float = 0.0          # BE-1R lifted stop (0 = not lifted)
 
     def __post_init__(self):
         if not self.tranches:
@@ -256,6 +259,13 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # exit-axis campaign (GIVEBACK_REDESIGN.md) is judged on — without it
             # in the record the forward ledger cannot measure the problem at all.
             "peak_r": pos.peak_r,
+            # S0 (STOP_REDESIGN): stop/MAE instrumentation, read by NO logic.
+            # atr_entry / bias4h_entry are stamped on the Pending meta at the
+            # decision bar (bias already multiplied by direction).
+            "init_stop_frac": pos.init_stop_frac,
+            "stop_atr": (abs(pos.entry - pos.sl0) / pos.meta["atr_entry"]
+                         if pos.meta.get("atr_entry") else float("nan")),
+            "mae_r": pos.mae_r, "bars_to_peak": pos.bars_to_peak,
             "pnl_pct_price": price_pct, "pnl_pct_lev": price_pct * pos.leverage,
             "reason": reason, "risk_amt": pos.risk_amt,
             "notional": pos.total_notional(),
@@ -405,7 +415,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             tp_hit = tp_on and (hi >= pos.tp1 if d == 1 else lo <= pos.tp1)
             if sl_hit:  # conservative: stop fills before any TP in the same bar
                 px = pos.sl * (1 - d * spec(sym).slippage * p.cost_mult)
-                finalize(pos, px, t, "SL" if pos.sl == pos.sl0 else "Trail")
+                finalize(pos, px, t, "SL" if pos.sl == pos.sl0
+                         else "BE" if pos.sl == pos.be_level else "Trail")
                 continue
             if tp_hit and not pos.tp1_done:
                 tp_frac = pb.get("tp_frac", p.tp1_frac)
@@ -473,7 +484,15 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
                             pos.liq_price = max(pos.liq_price, liq_add) if d == 1 \
                                 else min(pos.liq_price, liq_add)
             unreal_r = pos.gross_at(close_px) / pos.risk_amt
+            if unreal_r > pos.peak_r:
+                pos.bars_to_peak = pos.bars
             pos.peak_r = max(pos.peak_r, unreal_r)
+            # BE-1R: decided on this close, effective from the next bar (no lookahead)
+            if p.be_arm_r > 0 and pos.peak_r >= p.be_arm_r and pos.be_level == 0.0:
+                lvl = pos.entry + d * p.be_lock_r * abs(pos.entry - pos.sl0)
+                if d * (lvl - pos.sl) > 0:
+                    pos.sl = pos.be_level = lvl
+            pos.mae_r = min(pos.mae_r, unreal_r)
             b4 = bias4h[sym].iloc[i]
             pos.bias_flip_streak = pos.bias_flip_streak + 1 if b4 == -d else 0
             # hourly re-score of this held position (the live conviction the
@@ -562,6 +581,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             # forward judge for WF-A — corr(hold_entry, R) and the hold_entry
             # distribution — and 1.0 on disarmed profiles (constant, inert).
             meta["hold_entry"] = round(hold_dec, 4)
+            # S0 instrumentation (attribution-only): ATR and direction-signed 4H
+            # bias at the decision bar.
+            _a, _b = atr1h[sym].iloc[i], bias4h[sym].iloc[i]
+            meta["atr_entry"] = None if np.isnan(_a) else float(_a)
+            meta["bias4h_entry"] = None if np.isnan(_b) else int(_b * d_i)
             pendings.append(Pending(sym=sym, direction=d_i,
                                     conf=float(row["conf"]), sl=float(row["sl"]),
                                     setup=str(row["setup"]),
