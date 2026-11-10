@@ -363,3 +363,39 @@ def test_open_position_mark_to_market_scoring():
     assert mtm["bars"] == pos.bars and mtm["sl"] == pos.sl
     assert "PBK_L" in open_report({SYM: pos}, {SYM: 110.0})
     assert open_report({}, {}).endswith("none")
+
+
+def _be_path():
+    # long, sl0=95 (R0 ~5). bar2 closes 106 (~+1.2R) -> lift armed on that close;
+    # bar3 dips to 97.4: below a -0.5R lift (97.5) but above sl0 and BE.
+    return [
+        (100, 101, 99.5, 100),        # bar0: decided
+        (100, 100.5, 99.8, 100),      # bar1: fill ~100
+        (100, 106.2, 99.9, 106),      # bar2: peak_r >= 1 on the close
+        (106, 106.1, 97.4, 99),       # bar3: dip
+        (99, 99.5, 98.5, 99),         # bar4
+    ]
+
+
+def test_be_lift_off_is_inert_and_lock_levels():
+    off = run(*_setup(_be_path(), 0, 1, sl=95.0), Params(trail_atr=0.0), equity0=10_000.0)
+    assert len(off["trades"]) == 0 and off["open_positions"][SYM].be_level == 0.0
+    # BE (lock 0): stop lifted to entry -> bar3 low 97.4 exits at ~entry, reason BE
+    be = run(*_setup(_be_path(), 0, 1, sl=95.0),
+             Params(trail_atr=0.0, be_arm_r=1.0, be_lock_r=0.0), equity0=10_000.0)
+    t = be["trades"].iloc[0]
+    assert t["reason"] == "BE" and abs(t["exit"] - t["entry"]) / t["entry"] < 0.001
+    # lock -0.5: lifted to entry - 0.5*R0 (~97.5); 97.4 low touches it -> BE exit ~-0.5R
+    half = run(*_setup(_be_path(), 0, 1, sl=95.0),
+               Params(trail_atr=0.0, be_arm_r=1.0, be_lock_r=-0.5), equity0=10_000.0)
+    t2 = half["trades"].iloc[0]
+    assert t2["reason"] == "BE" and -0.6 < t2["r"] < -0.45
+
+
+def test_be_lift_not_armed_below_threshold_and_raise_only():
+    path = _be_path()
+    path[2] = (100, 103.2, 99.9, 103)   # peaks ~+0.6R only -> never armed
+    res = run(*_setup(path, 0, 1, sl=95.0),
+              Params(trail_atr=0.0, be_arm_r=1.0, be_lock_r=0.0), equity0=10_000.0)
+    pos = res["open_positions"][SYM]
+    assert len(res["trades"]) == 0 and pos.be_level == 0.0 and pos.sl == pos.sl0

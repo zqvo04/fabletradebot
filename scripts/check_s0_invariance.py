@@ -11,7 +11,9 @@ sys.path.insert(0, "scripts")
 import exp_stop_common as c
 
 prep = c.load()
-r = c.row(prep, c.BASE)
+# pinned pre-BE-1R numbers (STOP_REDESIGN §15 armed be_lock in whale afterwards)
+from dataclasses import replace
+r = c.row(prep, replace(c.BASE, be_arm_r=0.0))
 print({k: v for k, v in r.items() if k != "trades"})
 assert (r["ret"], r["n"], r["avg_r"]) == (50.6369, 470, 0.2054), (r["ret"], r["n"], r["avg_r"])
 print("INVARIANT OK: total_return 50.6369, n 470, avg_r 0.2054")

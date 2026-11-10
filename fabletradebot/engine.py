@@ -55,6 +55,7 @@ class Position:
     bars_to_peak: int = 0          # pos.bars when peak_r last increased (S0, attribution only)
     stall_count: int = 0           # consecutive bars with no new best_close (X-A)
     trail_tightened: bool = False  # X-A width ratchet, one-way once armed
+    be_level: float = 0.0          # BE-1R lifted stop (0 = not lifted)
 
     def __post_init__(self):
         if not self.tranches:
@@ -414,7 +415,8 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             tp_hit = tp_on and (hi >= pos.tp1 if d == 1 else lo <= pos.tp1)
             if sl_hit:  # conservative: stop fills before any TP in the same bar
                 px = pos.sl * (1 - d * spec(sym).slippage * p.cost_mult)
-                finalize(pos, px, t, "SL" if pos.sl == pos.sl0 else "Trail")
+                finalize(pos, px, t, "SL" if pos.sl == pos.sl0
+                         else "BE" if pos.sl == pos.be_level else "Trail")
                 continue
             if tp_hit and not pos.tp1_done:
                 tp_frac = pb.get("tp_frac", p.tp1_frac)
@@ -485,6 +487,11 @@ def run(frames: dict[str, pd.DataFrame], features: dict[str, pd.DataFrame],
             if unreal_r > pos.peak_r:
                 pos.bars_to_peak = pos.bars
             pos.peak_r = max(pos.peak_r, unreal_r)
+            # BE-1R: decided on this close, effective from the next bar (no lookahead)
+            if p.be_arm_r > 0 and pos.peak_r >= p.be_arm_r and pos.be_level == 0.0:
+                lvl = pos.entry + d * p.be_lock_r * abs(pos.entry - pos.sl0)
+                if d * (lvl - pos.sl) > 0:
+                    pos.sl = pos.be_level = lvl
             pos.mae_r = min(pos.mae_r, unreal_r)
             b4 = bias4h[sym].iloc[i]
             pos.bias_flip_streak = pos.bias_flip_streak + 1 if b4 == -d else 0

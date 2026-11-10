@@ -166,7 +166,8 @@ def post_shadow_close(tr: dict, page_id: str | None, seat_state: str) -> str | N
     giveback = max(0.0, peak - float(tr["r"]))
     props = {
         "Status": {"select": {"name": _status(tr["reason"], tr["pnl"])}},
-        "Exit Reason": {"select": {"name": tr["reason"]}},
+        # "BE" has no Shadow DB select option -- file it under the moved-stop bucket
+        "Exit Reason": {"select": {"name": "Trail" if tr["reason"] == "BE" else tr["reason"]}},
         "Exit": {"number": round(float(tr["exit"]), 8)},
         "Result R": {"number": round(float(tr["r"]), 4)},
         "Peak R": {"number": round(peak, 4)},
