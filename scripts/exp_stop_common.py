@@ -52,3 +52,17 @@ if __name__ == "__main__":
     t = time.time(); prep = load(); r = row(prep, BASE); show("BASELINE", r)
     print(r["trades"].groupby("reason")["r"].agg(["size", "mean", "sum"]).round(3))
     print(f"elapsed {time.time() - t:.0f}s")
+
+
+def matched(base_tr, cand_tr):
+    """Seat-reuse decomposition (T6 §12): R of trades shared by both runs (keyed by
+    sym/opened/setup), only in baseline (displaced), only in candidate (new seat fills)."""
+    k = ["sym", "opened", "setup"]
+    m = base_tr[k + ["r"]].merge(cand_tr[k + ["r"]], on=k, how="outer",
+                                 suffixes=("_b", "_c"), indicator=True)
+    sh = m[m._merge == "both"]
+    return {"shared_n": len(sh), "shared_dR": round((sh.r_c - sh.r_b).sum(), 2),
+            "only_base_n": int((m._merge == "left_only").sum()),
+            "only_base_R": round(m.loc[m._merge == "left_only", "r_b"].sum(), 2),
+            "only_cand_n": int((m._merge == "right_only").sum()),
+            "only_cand_R": round(m.loc[m._merge == "right_only", "r_c"].sum(), 2)}
