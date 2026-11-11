@@ -12,19 +12,19 @@
   ],
   "cooldown": {
    "SOL": {
-    "bars": 6,
+    "bars": 5,
     "exp": true
    },
    "BTC": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    },
    "ADA": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    },
    "SUI": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    }
   },
@@ -64,18 +64,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
-    "best_close": 0.36757932,
+    "best_close": 0.367,
     "realized": 0.5122901889285004,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.739670086427809,
-    "peak_r": 0.0,
+    "hold_conf": 0.7555326592658637,
+    "peak_r": 0.05342944242869968,
     "mae_r": -0.7120617751336378,
-    "bars_to_peak": 0,
-    "stall_count": 4,
+    "bars_to_peak": 5,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -272,9 +272,9 @@
   "SUI|2026-11-09 17:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-11 19:00:00+00:00",
- "last_bar": "2026-11-11 18:00:00+00:00",
- "equity": 22348.229408892115,
+ "anchor": "2026-11-11 20:00:00+00:00",
+ "last_bar": "2026-11-11 19:00:00+00:00",
+ "equity": 22353.6160339087,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -283,20 +283,29 @@
   "loss_log": [],
   "cooldown": {
    "SOL": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    }
   },
-  "positions": {},
-  "pendings": [
-   {
+  "positions": {
+   "ADA": {
     "sym": "ADA",
     "direction": -1,
     "conf": 0.8528677810416299,
-    "sl": 0.18200649694545382,
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-11 18:00:00+00:00",
+    "entry": 0.17772888000000003,
+    "sl": 0.18200649694545382,
+    "sl0": 0.18200649694545382,
+    "tp1": 0.0,
+    "notional": 7428.296331295937,
+    "margin": 1485.6592662591875,
+    "risk_amt": 178.78583527113693,
+    "leverage": 5.0,
+    "liq_price": 0.21149736720000004,
+    "opened_ts": "2026-11-11 19:00:00+00:00",
+    "risk_frac": 0.0006647771682834345,
+    "init_stop_frac": 0.024068215280790506,
     "meta": {
      "c_base": 0.732486874621145,
      "c_fit": 1.0,
@@ -307,31 +316,34 @@
      "atr_entry": 0.002010828242423024,
      "bias4h_entry": 1
     },
-    "hold_dec": 0.7719556269872361
-   },
-   {
-    "sym": "SUI",
-    "direction": -1,
-    "conf": 0.56926924276316,
-    "sl": 0.8594916168235722,
-    "setup": "PBK_S",
-    "regime": "RANGE",
-    "decided_ts": "2026-11-11 18:00:00+00:00",
-    "meta": {
-     "c_base": 0.6713986232057455,
-     "c_fit": 0.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8583333333333333,
-     "hold_entry": 0.7739,
-     "atr_entry": 0.009652694705953669,
-     "bias4h_entry": 1
-    },
-    "hold_dec": 0.7738727484601085
+    "tranches": [
+     [
+      0.17772888000000003,
+      7428.296331295937
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 0.1776,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7732301565222125,
+    "peak_r": 0.03012892497001123,
+    "mae_r": 0.0,
+    "bars_to_peak": 1,
+    "stall_count": 0,
+    "trail_tightened": false,
+    "be_level": 0.0
    }
-  ]
+  },
+  "pendings": []
  },
- "pages": {},
+ "pages": {
+  "ADA|2026-11-11 19:00:00+00:00": "4158b798-76e3-8174-872e-db71937021cd"
+ },
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
   "XRP|2026-07-26 13:00:00+00:00",
@@ -397,5 +409,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-11 19:03:41.251448+00:00"
+ "last_run": "2026-11-11 20:03:40.044071+00:00"
 }
