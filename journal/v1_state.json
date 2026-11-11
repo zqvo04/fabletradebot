@@ -12,19 +12,19 @@
   ],
   "cooldown": {
    "SOL": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    },
    "BTC": {
-    "bars": 6,
+    "bars": 5,
     "exp": true
    },
    "ADA": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    },
    "SUI": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    }
   },
@@ -64,18 +64,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 6,
+    "bars": 7,
     "tp1_done": false,
-    "best_close": 0.367,
+    "best_close": 0.365,
     "realized": 0.5122901889285004,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7526339394077725,
-    "peak_r": 0.05342944242869968,
+    "hold_conf": 0.7671275386982286,
+    "peak_r": 0.2378851575039612,
     "mae_r": -0.7120617751336378,
-    "bars_to_peak": 5,
-    "stall_count": 1,
+    "bars_to_peak": 7,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -272,9 +272,9 @@
   "SUI|2026-11-09 17:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-11 21:00:00+00:00",
- "last_bar": "2026-11-11 20:00:00+00:00",
- "equity": 22349.436467632644,
+ "anchor": "2026-11-11 22:00:00+00:00",
+ "last_bar": "2026-11-11 21:00:00+00:00",
+ "equity": 22387.052564117166,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -283,7 +283,7 @@
   "loss_log": [],
   "cooldown": {
    "SOL": {
-    "bars": 8,
+    "bars": 7,
     "exp": true
    }
   },
@@ -323,23 +323,44 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
-    "best_close": 0.1776,
+    "best_close": 0.1768,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.771657264256937,
-    "peak_r": 0.03012892497001123,
+    "hold_conf": 0.7858132946444177,
+    "peak_r": 0.2171489434057968,
     "mae_r": 0.0,
-    "bars_to_peak": 1,
-    "stall_count": 1,
+    "bars_to_peak": 3,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
    }
   },
-  "pendings": []
+  "pendings": [
+   {
+    "sym": "ONDO",
+    "direction": -1,
+    "conf": 0.8063129134583247,
+    "sl": 0.3804829653103568,
+    "setup": "PBK_S",
+    "regime": "TREND_DOWN",
+    "decided_ts": "2026-11-11 21:00:00+00:00",
+    "meta": {
+     "c_base": 0.6478416608333176,
+     "c_fit": 1.0,
+     "c_align": 1.0,
+     "c_fund": 0.0,
+     "c_base_pct": 0.8166666666666668,
+     "hold_entry": 0.7671,
+     "atr_entry": 0.005138275517261307,
+     "bias4h_entry": 1
+    },
+    "hold_dec": 0.7671275386982286
+   }
+  ]
  },
  "pages": {
   "ADA|2026-11-11 19:00:00+00:00": "4158b798-76e3-8174-872e-db71937021cd"
@@ -409,5 +430,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-11 21:03:43.044034+00:00"
+ "last_run": "2026-11-11 22:03:45.505183+00:00"
 }
