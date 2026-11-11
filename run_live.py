@@ -25,7 +25,7 @@ import os
 
 import pandas as pd
 
-from fabletradebot import journal_notion, notify, promotion, shadow
+from fabletradebot import journal_notion, notify, promotion, regime, shadow
 from fabletradebot.backtest import load_universe, prepare
 from fabletradebot.config import UNIVERSE, profile
 from fabletradebot.data_okx import update_cache
@@ -120,6 +120,11 @@ def main() -> None:
     # the next candle) — carry forward the last known equity unchanged.
     eq_now = (float(res["equity"].iloc[-1]) if len(res["equity"])
              else float(state.get("equity", EQUITY0)) if not reset else EQUITY0)
+
+    changes = regime.transitions(regime_h, start)
+    if changes:
+        notify.send(notify.fmt_regime(changes))
+        print(f"  REGIME {len(changes)} change(s): {changes}")
 
     # Every event this run sits on a bar >= anchor, i.e. genuinely new — no
     # wall-clock freshness heuristic needed. closed_keys / pages only guard the

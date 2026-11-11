@@ -48,3 +48,13 @@ def fmt_exit(tr: dict) -> str:
             f"levered {tr['pnl_pct_lev']:+.2f}%\n"
             f"entry {tr['entry']:.6g} → exit {tr['exit']:.6g} | held {tr['bars']}h\n"
             f"equity {tr['equity_after']:.2f}")
+
+
+def fmt_regime(changes: list[tuple]) -> str:
+    # only TREND_UP has a measured forward drift (README §2: +2.24%/168h, CI excl. 0)
+    lines = ["🧭 국면 전환 (1D 마감, 정보성 — 진입 신호 아님)"]
+    for ts, sym, old, new in changes:
+        mark = " ⬆️" if new == "TREND_UP" else " ⚠️" if new == "CRISIS" else ""
+        lines.append(f"{sym}: {old} → {new}{mark}")
+    lines.append(f"기준봉 {changes[-1][0]:%Y-%m-%d %H:%M} UTC")
+    return "\n".join(lines)
