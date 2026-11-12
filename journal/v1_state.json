@@ -47,10 +47,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 25,
+    "bars": 26,
     "tp1_done": false,
     "best_close": 0.3475,
-    "realized": -0.7077379266788077,
+    "realized": -0.6771433175538852,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -58,7 +58,7 @@
     "peak_r": 1.8518726644124996,
     "mae_r": -0.7120617751336378,
     "bars_to_peak": 25,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.37300067547056365
    },
@@ -97,18 +97,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
     "best_close": 0.06505,
-    "realized": 0.0,
+    "realized": 0.09098164444619307,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9045748398273039,
     "peak_r": 0.299553477819414,
-    "mae_r": -0.01094017640808797,
+    "mae_r": -0.11218810713444508,
     "bars_to_peak": 1,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -147,10 +147,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
     "best_close": 71612.9,
-    "realized": 0.0,
+    "realized": 0.9709236573510092,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -158,7 +158,7 @@
     "peak_r": 0.9640302461574122,
     "mae_r": 0.0,
     "bars_to_peak": 1,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -197,18 +197,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
     "best_close": 0.7905,
-    "realized": 0.0,
+    "realized": -0.2468928954648,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8970051737337008,
     "peak_r": 0.13389180023751446,
-    "mae_r": -0.054915314860517844,
+    "mae_r": -0.1977963749347043,
     "bars_to_peak": 1,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -411,9 +411,9 @@
   "SUI|2026-11-09 17:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-12 16:00:00+00:00",
- "last_bar": "2026-11-12 15:00:00+00:00",
- "equity": 22659.59884897134,
+ "anchor": "2026-11-12 17:00:00+00:00",
+ "last_bar": "2026-11-12 16:00:00+00:00",
+ "equity": 22655.036489309336,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -457,10 +457,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 21,
+    "bars": 22,
     "tp1_done": false,
     "best_close": 0.1693,
-    "realized": 0.8744769103933036,
+    "realized": 0.49168352444556884,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -468,7 +468,7 @@
     "peak_r": 1.9704616162412982,
     "mae_r": 0.0,
     "bars_to_peak": 20,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.17986768847272694
    }
@@ -543,5 +543,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-12 16:03:46.729984+00:00"
+ "last_run": "2026-11-12 17:03:44.267029+00:00"
 }
