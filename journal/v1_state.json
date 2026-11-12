@@ -12,15 +12,15 @@
   ],
   "cooldown": {
    "BTC": {
-    "bars": 2,
+    "bars": 1,
     "exp": true
    },
    "ADA": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    },
    "SUI": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    }
   },
@@ -60,18 +60,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
-    "best_close": 0.3582,
+    "best_close": 0.3571,
     "realized": -0.22824742908037354,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8112102267704654,
-    "peak_r": 0.8650345887598474,
+    "hold_conf": 0.8257517929770963,
+    "peak_r": 0.9664852320512454,
     "mae_r": -0.7120617751336378,
-    "bars_to_peak": 9,
-    "stall_count": 1,
+    "bars_to_peak": 11,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -268,9 +268,9 @@
   "SUI|2026-11-09 17:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-12 01:00:00+00:00",
- "last_bar": "2026-11-12 00:00:00+00:00",
- "equity": 22488.104984375692,
+ "anchor": "2026-11-12 02:00:00+00:00",
+ "last_bar": "2026-11-12 01:00:00+00:00",
+ "equity": 22538.25977968839,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -279,7 +279,7 @@
   "loss_log": [],
   "cooldown": {
    "SOL": {
-    "bars": 4,
+    "bars": 3,
     "exp": true
    }
   },
@@ -291,7 +291,7 @@
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
     "entry": 0.17772888000000003,
-    "sl": 0.18200649694545382,
+    "sl": 0.17986768847272694,
     "sl0": 0.18200649694545382,
     "tp1": 0.0,
     "notional": 7428.296331295937,
@@ -319,20 +319,20 @@
      ]
     ],
     "adds": 0,
-    "bars": 6,
+    "bars": 7,
     "tp1_done": false,
-    "best_close": 0.1743,
+    "best_close": 0.1732,
     "realized": 0.7428296331295937,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8261221427356265,
-    "peak_r": 0.8015865010176307,
+    "hold_conf": 0.8442392005111141,
+    "peak_r": 1.0587390263668415,
     "mae_r": 0.0,
-    "bars_to_peak": 5,
-    "stall_count": 1,
+    "bars_to_peak": 7,
+    "stall_count": 0,
     "trail_tightened": false,
-    "be_level": 0.0
+    "be_level": 0.17986768847272694
    }
   },
   "pendings": []
@@ -405,5 +405,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-12 01:03:44.009981+00:00"
+ "last_run": "2026-11-12 02:03:44.447512+00:00"
 }
