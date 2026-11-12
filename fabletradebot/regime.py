@@ -105,3 +105,14 @@ def corr_alert_1h(closes_1h: pd.DataFrame, p: Params) -> pd.Series:
     var_mean = mean_z.rolling(p.corr_window_h).var(ddof=0)
     mean_corr = (n * var_mean - 1) / (n - 1)
     return (mean_corr > p.corr_alert).fillna(False)
+
+
+def transitions(states: dict, start) -> list[tuple]:
+    """(ts, sym, old, new) for every effective-state change on bars >= start.
+    The live anchor only advances, so each change is reported exactly once."""
+    out = []
+    for sym, s in states.items():
+        prev = s.shift()
+        hit = (s.index >= start) & prev.notna() & (s != prev)
+        out += [(t, sym, prev[t], s[t]) for t in s.index[hit]]
+    return sorted(out)

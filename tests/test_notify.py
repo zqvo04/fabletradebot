@@ -45,3 +45,16 @@ def test_telegram_disabled_prints_diagnostic(capsys):
     out = capsys.readouterr().out
     assert "[notify] Telegram disabled" in out
     assert "TELEGRAM_BOT_TOKEN" in out and "TELEGRAM_CHAT_ID" in out
+
+
+def test_regime_transitions_only_from_start_and_formatted():
+    import pandas as pd
+    from fabletradebot import regime
+    idx = pd.date_range("2026-01-01", periods=4, freq="h", tz="UTC")
+    states = {"BTC": pd.Series(["RANGE", "TREND_UP", "TREND_UP", "CRISIS"], index=idx),
+              "ETH": pd.Series(["RANGE"] * 4, index=idx)}
+    ch = regime.transitions(states, idx[2])
+    assert ch == [(idx[3], "BTC", "TREND_UP", "CRISIS")]   # idx[1] change is before start
+    assert regime.transitions(states, idx[0]) == [(idx[1], "BTC", "RANGE", "TREND_UP"), ch[0]]
+    msg = notify.fmt_regime(ch)
+    assert "BTC: TREND_UP → CRISIS ⚠️" in msg and "진입 신호 아님" in msg
