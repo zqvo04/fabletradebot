@@ -12,7 +12,7 @@
   ],
   "cooldown": {
    "SUI": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    }
   },
@@ -52,10 +52,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 41,
+    "bars": 42,
     "tp1_done": false,
     "best_close": 0.3315,
-    "realized": -0.13472646701405866,
+    "realized": -0.10528567756958465,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -63,7 +63,7 @@
     "peak_r": 3.3275183850145864,
     "mae_r": -0.7120617751336378,
     "bars_to_peak": 38,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false,
     "be_level": 0.37300067547056365
    },
@@ -102,10 +102,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 18,
+    "bars": 19,
     "tp1_done": false,
     "best_close": 0.06323,
-    "realized": 0.4795162960555314,
+    "realized": 0.3659231729512921,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -113,7 +113,7 @@
     "peak_r": 1.52802837063257,
     "mae_r": -0.6656767951052078,
     "bars_to_peak": 15,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false,
     "be_level": 0.06623454787976904
    },
@@ -152,10 +152,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 18,
+    "bars": 19,
     "tp1_done": false,
     "best_close": 68100.9,
-    "realized": 2.288464960283979,
+    "realized": 1.4426084028999928,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -163,7 +163,7 @@
     "peak_r": 4.9551357839764645,
     "mae_r": 0.0,
     "bars_to_peak": 16,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 72901.18320268235
    },
@@ -202,10 +202,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 5,
+    "bars": 6,
     "tp1_done": false,
     "best_close": 78.32,
-    "realized": 0.0,
+    "realized": -0.5385402962368009,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -213,7 +213,7 @@
     "peak_r": 1.0760039472388976,
     "mae_r": 0.0,
     "bars_to_peak": 2,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false,
     "be_level": 80.95341091282224
    },
@@ -252,18 +252,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 5,
+    "bars": 6,
     "tp1_done": false,
     "best_close": 70.166,
-    "realized": 0.0,
+    "realized": 0.404901229659,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8389499156902188,
+    "hold_conf": 0.8147430389567443,
     "peak_r": 1.1830046187116308,
     "mae_r": 0.0,
     "bars_to_peak": 2,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false,
     "be_level": 73.09330664975451
    },
@@ -302,10 +302,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 1910.69,
-    "realized": 0.0,
+    "realized": -0.438376723915627,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -313,7 +313,7 @@
     "peak_r": 0.41117379740660454,
     "mae_r": -0.09732559405313011,
     "bars_to_peak": 2,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -521,9 +521,9 @@
   "SUI|2026-11-12 14:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-13 08:00:00+00:00",
- "last_bar": "2026-11-13 07:00:00+00:00",
- "equity": 22650.47785309907,
+ "anchor": "2026-11-13 09:00:00+00:00",
+ "last_bar": "2026-11-13 08:00:00+00:00",
+ "equity": 22666.50485010107,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -567,18 +567,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 37,
+    "bars": 38,
     "tp1_done": false,
     "best_close": 0.167,
-    "realized": 0.1126135902376792,
+    "realized": -0.5786545119951689,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8457553038163191,
+    "hold_conf": 0.8514327681131071,
     "peak_r": 2.508144169244184,
     "mae_r": 0.0,
     "bars_to_peak": 34,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false,
     "be_level": 0.17986768847272694
    }
@@ -653,5 +653,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-13 08:03:46.964321+00:00"
+ "last_run": "2026-11-13 09:03:47.153693+00:00"
 }
