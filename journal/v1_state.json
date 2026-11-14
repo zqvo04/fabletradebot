@@ -59,7 +59,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 67,
+    "bars": 68,
     "tp1_done": false,
     "best_close": 0.3271,
     "realized": 0.8444394573857625,
@@ -70,7 +70,7 @@
     "peak_r": 3.733320958180163,
     "mae_r": -0.7120617751336378,
     "bars_to_peak": 65,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.37300067547056365
    },
@@ -81,7 +81,7 @@
     "setup": "BRK_S",
     "regime": "TREND_DOWN",
     "entry": 72461.20486,
-    "sl": 72602.51812371395,
+    "sl": 72371.5739720201,
     "sl0": 73341.16154536471,
     "tp1": 0.0,
     "notional": 13175.413029329697,
@@ -109,7 +109,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 44,
+    "bars": 45,
     "tp1_done": false,
     "best_close": 66722.3,
     "realized": 2.339795150717907,
@@ -120,7 +120,7 @@
     "peak_r": 6.521803806310551,
     "mae_r": 0.0,
     "bars_to_peak": 38,
-    "stall_count": 6,
+    "stall_count": 7,
     "trail_tightened": false,
     "be_level": 72901.18320268235
    },
@@ -159,7 +159,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 18,
+    "bars": 19,
     "tp1_done": false,
     "best_close": 0.1626,
     "realized": 0.12979440632358288,
@@ -170,7 +170,7 @@
     "peak_r": 1.858346806291399,
     "mae_r": -0.09860512641575757,
     "bars_to_peak": 16,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.17380754420787914
    },
@@ -209,7 +209,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 75.03,
     "realized": 0.005360150648447056,
@@ -220,7 +220,7 @@
     "peak_r": 0.9954953411710497,
     "mae_r": 0.0,
     "bars_to_peak": 2,
-    "stall_count": 6,
+    "stall_count": 7,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -259,7 +259,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 7,
+    "bars": 8,
     "tp1_done": false,
     "best_close": 67.336,
     "realized": 0.02013259376161102,
@@ -270,7 +270,7 @@
     "peak_r": 0.5469056346443766,
     "mae_r": 0.0,
     "bars_to_peak": 1,
-    "stall_count": 6,
+    "stall_count": 7,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -309,7 +309,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
     "best_close": 0.98150724,
     "realized": 0.0,
@@ -320,7 +320,7 @@
     "peak_r": 0.0,
     "mae_r": -0.37025917859353896,
     "bars_to_peak": 0,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -532,9 +532,9 @@
   "ETH|2026-11-13 04:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-14 10:00:00+00:00",
- "last_bar": "2026-11-14 09:00:00+00:00",
- "equity": 22930.636981796462,
+ "anchor": "2026-11-14 11:00:00+00:00",
+ "last_bar": "2026-11-14 10:00:00+00:00",
+ "equity": 22951.534813176753,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -578,7 +578,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 63,
+    "bars": 64,
     "tp1_done": false,
     "best_close": 0.1626,
     "realized": 0.2408017917309531,
@@ -589,7 +589,7 @@
     "peak_r": 3.5367542706410147,
     "mae_r": 0.0,
     "bars_to_peak": 61,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.17986768847272694
    }
@@ -664,5 +664,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-14 10:03:46.515599+00:00"
+ "last_run": "2026-11-14 11:03:40.311622+00:00"
 }
