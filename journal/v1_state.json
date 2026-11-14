@@ -63,7 +63,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 63,
+    "bars": 64,
     "tp1_done": false,
     "best_close": 0.3285,
     "realized": 0.6096704670898067,
@@ -74,7 +74,7 @@
     "peak_r": 3.604201957627479,
     "mae_r": -0.7120617751336378,
     "bars_to_peak": 61,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.37300067547056365
    },
@@ -113,7 +113,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 40,
+    "bars": 41,
     "tp1_done": false,
     "best_close": 66722.3,
     "realized": 2.464515140652599,
@@ -124,7 +124,7 @@
     "peak_r": 6.521803806310551,
     "mae_r": 0.0,
     "bars_to_peak": 38,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 72901.18320268235
    },
@@ -163,7 +163,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 14,
+    "bars": 15,
     "tp1_done": false,
     "best_close": 0.1634,
     "realized": 0.22969923213968627,
@@ -174,7 +174,7 @@
     "peak_r": 1.6900068550907847,
     "mae_r": -0.09860512641575757,
     "bars_to_peak": 12,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.17380754420787914
    },
@@ -213,7 +213,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 75.03,
     "realized": 0.0,
@@ -224,7 +224,7 @@
     "peak_r": 0.9954953411710497,
     "mae_r": 0.0,
     "bars_to_peak": 2,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -263,7 +263,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 67.336,
     "realized": 0.0,
@@ -274,7 +274,7 @@
     "peak_r": 0.5469056346443766,
     "mae_r": 0.0,
     "bars_to_peak": 1,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -484,9 +484,9 @@
   "ETH|2026-11-13 04:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-14 06:00:00+00:00",
- "last_bar": "2026-11-14 05:00:00+00:00",
- "equity": 22888.969897467174,
+ "anchor": "2026-11-14 07:00:00+00:00",
+ "last_bar": "2026-11-14 06:00:00+00:00",
+ "equity": 22926.5859939517,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -530,7 +530,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 59,
+    "bars": 60,
     "tp1_done": false,
     "best_close": 0.1634,
     "realized": 0.36938022302474616,
@@ -541,7 +541,7 @@
     "peak_r": 3.349734252205229,
     "mae_r": 0.0,
     "bars_to_peak": 57,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.17986768847272694
    }
@@ -616,5 +616,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-14 06:03:49.416873+00:00"
+ "last_run": "2026-11-14 07:03:51.256971+00:00"
 }
