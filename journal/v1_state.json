@@ -42,7 +42,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 75,
+    "bars": 76,
     "tp1_done": false,
     "best_close": 0.3068,
     "realized": 0.6028846771751492,
@@ -53,7 +53,7 @@
     "peak_r": 5.605546466194064,
     "mae_r": -0.7120617751336378,
     "bars_to_peak": 74,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.37300067547056365
    },
@@ -92,7 +92,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 52,
+    "bars": 53,
     "tp1_done": false,
     "best_close": 65315.0,
     "realized": 2.952946446337636,
@@ -103,7 +103,7 @@
     "peak_r": 8.121087070368855,
     "mae_r": 0.0,
     "bars_to_peak": 51,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 72901.18320268235
    },
@@ -142,7 +142,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 26,
+    "bars": 27,
     "tp1_done": false,
     "best_close": 0.1545,
     "realized": -0.8173752521713551,
@@ -153,7 +153,7 @@
     "peak_r": 3.562788812197631,
     "mae_r": -0.09860512641575757,
     "bars_to_peak": 25,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.17380754420787914
    },
@@ -192,18 +192,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 16,
+    "bars": 17,
     "tp1_done": false,
-    "best_close": 72.36,
+    "best_close": 72.19,
     "realized": -0.17074526246591823,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9285338330380777,
-    "peak_r": 2.3661495083155963,
+    "peak_r": 2.4534196238266732,
     "mae_r": 0.0,
-    "bars_to_peak": 15,
-    "stall_count": 1,
+    "bars_to_peak": 17,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 77.94318748130695
    },
@@ -242,18 +242,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 15,
+    "bars": 16,
     "tp1_done": false,
-    "best_close": 65.849,
+    "best_close": 65.543,
     "realized": 0.21512947214476832,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8816058267443849,
-    "peak_r": 0.8039638754964977,
+    "peak_r": 0.8568622088527512,
     "mae_r": 0.0,
-    "bars_to_peak": 14,
-    "stall_count": 1,
+    "bars_to_peak": 16,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -292,18 +292,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
-    "best_close": 0.9562,
+    "best_close": 0.9543,
     "realized": 0.10388091698302251,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9087586999417789,
-    "peak_r": 1.0193062687233772,
+    "peak_r": 1.0958330614741645,
     "mae_r": -0.543451393766371,
-    "bars_to_peak": 9,
-    "stall_count": 1,
+    "bars_to_peak": 11,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.9939211928895941
    },
@@ -342,7 +342,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 0.7243,
     "realized": -0.4055643992604,
@@ -353,7 +353,7 @@
     "peak_r": 1.8321783975822081,
     "mae_r": 0.0,
     "bars_to_peak": 3,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.7714519028503826
    },
@@ -392,7 +392,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 1824.65,
     "realized": -0.20054927535310552,
@@ -403,7 +403,7 @@
     "peak_r": 0.6503028291807633,
     "mae_r": 0.0,
     "bars_to_peak": 2,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -442,7 +442,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 0.05992,
     "realized": 0.004226658355698448,
@@ -453,7 +453,7 @@
     "peak_r": 0.8519167624585187,
     "mae_r": 0.0,
     "bars_to_peak": 2,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -671,9 +671,9 @@
   "ETH|2026-11-13 04:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-14 18:00:00+00:00",
- "last_bar": "2026-11-14 17:00:00+00:00",
- "equity": 23272.14240035605,
+ "anchor": "2026-11-14 19:00:00+00:00",
+ "last_bar": "2026-11-14 18:00:00+00:00",
+ "equity": 23297.219798012396,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -717,7 +717,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 71,
+    "bars": 72,
     "tp1_done": false,
     "best_close": 0.1545,
     "realized": -0.9782142854556459,
@@ -728,7 +728,7 @@
     "peak_r": 5.430331957303355,
     "mae_r": 0.0,
     "bars_to_peak": 70,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.17986768847272694
    }
@@ -803,5 +803,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-14 18:03:42.971134+00:00"
+ "last_run": "2026-11-14 19:03:41.689021+00:00"
 }
