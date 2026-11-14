@@ -31,7 +31,7 @@
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
     "entry": 0.36757932,
-    "sl": 0.37300067547056365,
+    "sl": 0.3707281075616996,
     "sl0": 0.3784220309411273,
     "tp1": 0.0,
     "notional": 5424.168505398266,
@@ -59,18 +59,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 69,
+    "bars": 70,
     "tp1_done": false,
-    "best_close": 0.3271,
+    "best_close": 0.3254,
     "realized": 0.8444394573857625,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.9194148553684662,
-    "peak_r": 3.733320958180163,
+    "peak_r": 3.8901083159941336,
     "mae_r": -0.7120617751336378,
-    "bars_to_peak": 65,
-    "stall_count": 4,
+    "bars_to_peak": 70,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.37300067547056365
    },
@@ -81,7 +81,7 @@
     "setup": "BRK_S",
     "regime": "TREND_DOWN",
     "entry": 72461.20486,
-    "sl": 72184.3401168758,
+    "sl": 72089.6229656704,
     "sl0": 73341.16154536471,
     "tp1": 0.0,
     "notional": 13175.413029329697,
@@ -109,7 +109,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 46,
+    "bars": 47,
     "tp1_done": false,
     "best_close": 66722.3,
     "realized": 2.339795150717907,
@@ -120,7 +120,7 @@
     "peak_r": 6.521803806310551,
     "mae_r": 0.0,
     "bars_to_peak": 38,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false,
     "be_level": 72901.18320268235
    },
@@ -159,18 +159,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 20,
+    "bars": 21,
     "tp1_done": false,
-    "best_close": 0.1626,
+    "best_close": 0.1615,
     "realized": 0.12979440632358288,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.908150729662096,
-    "peak_r": 1.858346806291399,
+    "peak_r": 2.0898142391922434,
     "mae_r": -0.09860512641575757,
-    "bars_to_peak": 16,
-    "stall_count": 4,
+    "bars_to_peak": 21,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.17380754420787914
    },
@@ -209,7 +209,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
     "best_close": 75.03,
     "realized": 0.005360150648447056,
@@ -220,7 +220,7 @@
     "peak_r": 0.9954953411710497,
     "mae_r": 0.0,
     "bars_to_peak": 2,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -259,7 +259,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
     "best_close": 67.336,
     "realized": 0.02013259376161102,
@@ -270,7 +270,7 @@
     "peak_r": 0.5469056346443766,
     "mae_r": 0.0,
     "bars_to_peak": 1,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -309,7 +309,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 4,
+    "bars": 5,
     "tp1_done": false,
     "best_close": 0.98150724,
     "realized": 0.0,
@@ -320,7 +320,7 @@
     "peak_r": 0.0,
     "mae_r": -0.5192850381608575,
     "bars_to_peak": 0,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -532,9 +532,9 @@
   "ETH|2026-11-13 04:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-14 12:00:00+00:00",
- "last_bar": "2026-11-14 11:00:00+00:00",
- "equity": 22947.355246900697,
+ "anchor": "2026-11-14 13:00:00+00:00",
+ "last_bar": "2026-11-14 12:00:00+00:00",
+ "equity": 23026.7670061458,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -578,18 +578,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 65,
+    "bars": 66,
     "tp1_done": false,
-    "best_close": 0.1626,
+    "best_close": 0.1615,
     "realized": 0.2408017917309531,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.908150729662096,
-    "peak_r": 3.5367542706410147,
+    "peak_r": 3.793906795990219,
     "mae_r": 0.0,
-    "bars_to_peak": 61,
-    "stall_count": 4,
+    "bars_to_peak": 66,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.17986768847272694
    }
@@ -664,5 +664,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-14 12:03:39.575718+00:00"
+ "last_run": "2026-11-14 13:03:38.027324+00:00"
 }
