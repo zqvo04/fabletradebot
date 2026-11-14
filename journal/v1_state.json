@@ -63,7 +63,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 61,
+    "bars": 62,
     "tp1_done": false,
     "best_close": 0.3285,
     "realized": 0.6096704670898067,
@@ -74,7 +74,7 @@
     "peak_r": 3.604201957627479,
     "mae_r": -0.7120617751336378,
     "bars_to_peak": 61,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.37300067547056365
    },
@@ -113,7 +113,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 38,
+    "bars": 39,
     "tp1_done": false,
     "best_close": 66722.3,
     "realized": 2.464515140652599,
@@ -124,7 +124,7 @@
     "peak_r": 6.521803806310551,
     "mae_r": 0.0,
     "bars_to_peak": 38,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 72901.18320268235
    },
@@ -163,7 +163,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 12,
+    "bars": 13,
     "tp1_done": false,
     "best_close": 0.1634,
     "realized": 0.22969923213968627,
@@ -174,7 +174,7 @@
     "peak_r": 1.6900068550907847,
     "mae_r": -0.09860512641575757,
     "bars_to_peak": 12,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.17380754420787914
    },
@@ -213,7 +213,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 2,
+    "bars": 3,
     "tp1_done": false,
     "best_close": 75.03,
     "realized": 0.0,
@@ -224,7 +224,7 @@
     "peak_r": 0.9954953411710497,
     "mae_r": 0.0,
     "bars_to_peak": 2,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -263,7 +263,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 67.336,
     "realized": 0.0,
@@ -274,7 +274,7 @@
     "peak_r": 0.5469056346443766,
     "mae_r": 0.0,
     "bars_to_peak": 1,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -484,9 +484,9 @@
   "ETH|2026-11-13 04:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-14 04:00:00+00:00",
- "last_bar": "2026-11-14 03:00:00+00:00",
- "equity": 22947.48382533199,
+ "anchor": "2026-11-14 05:00:00+00:00",
+ "last_bar": "2026-11-14 04:00:00+00:00",
+ "equity": 22922.40642767564,
  "carry": {
   "cash": 22348.229408892115,
   "peak": 28701.98386769757,
@@ -530,7 +530,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 57,
+    "bars": 58,
     "tp1_done": false,
     "best_close": 0.1634,
     "realized": 0.36938022302474616,
@@ -541,53 +541,12 @@
     "peak_r": 3.349734252205229,
     "mae_r": 0.0,
     "bars_to_peak": 57,
-    "stall_count": 0,
+    "stall_count": 1,
     "trail_tightened": false,
     "be_level": 0.17986768847272694
    }
   },
-  "pendings": [
-   {
-    "sym": "BTC",
-    "direction": -1,
-    "conf": 0.7463691778529751,
-    "sl": 68027.28917149433,
-    "setup": "BRK_S",
-    "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-14 03:00:00+00:00",
-    "meta": {
-     "c_base": 0.5388530506417729,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9625,
-     "hold_entry": 0.9458,
-     "atr_entry": 652.4945857471611,
-     "bias4h_entry": 1
-    },
-    "hold_dec": 0.9458410730117961
-   },
-   {
-    "sym": "HYPE",
-    "direction": -1,
-    "conf": 0.7066397340624422,
-    "sl": 70.12219802065754,
-    "setup": "BRK_S",
-    "regime": "RANGE",
-    "decided_ts": "2026-11-14 03:00:00+00:00",
-    "meta": {
-     "c_base": 0.739344971022622,
-     "c_fit": 0.4,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.9958333333333332,
-     "hold_entry": 0.8542,
-     "atr_entry": 1.1486633677625553,
-     "bias4h_entry": 1
-    },
-    "hold_dec": 0.8541526000454679
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "ADA|2026-11-11 19:00:00+00:00": "4158b798-76e3-8174-872e-db71937021cd"
@@ -657,5 +616,5 @@
   "DOGE|2026-11-05 13:00:00+00:00",
   "SOL|2026-11-08 22:00:00+00:00"
  ],
- "last_run": "2026-11-14 04:03:41.826577+00:00"
+ "last_run": "2026-11-14 05:03:43.585405+00:00"
 }
