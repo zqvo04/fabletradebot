@@ -42,18 +42,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
-    "best_close": 59432.51112,
+    "best_close": 59141.7,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8941759339903018,
-    "peak_r": 0.0,
+    "peak_r": 0.13222867275712757,
     "mae_r": -0.037552270996022756,
-    "bars_to_peak": 0,
-    "stall_count": 1,
+    "bars_to_peak": 2,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -92,17 +92,17 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
-    "best_close": 1644.4,
+    "best_close": 1630.16,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8868197193952305,
-    "peak_r": 0.13528785187597533,
+    "peak_r": 0.3349431792107556,
     "mae_r": 0.0,
-    "bars_to_peak": 1,
+    "bars_to_peak": 2,
     "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
@@ -142,7 +142,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 0.13974408000000002,
     "realized": 0.0,
@@ -153,7 +153,7 @@
     "peak_r": 0.0,
     "mae_r": -0.09255461683076074,
     "bars_to_peak": 0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -192,7 +192,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 0.65170874,
     "realized": 0.0,
@@ -203,7 +203,7 @@
     "peak_r": 0.0,
     "mae_r": -0.10602228624044663,
     "bars_to_peak": 0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -242,7 +242,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 0.053778480000000004,
     "realized": 0.0,
@@ -253,7 +253,7 @@
     "peak_r": 0.0,
     "mae_r": -0.11118793911752155,
     "bars_to_peak": 0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -472,9 +472,9 @@
   "DOGE|2026-11-14 15:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-20 17:00:00+00:00",
- "last_bar": "2026-11-20 16:00:00+00:00",
- "equity": 23597.247974780516,
+ "anchor": "2026-11-20 18:00:00+00:00",
+ "last_bar": "2026-11-20 17:00:00+00:00",
+ "equity": 23613.27583443517,
  "carry": {
   "cash": 23600.79302828259,
   "peak": 28701.98386769757,
@@ -518,44 +518,23 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
-    "best_close": 59432.51112,
+    "best_close": 59141.7,
     "realized": 0.0,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
     "hold_conf": 0.8941759339903018,
-    "peak_r": 0.0,
+    "peak_r": 0.13222867275712757,
     "mae_r": -0.037552270996022756,
-    "bars_to_peak": 0,
-    "stall_count": 1,
+    "bars_to_peak": 2,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
    }
   },
-  "pendings": [
-   {
-    "sym": "ETH",
-    "direction": -1,
-    "conf": 0.6621108162060341,
-    "sl": 1700.0763121083153,
-    "setup": "BRK_S",
-    "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-20 16:00:00+00:00",
-    "meta": {
-     "c_base": 0.3856560294655166,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8,
-     "hold_entry": 0.8868,
-     "atr_entry": 27.838156054157622,
-     "bias4h_entry": 1
-    },
-    "hold_dec": 0.8868197193952305
-   }
-  ]
+  "pendings": []
  },
  "pages": {
   "BTC|2026-11-20 16:00:00+00:00": "41e8b798-76e3-8119-beb7-ecb440e29360"
@@ -626,5 +605,5 @@
   "SOL|2026-11-08 22:00:00+00:00",
   "ADA|2026-11-11 19:00:00+00:00"
  ],
- "last_run": "2026-11-20 17:03:52.053935+00:00"
+ "last_run": "2026-11-20 18:03:57.031106+00:00"
 }
