@@ -12,11 +12,11 @@
   ],
   "cooldown": {
    "ETH": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    },
    "SUI": {
-    "bars": 9,
+    "bars": 8,
     "exp": true
    }
   },
@@ -56,7 +56,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
     "best_close": 58371.7,
     "realized": -0.1285758303647786,
@@ -67,7 +67,7 @@
     "peak_r": 0.48233934948429746,
     "mae_r": -0.037552270996022756,
     "bars_to_peak": 3,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -106,7 +106,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
     "best_close": 0.1391,
     "realized": -0.4884999202871874,
@@ -117,7 +117,7 @@
     "peak_r": 0.13075227585620716,
     "mae_r": -0.742174668283766,
     "bars_to_peak": 5,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -156,7 +156,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
     "best_close": 0.0528,
     "realized": -0.053314153961557226,
@@ -167,7 +167,7 @@
     "peak_r": 0.4699169603823141,
     "mae_r": -0.3657214901381081,
     "bars_to_peak": 5,
-    "stall_count": 5,
+    "stall_count": 6,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -384,9 +384,9 @@
   "SUI|2026-11-20 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-21 02:00:00+00:00",
- "last_bar": "2026-11-21 01:00:00+00:00",
- "equity": 23619.11202207412,
+ "anchor": "2026-11-21 03:00:00+00:00",
+ "last_bar": "2026-11-21 02:00:00+00:00",
+ "equity": 23637.625187229594,
  "carry": {
   "cash": 23600.79302828259,
   "peak": 28701.98386769757,
@@ -430,7 +430,7 @@
      ]
     ],
     "adds": 0,
-    "bars": 10,
+    "bars": 11,
     "tp1_done": false,
     "best_close": 58371.7,
     "realized": -0.15172457804393558,
@@ -441,7 +441,7 @@
     "peak_r": 0.4823393494842975,
     "mae_r": -0.037552270996022756,
     "bars_to_peak": 3,
-    "stall_count": 7,
+    "stall_count": 8,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -517,5 +517,5 @@
   "SOL|2026-11-08 22:00:00+00:00",
   "ADA|2026-11-11 19:00:00+00:00"
  ],
- "last_run": "2026-11-21 02:03:36.825676+00:00"
+ "last_run": "2026-11-21 03:03:40.022760+00:00"
 }
