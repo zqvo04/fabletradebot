@@ -34,10 +34,15 @@ LIT)을 제외했다. XRP·ADA는 신규 편입으로 캐시가 없어 첫 라�
 hold_conf 재설계) · [TAIL_REDESIGN.md](TAIL_REDESIGN.md)(**V6/E20** — tail 정렬
 재설계·진입/청산 결합 진단·홀드아웃 개봉 기록) · [WHALE_WORKFLOW.md](WHALE_WORKFLOW.md)
 (고래 좌석 유지/회전 워크플로우 진단 + V5.1 개선) · [VALIDATION.md](VALIDATION.md)
-(게이트 결과) · [SECRETS.md](SECRETS.md) · [CRON_SETUP.md](CRON_SETUP.md)
+(게이트 결과) · [REGIME_REDESIGN.md](REGIME_REDESIGN.md)(국면 분류·게이트 검정, §9 4H
+검정) · [STOP_REDESIGN.md](STOP_REDESIGN.md)(손절 측 재설계, §15 BE-1R) ·
+[SECRETS.md](SECRETS.md) · [CRON_SETUP.md](CRON_SETUP.md)
 
-> **최신 변경(V6/E20)**: 고래 승자 청산 트레일 폭을 **8→10×ATR로 확대** +
-> `hold_minr_strict` 채택. 버전별 변경·채택/기각 근거·수치는 이 문서 본문을
+> **최신 변경(2026-11)**: ① **국면 전환 텔레그램 알림** — 자산별 1D 국면이 바뀌면
+> 하루 1회 정보성 알림(§2-2, 매매 규칙 불변). ② **BE-1R 손절 상향** — +1R 증명 후
+> 손절을 −0.5R로 올림(whale, 오너 오버라이드, §7). ③ 4H 국면 분류 검정 **기각** —
+> 국면은 1D 유지(§2-2). 직전 변경은 V8/V9(레버리지 손절폭 유도)·V7(give-back)·
+> V6/E20(트레일 10×ATR). 버전별 변경·채택/기각 근거·수치는 이 문서 본문을
 > 깔끔히 유지하기 위해 하단 **[패치 및 실험 이력](#패치-및-실험-이력)**에 모아
 > 두었다. 로직만 먼저 읽으려면 아래 §0~§9, 변경 내역이 궁금하면 문서 끝을 보라.
 
@@ -79,6 +84,8 @@ hold_conf 재설계) · [TAIL_REDESIGN.md](TAIL_REDESIGN.md)(**V6/E20** — tail
  │
  ├─ [청산 시] 좌석이 비면 다음 실행에서 §스캔~좌석선택이 다음 최고 후보를 채움
  │    (같은 실행 내 교차-코인 회전 없음 — "밀어내지 않는다" 설계)
+ │
+ ├─ [국면 알림] 자산별 1D 국면 전환 → Telegram 1건 묶음 알림 (정보성, §2-2)
  │
  └─ [기록] Telegram 알림 + Notion 저널(오픈/청산/시간별 재채점) + journal/v1_state.json
       커밋 (롤링 앵커 = 새 봉만 증분 처리, 아래 운영 섹션) → scoring.score_report로 setup·
@@ -152,6 +159,47 @@ CRISIS      → 없음 (관망 + 청산)
 
 폐지 2026-08: OSC_L/S · BND_L/S · FADE · RANGE_L/S — 평균회귀 계열 6종 전부
 ```
+
+#### 2-2. 국면 전환 알림 (2026-11, 정보성 — 매매 규칙과 무관)
+
+매 실행에서 새로 처리한 봉 중 **유효 국면(BTC CRISIS 상속 포함)이 바뀐 자산**을 모아
+Telegram 메시지 1건으로 보낸다(`regime.transitions` → `notify.fmt_regime`,
+`run_live.py`). 앵커가 단조 전진하므로 같은 전환은 한 번만 나가고, 누락된 실행은 다음
+실행이 밀린 봉과 함께 처리한다. 국면은 1D 마감에만 바뀌므로 알림은 **UTC 00:03 실행
+(KST 09:03)**에 몰린다. 설계구간 빈도 0.81건/일(9자산 합).
+
+```
+🧭 국면 전환 (1D 마감, 정보성 — 진입 신호 아님)
+BTC: RANGE → TREND_DOWN
+SOL: RANGE → TREND_UP ⬆️
+ONDO: RANGE → CRISIS ⚠️
+기준봉 2026-11-11 23:00 UTC
+```
+
+**읽는 법 (측정 근거 기준).**
+
+| 전환 대상 | 의미 | 근거 |
+|---|---|---|
+| **TREND_UP ⬆️** | 드리프트 강한 구간 진입 — 유일한 방향 정보 | +2.24%/168h, CI 0 배제 (위 표) |
+| HIGH_VOL | 신규 진입 회피 구간 | 진입 −0.114R, 양 반기 동일 (REGIME_REDESIGN §1c·§4a) |
+| **CRISIS ⚠️** | 급락 진행 중. 하락 지속 신호 아님(168h +0.89%) | 강제 청산은 수익원 +3.02R (REGIME_REDESIGN §1e) |
+| TREND_DOWN / RANGE | 참고용. 하락 신호로 읽지 말 것 | 전 지평선 0과 구분 불가 (REGIME_REDESIGN §8) |
+
+**왜 4H가 아니라 1D인가 (REGIME_REDESIGN §9, 2026-11-11 — 기각).** 같은 5상태
+분류기를 4H봉에서 계산해 위 표와 같은 바 단위 검정을 했다(`scripts/exp_regime_4h.py`,
+셀 사전 고정).
+
+```
+                TREND_UP +168h   CI              분리도 전체/H1/H2      전환/자산/일
+D1 (현행)        +2.24          [+0.38,+4.09] *   +1.23 / +1.70 / +0.72     0.090
+H4-T (시간상수=)  +1.58          [-0.09,+3.22]     +0.38 / +1.22 / -0.55     0.132
+H4-B (봉수=)      +0.88          [-1.05,+2.84]     -0.51 / -0.25 / -0.85     0.562
+```
+
+갱신만 4h로 빨라져도(H4-T) TREND_UP이 0을 배제하지 못하고 H2에서 부호가 뒤집힌다.
+국면 라벨의 정보는 1D에서만 나오며, 빠른 판단은 4H 진입/청산 게이트(`bias4h`)가
+맡는 현 구조가 측정과 일치한다. 1D 확인 일수 스윕(REGIME_REDESIGN §4a)도 지연이
+길수록 BRK_L이 낫다는 쪽이었다.
 
 ### 3. 진입 전략 — 완전 커버리지 플레이북 매트릭스
 
@@ -368,7 +416,15 @@ conf 티어는 `conf_entry` 게이트로만 남는다(비무장 프로파일 bas
    트레이드가 1건뿐이라 표본 밖 증거가 없다. 되돌림 규칙 사전 확정
    (GIVEBACK_REDESIGN.md §10d/§11): 전방 10건이 8R을 넘긴 뒤 그중 최악
    되돌림이 40%를 넘으면 60%로 완화, 55%를 넘으면 이 레그를 끈다.
-7. **LossFade**: 매시 재채점에서 **패자**의 확신도가 붕괴 상태로 2봉 연속 머물면
+7. **BE-1R 손절 상향 (whale, 2026-11-10 오너 오버라이드)**: 1H 종가 기준
+   `peak_r ≥ be_arm_r`(1.0)이 된 봉의 **다음 봉부터** 손절을 `entry + be_lock_r×R0`
+   (`be_lock_r` = −0.5, R0 = 초기 손절 거리)로 올린다. 올리기만 하고 1회 무장, 체결
+   사유 `BE`. 설계구간 ret 50.6x→66.2x지만 **결과를 보고 고른 셀**이고 인접 셀이
+   10.9x~76.2x로 요동(좌석 경로 민감), 비용×2에서는 baseline보다 열위 — G5 통과가
+   아니다. 기대할 수 있는 건 "+1R 증명 후 −1R 풀손절"의 크기 절반화(분포 모양)뿐이고
+   판정은 전방 섀도 30건 또는 6주로 한다. 롤백: `profile('whale')`의 두 줄 삭제
+   (STOP_REDESIGN.md §15).
+8. **LossFade**: 매시 재채점에서 **패자**의 확신도가 붕괴 상태로 2봉 연속 머물면
    구조적 손절보다 앞서 손실을 줄인다 — 상세 §9. `hold_loss_exit=0.50`.
 - 같은 봉에서 SL·상방이 겹치면 **항상 SL 먼저**(보수적 체결 가정).
 - 청산 우선순위: CRISIS > SignalFade(두 레그 중 먼저 걸리는 쪽) > LossFade >
@@ -532,6 +588,7 @@ G6 비용2배(pf 1.74) · G7 MC(파산확률>50%DD 0.73→**0.48**, final_p5 0.8
      쿨다운·펜딩·서킷/DD를 주입해 이어감) → 오픈/청산 산출
   3. 신규 진입 → Telegram 즉시 알림 + Notion Open 행 생성
   4. 청산 → Telegram 손익 알림 + Notion 행 갱신(승률·R·레버리지 손익·보유시간)
+  4a. 국면 전환 → Telegram 1건 묶음 알림 (1D 마감 직후 실행에서만 발생, §2-2)
   4b. 오픈 포지션 시간별 재채점: 마크투마켓 + hold_confidence 재계산 → Notion/
       리포트 갱신, 이 재채점으로 SignalFade/LossFade 청산 판단 (§9)
   5. journal/v1_state.json 저장(앵커를 최신봉 다음으로 전진 + carry 직렬화) + git 커밋
@@ -612,6 +669,21 @@ scoring(층위A/B 리포트 + Phase 0 진단) · notify(Telegram) · journal_not
 > 상세 수치·홀드아웃 원장은 각 항목이 가리키는 문서에 있다: EXPERIMENTS.md ·
 > TAIL_REDESIGN.md · CONF_REDESIGN.md · SEAT_REDESIGN.md · EXIT_REDESIGN.md ·
 > WHALE_WORKFLOW.md.
+
+### 2026-11 — 국면 전환 알림 · 4H 국면 기각 · BE-1R · 손절 측 재설계 (STOP_REDESIGN.md)
+
+- **국면 전환 Telegram 알림 (채택, 로직 불변)**: §2-2. 전방 원장 분석(forward 62건,
+  shadow 178건) 결과 SR-D 승급 게이트(n≥30·+0.05R·양 반기)를 통과한 슬롯이 0개라
+  셋업 단위 신호 알림은 보류하고, 바 단위로 유일하게 0을 배제한 TREND_UP을 포함한
+  국면 전환을 정보성 알림으로 연결했다. 테스트 `test_regime_transitions_only_from_start_and_formatted`.
+- **4H 국면 분류 (기각)**: §2-2 표, REGIME_REDESIGN.md §9.
+- **BE-1R (오너 오버라이드로 whale 무장)**: §7 7번, STOP_REDESIGN.md §15.
+- **S0 계측 (채택, 바이트 불변)**: 섀도·실계좌 원장에 `sl0`·`init_stop_frac`·
+  `stop_atr`·`mae_r`·`bars_to_peak`·`bias4h_entry` 추가.
+- **기각**: S1(BiasFlip 정렬 후 무장) · S2/S2b(종가 확인 손절) · S3(스탑 하한) ·
+  S4(진입 무효화 청산) · S5(2단 분할 손절) · R2-B(실험 셋업 손실 컷). 공통 원인: 손실
+  측 R을 줄이는 장치가 깊게 눌렸다 재점화하는 러너를 함께 절단한다. 손절 측은
+  §14d에 따라 원리적으로 소진 선언. 반면 BRK_L 단독 payoff는 이미 3.11.
 
 ### V8/V9 — 레버리지 손절폭 유도 · 롱/숏 비대칭 (2026-08-06)
 
