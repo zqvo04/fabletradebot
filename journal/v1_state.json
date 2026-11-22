@@ -51,18 +51,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 13,
+    "bars": 14,
     "tp1_done": false,
     "best_close": 0.9152,
-    "realized": 0.14948025901712408,
+    "realized": 0.2603348227045674,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.804936697193544,
+    "hold_conf": 0.7910059129488852,
     "peak_r": 0.1941811370773482,
     "mae_r": -0.4769442818938239,
     "bars_to_peak": 5,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -101,18 +101,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 3,
+    "bars": 4,
     "tp1_done": false,
     "best_close": 70.03,
-    "realized": 0.0,
+    "realized": 0.052722295904381114,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.79237496947473,
+    "hold_conf": 0.7810853842271841,
     "peak_r": 0.07739756979427688,
-    "mae_r": -0.07514001356062974,
+    "mae_r": -0.2746122379478051,
     "bars_to_peak": 1,
-    "stall_count": 2,
+    "stall_count": 3,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -332,9 +332,9 @@
   "DOGE|2026-11-20 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-22 16:00:00+00:00",
- "last_bar": "2026-11-22 15:00:00+00:00",
- "equity": 23540.654889103935,
+ "anchor": "2026-11-22 17:00:00+00:00",
+ "last_bar": "2026-11-22 16:00:00+00:00",
+ "equity": 23524.13216752791,
  "carry": {
   "cash": 23550.25063372614,
   "peak": 28701.98386769757,
@@ -383,18 +383,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 13,
+    "bars": 14,
     "tp1_done": false,
     "best_close": 0.9152,
-    "realized": 0.17601487823237869,
+    "realized": 0.30654751616896103,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.804936697193544,
+    "hold_conf": 0.7910059129488852,
     "peak_r": 0.19418113707734824,
     "mae_r": -0.47694428189382393,
     "bars_to_peak": 5,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -471,5 +471,5 @@
   "ADA|2026-11-11 19:00:00+00:00",
   "BTC|2026-11-20 16:00:00+00:00"
  ],
- "last_run": "2026-11-22 16:03:37.604438+00:00"
+ "last_run": "2026-11-22 17:03:39.133081+00:00"
 }
