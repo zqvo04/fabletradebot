@@ -63,18 +63,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 0.9152,
     "realized": 0.14948025901712408,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7998253977466804,
+    "hold_conf": 0.7904899573351474,
     "peak_r": 0.1941811370773482,
     "mae_r": -0.4769442818938239,
     "bars_to_peak": 5,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -292,9 +292,9 @@
   "DOGE|2026-11-20 16:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-22 11:00:00+00:00",
- "last_bar": "2026-11-22 10:00:00+00:00",
- "equity": 23517.525369362324,
+ "anchor": "2026-11-22 12:00:00+00:00",
+ "last_bar": "2026-11-22 11:00:00+00:00",
+ "equity": 23528.93593243485,
  "carry": {
   "cash": 23550.25063372614,
   "peak": 28701.98386769757,
@@ -343,18 +343,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 0.9152,
     "realized": 0.17601487823237869,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7998253977466804,
+    "hold_conf": 0.7904899573351474,
     "peak_r": 0.19418113707734824,
     "mae_r": -0.47694428189382393,
     "bars_to_peak": 5,
-    "stall_count": 3,
+    "stall_count": 4,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -431,5 +431,5 @@
   "ADA|2026-11-11 19:00:00+00:00",
   "BTC|2026-11-20 16:00:00+00:00"
  ],
- "last_run": "2026-11-22 11:03:41.385888+00:00"
+ "last_run": "2026-11-22 12:03:35.433069+00:00"
 }
