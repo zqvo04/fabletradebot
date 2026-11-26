@@ -16,19 +16,19 @@
   ],
   "cooldown": {
    "DOGE": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    },
    "ONDO": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    },
    "SOL": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    },
    "ADA": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    }
   },
@@ -68,18 +68,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
-    "best_close": 60.501,
-    "realized": 0.19203559845374638,
+    "best_close": 60.499,
+    "realized": 0.20172465278008558,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7720590890804837,
-    "peak_r": 0.2122210279171771,
+    "hold_conf": 0.7761935831069653,
+    "peak_r": 0.21302434712095045,
     "mae_r": -0.22558793814031328,
-    "bars_to_peak": 4,
-    "stall_count": 5,
+    "bars_to_peak": 10,
+    "stall_count": 0,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -118,18 +118,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
     "best_close": 1686.482636,
-    "realized": 0.18519406774245833,
+    "realized": 0.3377647917803517,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7407827453727377,
+    "hold_conf": 0.741473289987913,
     "peak_r": 0.0,
     "mae_r": -0.35602350102393865,
     "bars_to_peak": 0,
-    "stall_count": 9,
+    "stall_count": 10,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -168,18 +168,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 0.66080328,
-    "realized": 0.0,
+    "realized": 0.29964158456793866,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7099918742074901,
+    "hold_conf": 0.7022656253079798,
     "peak_r": 0.0,
-    "mae_r": -0.1245129756415734,
+    "mae_r": -0.260548128751558,
     "bars_to_peak": 0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -410,9 +410,9 @@
   "ADA|2026-11-23 20:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-26 16:00:00+00:00",
- "last_bar": "2026-11-26 15:00:00+00:00",
- "equity": 23518.57647910706,
+ "anchor": "2026-11-26 17:00:00+00:00",
+ "last_bar": "2026-11-26 16:00:00+00:00",
+ "equity": 23506.125222302013,
  "carry": {
   "cash": 23530.29578769207,
   "peak": 28701.98386769757,
@@ -421,7 +421,7 @@
   "loss_log": [],
   "cooldown": {
    "DOGE": {
-    "bars": 10,
+    "bars": 9,
     "exp": true
    }
   },
@@ -461,18 +461,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 0.66080328,
-    "realized": 0.0,
+    "realized": 0.35253275575881715,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7099918742074901,
+    "hold_conf": 0.7022656253079798,
     "peak_r": 0.0,
-    "mae_r": -0.12451297564157339,
+    "mae_r": -0.2605481287515579,
     "bars_to_peak": 0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -551,5 +551,5 @@
   "XRP|2026-11-22 03:00:00+00:00",
   "DOGE|2026-11-23 18:00:00+00:00"
  ],
- "last_run": "2026-11-26 16:03:49.743070+00:00"
+ "last_run": "2026-11-26 17:03:44.604022+00:00"
 }
