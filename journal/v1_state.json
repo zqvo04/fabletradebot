@@ -16,19 +16,19 @@
   ],
   "cooldown": {
    "DOGE": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    },
    "ONDO": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    },
    "SOL": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    },
    "ADA": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    }
   },
@@ -68,18 +68,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 60.501,
     "realized": 0.19203559845374638,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7833804273378376,
+    "hold_conf": 0.7720590890804837,
     "peak_r": 0.2122210279171771,
     "mae_r": -0.22558793814031328,
     "bars_to_peak": 4,
-    "stall_count": 4,
+    "stall_count": 5,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -118,31 +118,39 @@
      ]
     ],
     "adds": 0,
-    "bars": 8,
+    "bars": 9,
     "tp1_done": false,
     "best_close": 1686.482636,
     "realized": 0.18519406774245833,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.7285349888862127,
+    "hold_conf": 0.7407827453727377,
     "peak_r": 0.0,
     "mae_r": -0.35602350102393865,
     "bars_to_peak": 0,
-    "stall_count": 8,
+    "stall_count": 9,
     "trail_tightened": false,
     "be_level": 0.0
-   }
-  },
-  "pendings": [
-   {
+   },
+   "SUI": {
     "sym": "SUI",
     "direction": -1,
     "conf": 0.8415328860563673,
-    "sl": 0.6784457786125428,
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-26 14:00:00+00:00",
+    "entry": 0.66080328,
+    "sl": 0.6784457786125428,
+    "sl0": 0.6784457786125428,
+    "tp1": 0.0,
+    "notional": 2996.415845679386,
+    "margin": 998.8052818931287,
+    "risk_amt": 80.0,
+    "leverage": 3.0,
+    "liq_price": 0.8744630071999999,
+    "opened_ts": "2026-11-26 15:00:00+00:00",
+    "risk_frac": 0.0009988052818931286,
+    "init_stop_frac": 0.026698563924414626,
     "meta": {
      "c_base": 0.7118779746479404,
      "c_fit": 1.0,
@@ -153,17 +161,40 @@
      "atr_entry": 0.007076297687571397,
      "bias4h_entry": 1
     },
-    "hold_dec": 0.7190773928597721
+    "tranches": [
+     [
+      0.66080328,
+      2996.415845679386
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 0.66080328,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7099918742074901,
+    "peak_r": 0.0,
+    "mae_r": -0.1245129756415734,
+    "bars_to_peak": 0,
+    "stall_count": 1,
+    "trail_tightened": false,
+    "be_level": 0.0
    }
-  ]
+  },
+  "pendings": []
  },
  "shadow_pages": {
   "HYPE|2026-11-26 07:00:00+00:00": "4248b798-76e3-81c3-841f-f65c78f2ecd4",
-  "ETH|2026-11-26 07:00:00+00:00": "4248b798-76e3-819d-a7b9-c3ec4d13ad70"
+  "ETH|2026-11-26 07:00:00+00:00": "4248b798-76e3-819d-a7b9-c3ec4d13ad70",
+  "SUI|2026-11-26 15:00:00+00:00": "4248b798-76e3-817b-8aa0-c8424d03130c"
  },
  "shadow_seats": {
   "HYPE|2026-11-26 07:00:00+00:00": "Live-Blocked",
-  "ETH|2026-11-26 07:00:00+00:00": "Live-Blocked"
+  "ETH|2026-11-26 07:00:00+00:00": "Live-Blocked",
+  "SUI|2026-11-26 15:00:00+00:00": "Live-Taken"
  },
  "shadow_closed_keys": [
   "SUI|2026-08-01 19:00:00+00:00",
@@ -379,9 +410,9 @@
   "ADA|2026-11-23 20:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-26 15:00:00+00:00",
- "last_bar": "2026-11-26 14:00:00+00:00",
- "equity": 23530.29578769207,
+ "anchor": "2026-11-26 16:00:00+00:00",
+ "last_bar": "2026-11-26 15:00:00+00:00",
+ "equity": 23518.57647910706,
  "carry": {
   "cash": 23530.29578769207,
   "peak": 28701.98386769757,
@@ -390,40 +421,29 @@
   "loss_log": [],
   "cooldown": {
    "DOGE": {
-    "bars": 11,
+    "bars": 10,
     "exp": true
    }
   },
-  "positions": {},
-  "pendings": [
-   {
-    "sym": "HYPE",
-    "direction": -1,
-    "conf": 0.8397608596418185,
-    "sl": 62.22505089703478,
-    "setup": "PBK_S",
-    "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-26 14:00:00+00:00",
-    "meta": {
-     "c_base": 0.70865610843967,
-     "c_fit": 1.0,
-     "c_align": 1.0,
-     "c_fund": 0.0,
-     "c_base_pct": 0.8875,
-     "hold_entry": 0.7834,
-     "atr_entry": 0.7834181617246226,
-     "bias4h_entry": 1
-    },
-    "hold_dec": 0.7833804273378376
-   },
-   {
+  "positions": {
+   "SUI": {
     "sym": "SUI",
     "direction": -1,
     "conf": 0.8415328860563673,
-    "sl": 0.6784457786125428,
     "setup": "PBK_S",
     "regime": "TREND_DOWN",
-    "decided_ts": "2026-11-26 14:00:00+00:00",
+    "entry": 0.66080328,
+    "sl": 0.6784457786125428,
+    "sl0": 0.6784457786125428,
+    "tp1": 0.0,
+    "notional": 3525.327557588171,
+    "margin": 1175.1091858627237,
+    "risk_amt": 94.12118315076827,
+    "leverage": 3.0,
+    "liq_price": 0.8744630071999999,
+    "opened_ts": "2026-11-26 15:00:00+00:00",
+    "risk_frac": 0.0004994026409465643,
+    "init_stop_frac": 0.026698563924414626,
     "meta": {
      "c_base": 0.7118779746479404,
      "c_fit": 1.0,
@@ -434,11 +454,34 @@
      "atr_entry": 0.007076297687571397,
      "bias4h_entry": 1
     },
-    "hold_dec": 0.7190773928597721
+    "tranches": [
+     [
+      0.66080328,
+      3525.327557588171
+     ]
+    ],
+    "adds": 0,
+    "bars": 1,
+    "tp1_done": false,
+    "best_close": 0.66080328,
+    "realized": 0.0,
+    "bias_flip_streak": 0,
+    "fade_streak": 0,
+    "loss_fade_streak": 0,
+    "hold_conf": 0.7099918742074901,
+    "peak_r": 0.0,
+    "mae_r": -0.12451297564157339,
+    "bars_to_peak": 0,
+    "stall_count": 1,
+    "trail_tightened": false,
+    "be_level": 0.0
    }
-  ]
+  },
+  "pendings": []
  },
- "pages": {},
+ "pages": {
+  "SUI|2026-11-26 15:00:00+00:00": "4248b798-76e3-816a-a811-e57ffaf27744"
+ },
  "closed_keys": [
   "DOGE|2026-07-22 13:00:00+00:00",
   "XRP|2026-07-26 13:00:00+00:00",
@@ -508,5 +551,5 @@
   "XRP|2026-11-22 03:00:00+00:00",
   "DOGE|2026-11-23 18:00:00+00:00"
  ],
- "last_run": "2026-11-26 15:03:49.892810+00:00"
+ "last_run": "2026-11-26 16:03:49.743070+00:00"
 }
