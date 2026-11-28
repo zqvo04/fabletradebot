@@ -51,18 +51,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
     "best_close": 63.521864,
-    "realized": -0.03415760680832258,
+    "realized": 0.0349253780421131,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6460192730628943,
+    "hold_conf": 0.6396823905192265,
     "peak_r": 0.0,
     "mae_r": -0.2656423483998602,
     "bars_to_peak": 0,
-    "stall_count": 9,
+    "stall_count": 10,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -101,18 +101,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 9,
+    "bars": 10,
     "tp1_done": false,
     "best_close": 0.056667324,
-    "realized": 0.027528950810807595,
+    "realized": 0.11230620591026194,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6170976611340306,
+    "hold_conf": 0.6146525651062732,
     "peak_r": 0.0,
     "mae_r": -0.4246724527065623,
     "bars_to_peak": 0,
-    "stall_count": 9,
+    "stall_count": 10,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -151,18 +151,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 0.28552858,
-    "realized": 0.0,
+    "realized": 0.2085003874413,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.6978836231752805,
+    "hold_conf": 0.7003394022212421,
     "peak_r": 0.0,
     "mae_r": -0.2685993915557344,
     "bars_to_peak": 0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    },
@@ -201,10 +201,10 @@
      ]
     ],
     "adds": 0,
-    "bars": 1,
+    "bars": 2,
     "tp1_done": false,
     "best_close": 0.14774088,
-    "realized": 0.0,
+    "realized": 0.08684966234009128,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
@@ -212,7 +212,7 @@
     "peak_r": 0.0,
     "mae_r": -0.13868443786990353,
     "bars_to_peak": 0,
-    "stall_count": 1,
+    "stall_count": 2,
     "trail_tightened": false,
     "be_level": 0.0
    }
@@ -448,9 +448,9 @@
   "ETH|2026-11-26 07:00:00+00:00"
  ],
  "schema": 2,
- "anchor": "2026-11-28 00:00:00+00:00",
- "last_bar": "2026-11-27 23:00:00+00:00",
- "equity": 23572.16920858045,
+ "anchor": "2026-11-28 01:00:00+00:00",
+ "last_bar": "2026-11-28 00:00:00+00:00",
+ "equity": 23574.720225087698,
  "carry": {
   "cash": 23431.169169185112,
   "peak": 28701.98386769757,
@@ -499,18 +499,18 @@
      ]
     ],
     "adds": 0,
-    "bars": 12,
+    "bars": 13,
     "tp1_done": false,
     "best_close": 1653.74,
-    "realized": -0.02987641161943212,
+    "realized": 0.002145322181942421,
     "bias_flip_streak": 0,
     "fade_streak": 0,
     "loss_fade_streak": 0,
-    "hold_conf": 0.8066145189820706,
+    "hold_conf": 0.8083608430124358,
     "peak_r": 1.7019845412922485,
     "mae_r": -0.03783974816808993,
     "bars_to_peak": 3,
-    "stall_count": 9,
+    "stall_count": 10,
     "trail_tightened": false,
     "be_level": 1743.0432877945245
    }
@@ -590,5 +590,5 @@
   "DOGE|2026-11-23 18:00:00+00:00",
   "SUI|2026-11-26 15:00:00+00:00"
  ],
- "last_run": "2026-11-28 00:03:42.702639+00:00"
+ "last_run": "2026-11-28 01:03:42.058779+00:00"
 }
